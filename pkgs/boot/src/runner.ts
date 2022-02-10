@@ -1,10 +1,8 @@
 import { execa, ExecaChildProcess } from 'execa'
-import { unzip } from 'fflate'
-import { readFileSync } from 'fs'
-import { ensureDir, pathExists, writeFile } from 'fs-extra'
+import { writeFile } from 'fs-extra'
 import { join } from 'path'
 import { dirs } from './dirs'
-import { findFreePorts, waitUntil } from './utils'
+import { findFreePorts } from './utils'
 
 export const EXECA_FULL_COLOR = {
   cwd: dirs.root,
@@ -14,33 +12,6 @@ export const EXECA_FULL_COLOR = {
 
 export const runDev = (args?: string[]) => {
   return new Promise<void>(async (resolve) => {
-    if (!(await pathExists(join(dirs.root, 'app')))) {
-      const zipFile = readFileSync(join(dirs.pkgs.boot, 'app.zip'))
-      await new Promise<void>((res) => {
-        unzip(zipFile, {}, async (error: any, content: any) => {
-          const promises: any[] = []
-          for (let [path, file] of Object.entries(content) as any) {
-            if (file.length === 0) {
-              await ensureDir(join(dirs.root, path))
-              continue
-            }
-            promises.push(
-              writeFile(join(dirs.root, path), file, {
-                mode: 0o777,
-              })
-            )
-          }
-          await Promise.all(promises)
-          res()
-        })
-      })
-
-      await runPnpm(['i'], dirs.root)
-      await waitUntil(
-        async () => await pathExists(join(dirs.app.web, 'node_modules'))
-      )
-    }
-
     const ports = await findFreePorts()
     const port = ports.pop()?.toString() || '3000'
     await writeFile(join(dirs.app.web, 'node_modules', 'viteport'), port)

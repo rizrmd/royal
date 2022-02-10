@@ -5,7 +5,6 @@ import http from 'isomorphic-git/http/node'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { dirs, log, timelog } from '../'
-
 export const basePull = async () => {
   const dir = join(tmpdir(), 'andro-base')
   if (await pathExists(dir)) {
@@ -24,4 +23,7 @@ export const basePull = async () => {
     depth: 1,
   })
   done()
+
+  await remove(join(dirs.root, 'pkgs'))
+  await copy(join(dir, 'pkgs'), join(dirs.root, 'pkgs'))
 }
