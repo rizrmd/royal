@@ -1,0 +1,14 @@
+{
+  "name": "boot",
+  "version": "1.0.0",
+  "author": "rizky",
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "esbuild-runner": "^2.2.1",
+    "esbuild": "0.14.18"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.14"
+  }
+}
