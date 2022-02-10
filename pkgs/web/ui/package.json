@@ -1,0 +1,22 @@
+{
+  "name": "web-ui",
+  "version": "1.0.0",
+  "main": "./src/index.tsx",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@headlessui/react": "^0.0.0-insiders.6fc28c6",
+    "lodash.startcase": "^4.4.0",
+    "path-to-regexp": "^6.2.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "theme": "workspace:^",
+    "web-utils": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/lodash.startcase": "^4.4.6"
+  }
+}

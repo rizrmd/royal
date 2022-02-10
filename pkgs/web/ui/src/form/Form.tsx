@@ -1,0 +1,81 @@
+/** @jsx jsx */
+import { createContext, FC, useEffect } from 'react'
+import { useLocal } from 'web-utils'
+import { RecursiveLayout } from './RecursiveLayout'
+import { IFormLayout, IFormProps, IFormSchema } from './types'
+import { prepareLayout } from './utils/prep-layout'
+import { prepareSchemaFromDb } from './utils/prep-schema'
+import { styles } from 'theme'
+
+export const Form: FC<IFormProps> = ({
+  schema,
+  layout,
+  defaultValue,
+  onSubmit,
+  init,
+}) => {
+  const local = useLocal({
+    ready: false,
+    schema: { ...schema } as unknown as IFormSchema,
+    layout: { ...layout } as unknown as IFormLayout,
+    data: (defaultValue || {}) as any,
+    error: {} as any,
+    ctx: createContext({} as any),
+  })
+
+  const dataContext = {
+    data: local.data,
+    error: local.error,
+    render: local.render,
+  } as any
+
+  dataContext.submit = () => {
+    if (onSubmit) onSubmit(dataContext)
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      if (schema?.tableName) {
+        local.schema = await prepareSchemaFromDb(schema)
+      }
+
+      local.layout = await prepareLayout(local.schema, layout)
+
+      for (let field of Object.values(local.schema.fields)) {
+        if (field.defaultValue && field.name) {
+          local.data[field.name] = field.defaultValue
+        }
+      }
+
+      local.ready = true
+      local.render()
+
+      if (init) {
+        init(dataContext)
+      }
+    })()
+  }, [])
+
+  if (!local.ready) return null
+  const Context = local.ctx
+
+  return (
+    <form
+      className="form"
+      css={styles.form()}
+      onSubmit={(e) => {
+        e.preventDefault()
+        // if (onSubmit) onSubmit(dataContext)
+      }}
+    >
+      <Context.Provider value={dataContext}>
+        <RecursiveLayout
+          direction="col"
+          layout={local.layout}
+          schema={local.schema}
+          ctx={local.ctx}
+        />
+      </Context.Provider>
+    </form>
+  )
+}
