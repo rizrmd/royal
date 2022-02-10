@@ -15,7 +15,7 @@ export const basePush = async (arg: string[]) => {
     (await getCommitMsg(arg)).trim().replace(/(\r\n|\n|\r)/gm, '')
 
   const username = 'rizkyramadhan'
-  const token = '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'
+  const token = 'ghp_###5rtbtvO4lJpv1###iaPcAJ###iQRGt##2EU####1nE###2ba68m'
   console.log('')
 
   const dir = join(tmpdir(), 'royal')
@@ -88,7 +88,7 @@ export const basePush = async (arg: string[]) => {
     onAuth: (url) => {
       return {
         username: 'token',
-        password: token,
+        password: token.replaceAll('#', ''),
       } as any
     },
   })

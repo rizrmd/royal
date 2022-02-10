@@ -21,5 +21,5 @@ export const dbsGenerate = async (name: string) => {
     return
   }
 
-  await execa('pnpm', ['prisma', 'generate'], { stdio: 'inherit', cwd: path })
+  await execa('npx', ['prisma', 'generate'], { stdio: 'inherit', cwd: path })
 }

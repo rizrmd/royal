@@ -9,13 +9,13 @@ export const Layout1: FC<{ sidebar?: ReactElement }> = ({
   sidebar,
 }) => {
   return (
-    <div className="h-screen w-full flex flex-row" css={themeStyle}>
+    <div className="h-screen w-full flex flex-row bg-gray-50" css={themeStyle}>
       <div className="drawer drawer-mobile">
-        <div className="menu p-4 overflow-y-auto w-80 bg-base-100 text-base-content">
+        <div className="menu overflow-y-auto w-80 text-base-content">
           {sidebar}
         </div>
       </div>
-      <main className="flex-1 bg-base-200">
+      <main className="flex-1">
         {/* <Header /> */}
         <div className="flex flex-1 flex-col">{children}</div>
       </main>

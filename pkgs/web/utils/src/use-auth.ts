@@ -34,20 +34,24 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
         },
         body: JSON.stringify(credentials),
       })
-      setUser(await res.json())
+      const json = await res.json()
+      setUser(json)
       setLoading(false)
       ref.current.activity = 'idle'
       render()
+      return json;
     },
     logout: async () => {
       setLoading(true)
       ref.current.activity = 'logging-out'
       render()
       const res = await rfetch('/auth/logout')
-      setUser(await res.json())
+      const json = await res.json()
+      setUser(json)
       setLoading(false)
       ref.current.activity = 'idle'
       render()
+      return json;
     },
     reload: async () => {
       setLoading(true)
