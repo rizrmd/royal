@@ -6,6 +6,7 @@ import { dbsAdd, reloadDbs } from './dbs/add'
 import { dbsGenerate, dbsInspect as dbsInspect } from './dbs/reload'
 import { dbsRemove } from './dbs/remove'
 import { dirs } from './dirs'
+import { basePull } from './git/base-pull'
 import { basePush } from './git/base-push'
 import { runDev, runPlatform, runPnpm } from './runner'
 const program = new Command()
@@ -103,7 +104,9 @@ const pkgs = program.command('royal').description('Upstream royal repository')
 pkgs
   .command('pull')
   .description('pull new pkgs from repository')
-  .action((name) => {})
+  .action((name) => {
+    basePull()
+  })
 pkgs
   .command('push')
   .description('push current pkgs to repository')

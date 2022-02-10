@@ -15,7 +15,7 @@ export const basePush = async (arg: string[]) => {
     (await getCommitMsg(arg)).trim().replace(/(\r\n|\n|\r)/gm, '')
 
   const username = 'rizkyramadhan'
-  const token = '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'
+  const token = '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'
   console.log('')
 
   const dir = join(tmpdir(), 'royal')
@@ -33,12 +33,6 @@ export const basePush = async (arg: string[]) => {
     url: 'https://github.com/rizkyramadhan/royal',
     dir,
     depth: 1,
-    // onAuth: (url) => {
-    //   return {
-    //     username,
-    //     password,
-    //   }
-    // },
   })
   done()
 

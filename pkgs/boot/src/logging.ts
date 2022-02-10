@@ -135,8 +135,8 @@ export const EXECA_FULL_COLOR = {
 } as any
 
 export const logo = () => {
-  const base = chalk.bold(`${chalk.green('Base')}`)
-  return chalk.gray(`[   ${base}   ]`)
+  const base = chalk.bold(`${chalk.green('Ro') + chalk.yellow('yal')}`)
+  return chalk.gray(`[   ${base}  ]`)
 }
 
 export const welcomeToBase = (mode: 'dev' | 'prod', port: number) => {
