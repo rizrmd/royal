@@ -15,7 +15,7 @@ export const basePush = async (arg: string[]) => {
     (await getCommitMsg(arg)).trim().replace(/(\r\n|\n|\r)/gm, '')
 
   const username = 'rizkyramadhan'
-  const token = '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'
+  const token = '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'
   console.log('')
 
   const dir = join(tmpdir(), 'royal')
