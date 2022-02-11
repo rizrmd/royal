@@ -5,7 +5,7 @@ type IColumn = {
   nullable: string
 }
 
-type IRelation = {
+export type IRelation = {
   join: {
     from: string
     to: string
@@ -44,10 +44,19 @@ export const getSchema = async (
   }
 
   for (let [k, v] of Object.entries(res.rels) as any) {
-    relations[k] = {
+    const type =
+      v.relation === 'Model.HasManyRelation' ? 'has-many' : 'belongs-to'
+
+    let colName = k
+
+    if (type === 'belongs-to') {
+      colName = v.join.from.split('.').pop()
+    }
+
+    relations[colName] = {
       join: v.join,
       relationName: v.modelClass,
-      type: v.relation === 'Model.HasManyRelation' ? 'has-many' : 'belongs-to',
+      type,
     }
   }
 

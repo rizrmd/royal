@@ -16,7 +16,10 @@ export const prepareSchemaFromDb = async (
   const fields = { ...schema.fields } as Record<string, IField>
 
   if (dbInternal) {
-    if (Object.keys(schema.fields || {}).length === 0 || schema.allFields) {
+    if (
+      Object.keys(schema.fields || {}).length === 0 ||
+      schema.allFields !== false
+    ) {
       for (let colName of Object.keys(dbInternal.columns)) {
         if (!fields[colName]) fields[colName] = {}
       }
@@ -32,6 +35,15 @@ export const prepareSchemaFromDb = async (
 
     if (col) {
       if (!field.type) field.type = col.type as any
+
+      const rel = dbInternal?.relations[k]
+      if (rel) {
+        if (rel.type === 'belongs-to') {
+          field.type = 'belongs'
+          field.info = { rel, fieldType: col.type }
+        }
+      }
+
       if (typeof field.required === 'undefined') {
         field.required = !col.nullable
       }

@@ -14,27 +14,16 @@ export const Form: FC<IFormProps> = ({
   onSubmit,
   init,
 }) => {
-  const local = useLocal({
-    ready: false,
-    schema: { ...schema } as unknown as IFormSchema,
-    layout: { ...layout } as unknown as IFormLayout,
-    data: (defaultValue || {}) as any,
-    error: {} as any,
-    ctx: createContext({} as any),
-  })
-
-  const dataContext = {
-    data: local.data,
-    error: local.error,
-    render: local.render,
-  } as any
-
-  dataContext.submit = () => {
-    if (onSubmit) onSubmit(dataContext)
-  }
-
-  useEffect(() => {
-    ;(async () => {
+  const local = useLocal(
+    {
+      ready: false,
+      schema: { ...schema } as unknown as IFormSchema,
+      layout: { ...layout } as unknown as IFormLayout,
+      data: (defaultValue || {}) as any,
+      error: {} as any,
+      ctx: createContext({} as any),
+    },
+    async () => {
       if (schema?.tableName) {
         local.schema = await prepareSchemaFromDb(schema)
       }
@@ -53,8 +42,18 @@ export const Form: FC<IFormProps> = ({
       if (init) {
         init(dataContext)
       }
-    })()
-  }, [])
+    }
+  )
+
+  const dataContext = {
+    data: local.data,
+    error: local.error,
+    render: local.render,
+  } as any
+
+  dataContext.submit = () => {
+    if (onSubmit) onSubmit(dataContext)
+  }
 
   if (!local.ready) return null
   const Context = local.ctx
@@ -65,7 +64,7 @@ export const Form: FC<IFormProps> = ({
       css={styles.form()}
       onSubmit={(e) => {
         e.preventDefault()
-        // if (onSubmit) onSubmit(dataContext)
+        if (onSubmit) onSubmit(dataContext)
       }}
     >
       <Context.Provider value={dataContext}>

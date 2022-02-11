@@ -4,6 +4,7 @@ import { IBaseField, IField } from './types'
 import { TextField } from './fields/TextField'
 import { UnknownField } from './fields/UnknownField'
 import { SectionField } from './fields/SectionField'
+import { BelongsField } from './fields/BelongsField'
 
 export const BaseField: FC<IBaseField> = ({ field, ctx: rawContext }) => {
   const ctx = useContext(rawContext)
@@ -12,6 +13,7 @@ export const BaseField: FC<IBaseField> = ({ field, ctx: rawContext }) => {
   const value = ctx.data[field.name]
 
   const FieldDefinition = {
+    belongs: BelongsField,
     text: TextField,
     string: TextField,
     password: TextField,

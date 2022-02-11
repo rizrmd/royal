@@ -1,7 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react'
 import 'react'
 import { Context, FC, ReactElement } from 'react'
-import { DBSchema } from 'web-utils'
+import { DBSchema, IRelation } from 'web-utils'
 import { dbsList } from '../../../../../app/web/types/dbs-list'
 type IField = {
   defaultValue?: any
@@ -31,7 +31,10 @@ type IField = {
     | 'decimal'
     | 'file'
   render?: FC<{ ctx: DataContainer; field: IField }>
+  info?: IBelongsInfo
 }
+
+type IBelongsInfo = { rel: IRelation; fieldType: string }
 
 type IFormSchema = IFormSchemaAbstract<Record<string, IField>>
 type IFormSchemaAbstract<K extends Record<string, IField>> = {
