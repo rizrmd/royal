@@ -36,7 +36,6 @@ export const runDev = (args?: string[]) => {
         })
       })
 
-      return
       await runPnpm(['i'], dirs.root)
     }
 
