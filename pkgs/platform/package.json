@@ -8,7 +8,6 @@
     "arg": "^5.0.1",
     "boot": "workspace:^",
     "cookie-signature": "^1.1.0",
-    "dbs": "workspace:^",
     "fastify": "^3.27.1",
     "fastify-cookie": "^5.5.0",
     "fastify-http-proxy": "^6.2.1",

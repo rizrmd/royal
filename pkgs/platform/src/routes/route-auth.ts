@@ -1,4 +1,4 @@
-import * as dbs from 'dbs'
+import * as dbs from '../../../../app/dbs'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import login from '../../../../app/web/src/auth/login'
 import logout from '../../../../app/web/src/auth/logout'

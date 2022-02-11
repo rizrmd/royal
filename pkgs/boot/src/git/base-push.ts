@@ -41,6 +41,7 @@ export const basePush = async (arg: string[]) => {
     'package.json',
     'base.js',
     '.prettierrc',
+    'esbuild-runner.config.js',
     'pnpm-workspace.yaml',
   ]
 

@@ -1,4 +1,4 @@
-import * as dbs from 'dbs'
+import * as dbs from '../../../app/dbs'
 import { FastifyReply, FastifyRequest } from 'fastify'
 
 export const sessionStore = {

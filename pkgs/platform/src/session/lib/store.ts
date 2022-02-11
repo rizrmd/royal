@@ -1,4 +1,4 @@
-import * as dbs from 'dbs'
+import * as dbs from '../../../../../app/dbs'
 import { EventEmitter } from 'events'
 import registerSession from '../../../../../app/web/src/auth/session'
 import { sessionStore } from '../../auth'

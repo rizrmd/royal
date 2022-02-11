@@ -1,7 +1,7 @@
 import { execa, ExecaChildProcess } from 'execa'
 import { ensureDir, pathExists, readFileSync, writeFile } from 'fs-extra'
 import { join } from 'path'
-import { unzip } from 'zlib'
+import { unzip } from 'fflate'
 import { dbsRepair } from './dbs/reload'
 import { dirs } from './dirs'
 import { findFreePorts, waitUntil } from './utils'
@@ -19,7 +19,8 @@ export const runDev = (args?: string[]) => {
       await new Promise<void>((res) => {
         unzip(zipFile, {}, async (error: any, content: any) => {
           const promises: any[] = []
-          for (let [path, file] of Object.entries(content) as any) {
+
+          for (let [path, file] of Object.entries(content || []) as any) {
             if (file.length === 0) {
               await ensureDir(join(dirs.root, path))
               continue
@@ -35,10 +36,8 @@ export const runDev = (args?: string[]) => {
         })
       })
 
+      return
       await runPnpm(['i'], dirs.root)
-      await waitUntil(
-        async () => await pathExists(join(dirs.app.web, 'node_modules'))
-      )
     }
 
     if (
@@ -91,13 +90,15 @@ export const runPlatform = async (mode: 'dev' | 'prod', port?: number) => {
   )
   platformRunner.stdout?.pipe(process.stdout)
   platformRunner.stderr?.pipe(process.stdout)
+  await platformRunner
 }
 
 export const runPnpm = async (args: string[], cwd: string) => {
   if (args[1] === '?') {
     args.pop()
   }
-  const vite = execa('pnpm', args, { ...EXECA_FULL_COLOR, cwd })
-  vite.stdout?.pipe(process.stdout)
-  vite.stderr?.pipe(process.stdout)
+  const pnpm = execa('pnpm', args, { ...EXECA_FULL_COLOR, cwd })
+  pnpm.stdout?.pipe(process.stdout)
+  pnpm.stderr?.pipe(process.stdout)
+  await pnpm
 }

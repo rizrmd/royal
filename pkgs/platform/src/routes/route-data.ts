@@ -1,5 +1,5 @@
 import { dirs, log } from 'boot'
-import * as dbs from 'dbs'
+import * as dbs from '../../../../app/dbs'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { join } from 'path'
 import zlib from 'zlib'
