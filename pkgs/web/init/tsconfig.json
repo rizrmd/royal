@@ -18,6 +18,7 @@
     "jsxImportSource": "@emotion/react"
   },
   "include": [
+    "./types.d.ts",
     "../../../app/web/types/**/*",
     "../../../app/web/types/react/next.d.ts",
     "../../../app/web/types/react-dom/next.d.ts",

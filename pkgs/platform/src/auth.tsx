@@ -2,8 +2,15 @@ import * as dbs from '../../../app/dbs'
 import { FastifyReply, FastifyRequest } from 'fastify'
 
 export const sessionStore = {
-  set: async (sid: string, data: any) => {},
-  get: async (sid: string): Promise<any> => {},
+  set: async (sid: string, data: Record<string, any> & { role: string }) => {},
+  expires: () => {
+    const date = new Date()
+    date.setDate(date.getDate() + 30)
+    return date
+  },
+  get: async (sid: string): Promise<Record<string, any> & { role: string }> => {
+    return { role: 'guest' }
+  },
   destroy: async (sid: string) => {},
 }
 
@@ -48,6 +55,7 @@ export const session = (
   const ses = fc({ db: dbs.db, dbs })
   sessionStore.set = ses.set
   sessionStore.get = ses.get
+  sessionStore.expires = ses.expires
   sessionStore.destroy = ses.destroy
   return fc
 }

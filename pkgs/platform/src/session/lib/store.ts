@@ -6,23 +6,22 @@ import { sessionStore } from '../../auth'
 class Store extends EventEmitter {
   store: typeof sessionStore
 
-  async set(sid: string, data: any, callback?: any) {
+  async set(sid: string, data: any) {
     await this.store.set(sid, data)
-    callback()
   }
 
-  async get(sid: string, callback?: any) {
+  async get(sid: string) {
     const data = await this.store.get(sid)
-    if (callback) {
-      callback(null, data)
-    }
     return data
   }
 
-  async destroy(sid: string, callback: () => void) {
+  expires() {
+    return sessionStore.expires()
+  }
+
+  async destroy(sid: string) {
     delete this.store[sid]
     await this.store.destroy(sid)
-    if (callback) callback()
   }
 
   constructor() {

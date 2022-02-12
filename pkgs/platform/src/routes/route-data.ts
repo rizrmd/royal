@@ -1,17 +1,57 @@
 import { dirs, log } from 'boot'
-import * as dbs from '../../../../app/dbs'
 import { FastifyReply, FastifyRequest } from 'fastify'
+import aes from 'js-crypto-aes'
 import { join } from 'path'
 import zlib from 'zlib'
+import * as dbs from '../../../../app/dbs'
 
 export const routeData = async (req: FastifyRequest, reply: FastifyReply) => {
   let reqBody = '' as any
 
-  await (req as any).handleSession()
-
+  await req.handleSession()
   if (req.body instanceof Buffer) {
     if (req.url === '/__data/query') {
-      reqBody = req.body
+      const data = req.body
+
+      const enc = new TextEncoder()
+      const sess = enc.encode(req.session.sessionId)
+      const iv = sess.slice(0, 12)
+      const key = sess.slice(6, 6 + 16)
+
+      let raw = new Uint8Array()
+      try {
+        raw = await aes.decrypt(data, key, {
+          name: 'AES-GCM',
+          iv,
+          tagLength: 16,
+        })
+      } catch (e) {
+        console.log('Failed when decrypting sql')
+      }
+
+      const sql = new TextDecoder().decode(raw)
+
+      if (sql) {
+        try {
+          let result = null as any
+          let final = {
+            result: new Promise<null>((resolve) => resolve(null)),
+            dbx: dbs.db,
+          }
+          new Function(`this.result = this.dbx.$queryRaw\`${sql}\``).bind(
+            final
+          )()
+          const finalResult = await final.result
+
+          if (finalResult) result = compress(req, reply, finalResult)
+
+          return result
+        } catch (e) {
+          console.log('')
+          log('error', 'Failed when executing sql:')
+          console.error(`${sql}\n\n`, e)
+        }
+      }
     } else {
       try {
         reqBody = JSON.parse(req.body.toString('utf-8'))

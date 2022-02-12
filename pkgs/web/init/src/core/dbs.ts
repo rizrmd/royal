@@ -1,6 +1,6 @@
 import find from 'lodash.find'
 import { dbsList } from '../../../../../app/web/types/dbs-list'
-import { waitUntil } from 'web-utils'
+import { encrypt, waitUntil } from 'web-utils'
 export const initDbs = () => {
   const w = window as any
   dbsList.map((dbname) => {
@@ -26,7 +26,7 @@ export const initDbs = () => {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
-                'Content-Type': 'text/plain', // kalau ga ini ga bisa ke post sama chrome >.<
+                'Content-Type': 'text/plain',
               },
               body: JSON.stringify(params),
             }
@@ -39,37 +39,16 @@ export const initDbs = () => {
             return async (q: string | [string, Record<string, any>]) => {
               // todo: process parameterized query
               if (Array.isArray(q)) return []
+              const encrypted = await encrypt(q)
 
-              w.global = w
-              if (!w.sodium) {
-                w.sodium = (await import('sodium-universal')).default
-              }
-              if (!w.Buffer) {
-                w.Buffer = (await w.loadExt('dev/buffer.js')).buffer.Buffer
-              }
-
-              if (typeof w.secret === 'object' && w.secret.data) {
-                w.secret = w.secret.data
-              }
-              var nonce = w.Buffer.alloc(w.sodium.crypto_secretbox_NONCEBYTES)
-              var key = w.Buffer.from(w.secret)
-              var message = w.Buffer.from(q)
-              var result = w.Buffer.alloc(
-                message.length + w.sodium.crypto_secretbox_MACBYTES
-              )
-
-              w.sodium.randombytes_buf(nonce)
-              w.sodium.crypto_secretbox_easy(result, message, nonce, key)
               let url = `${baseUrl}/__data/query`
-
               const options = {
                 method: 'POST',
                 headers: {
                   Accept: 'application/json',
                   'Content-Type': 'text/plain',
-                  'x-nonce': nonce.toString('hex'),
                 },
-                body: result,
+                body: encrypted,
               }
 
               const res = await fetch(url, options)

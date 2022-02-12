@@ -5,14 +5,16 @@ import logout from '../../../../app/web/src/auth/logout'
 
 const formatSession = (req: FastifyRequest) => {
   const session = { ...req.session }
-  delete session.cookie
+
+  delete (session as any).encryptedSessionId
+  delete (session as any).cookie
+
   return session
 }
 
 export const routeAuth = async (req: FastifyRequest, reply: FastifyReply) => {
+  await req.handleSession()
   const url = req.url
-
-  await (req as any).handleSession()
 
   switch (url) {
     case '/auth/set-data':

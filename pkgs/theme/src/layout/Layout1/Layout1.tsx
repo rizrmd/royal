@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { FC, ReactElement } from 'react'
-import { Header } from './Header'
 import { themeStyle } from './style'
-import { Box1 } from './Box1'
 
 export const Layout1: FC<{ sidebar?: ReactElement }> = ({
   children,

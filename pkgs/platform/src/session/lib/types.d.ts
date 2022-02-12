@@ -1,35 +1,22 @@
 /// <reference types="node" />
 
-import { FastifyPlugin } from "fastify";
+import { FastifyPlugin } from 'fastify'
+import { Session } from './session'
 
-declare module "fastify" {
+declare module 'fastify' {
   interface FastifyRequest {
-    /** Allows to access or modify the session data. */
-    session: Session;
-    /** A session store. */
-    sessionStore: FastifySessionPlugin.SessionStore;
-    /** Allows to destroy the session in the store. */
-    destroySession(callback: (err?: Error) => void): void;
-  }
-
-  interface Session extends Record<string, any> {
-    sessionId: string;
-    encryptedSessionId: string;
-    /** Updates the `expires` property of the session. */
-    touch(): void;
-    /** Regenerates the session by generating a new `sessionId`. */
-    regenerate(): void;
+    session: Session
+    handleSession: () => Promise<void>
+    sessionStore: FastifySessionPlugin.SessionStore
   }
 }
 
 declare namespace FastifySessionPlugin {
   interface SessionStore {
-    set(sessionId: string, session: any, callback: (err?: Error) => void): void;
-    get(
-      sessionId: string,
-      callback: (err?: Error, session?: any) => void
-    ): void;
-    destroy(sessionId: string, callback: (err?: Error) => void): void;
+    set(sessionId: string, session: any & { role: string }): Promise<void>
+    expires(): Date
+    get(sessionId: string): Promise<any & { role: string }>
+    destroy(sessionId: string): Promise<void>
   }
 
   interface Options {
@@ -47,52 +34,41 @@ declare namespace FastifySessionPlugin {
      * A secret should remain somewhere in the array as long as there are active sessions with cookies signed by it.
      * Secrets management is left up to the rest of the application.
      */
-    secret: string | string[];
+    secret: string | string[]
     /** The name of the session cookie. Defaults to `sessionId`. */
-    cookieName?: string;
+    cookieName?: string
     /** The options object used to generate the `Set-Cookie` header of the session cookie. */
-    cookie?: CookieOptions;
+    cookie?: CookieOptions
     /**
      * A session store.
      * Compatible to stores from express-session.
      * Defaults to a simple in memory store.
      * Note: The default store should not be used in a production environment because it will leak memory.
      */
-    store?: FastifySessionPlugin.SessionStore;
+    store?: FastifySessionPlugin.SessionStore
     /**
      * Save sessions to the store, even when they are new and not modified.
      * Defaults to true. Setting this to false can be useful to save storage space and to comply with the EU cookie law.
      */
-    saveUninitialized?: boolean;
+    saveUninitialized?: boolean
   }
 
   interface CookieOptions {
     /**  The `Path` attribute. Defaults to `/` (the root path).  */
-    path?: string;
-    /**  A `number` in milliseconds that specifies the `Expires` attribute by adding the specified milliseconds to the current date. If both `expires` and `maxAge` are set, then `expires` is used. */
-    maxAge?: number;
+    path?: string
     /**  The `boolean` value of the `HttpOnly` attribute. Defaults to true. */
-    httpOnly?: boolean;
+    httpOnly?: boolean
     /**  The `boolean` value of the `Secure` attribute. Set this option to false when communicating over an unencrypted (HTTP) connection. Value can be set to `auto`; in this case the `Secure` attribute will be set to false for HTTP request, in case of HTTPS it will be set to true.  Defaults to true. */
-    secure?: boolean | string;
+    secure?: boolean | string
     /**  The expiration `date` used for the `Expires` attribute. If both `expires` and `maxAge` are set, then `expires` is used. */
-    expires?: Date | number;
+    expires?: Date | number
     /** The `boolean` or `string` of the `SameSite` attribute.  */
-    sameSite?: string | boolean;
+    sameSite?: string | boolean
     /**  The `Domain` attribute. */
-    domain?: string;
+    domain?: string
   }
 }
 
-export class MemoryStore implements FastifySessionPlugin.SessionStore {
-  set(sessionId: string, session: any, callback: (err?: Error) => void): void;
-  get(
-    sessionId: string,
-    callback: (err?: Error, session?: any) => void
-  ): void;
-  destroy(sessionId: string, callback: (err?: Error) => void): void;
-}
+declare const FastifySessionPlugin: FastifyPlugin<FastifySessionPlugin.Options>
 
-declare const FastifySessionPlugin: FastifyPlugin<FastifySessionPlugin.Options>;
-
-export default FastifySessionPlugin;
+export default FastifySessionPlugin

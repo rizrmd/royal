@@ -64,7 +64,9 @@ export const reloadDbs = async () => {
   for (let k of await readdir(dirs.app.dbs, { withFileTypes: true })) {
     if (k.isDirectory()) {
       list.push(k.name)
-      types.push(`const ${k.name}: typeof dbs.${k.name}`)
+      types.push(
+        `const ${k.name}: typeof dbs.${k.name} & { query: (sql: string) => Promise<any> }`
+      )
       imports.push(`import _${k.name} from './${k.name}/index'`)
       exports.push(`export const ${k.name} = _${k.name}`)
     }

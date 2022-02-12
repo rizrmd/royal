@@ -9,6 +9,15 @@ export const init = () => {
   w.css = css
   w.jsx = jsx
   w.Fragment = Fragment
+
+  if (w.Capacitor) {
+    w.isMobile = true
+    w.mobile = {
+      ready: false,
+      insets: null,
+    }
+  }
+
   w.navigate = (href: string) => {
     history.pushState({}, '', href)
     w.appRoot.render()

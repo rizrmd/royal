@@ -53,7 +53,7 @@ export const runDev = (args?: string[]) => {
 
     const vite = execa(
       join(dirs.app.web, 'node_modules', '.bin', 'vite'),
-      [...(args || ['dev']), '--port', port],
+      [...(args || ['dev']), '--host', '--port', port],
       { ...EXECA_FULL_COLOR, cwd: dirs.app.web }
     )
     let isDone = false
