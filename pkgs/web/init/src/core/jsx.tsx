@@ -45,11 +45,12 @@ export const jsx = (...args: any[]) => {
     const findParent = (e: any) => {
       let tag = e.target
       while (
-        typeof tag.className !== 'string' ||
-        !tag.className ||
-        (tag.className &&
-          tag.className.indexOf &&
-          tag.className.indexOf('btn-fade') < 0)
+        tag &&
+        (typeof tag.className !== 'string' ||
+          !tag.className ||
+          (tag.className &&
+            tag.className.indexOf &&
+            tag.className.indexOf('btn-fade') < 0))
       ) {
         tag = tag.parentNode
       }

@@ -15,11 +15,17 @@ program
   .name('node base')
   .description('Base Framework')
   .version('1.0.0')
+  .argument('[debug]', 'run with debugging')
   .addOption(new Option('-p, --port <number>', 'port number'))
-  .action(async (opt) => {
+  .action(async (arg, opt) => {
     await runDev(['dev'])
     autoload('dev')
-    runPlatform('dev', opt.port || 3200)
+
+    if (arg === 'debug') {
+      runPlatform('dev', opt.port || 3200, true)
+    } else {
+      runPlatform('dev', opt.port || 3200)
+    }
   })
 
 const dbs = program.command('dbs').description('database configuration')

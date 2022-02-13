@@ -24,33 +24,28 @@ export const Sidebar: FC<{
 
   return (
     <Fragment>
-      <div
-        className={`flex absolute left-0 bottom-0 top-0`}
-        css={css`
-          z-index: 10001;
-          pointer-events: ${!show ? 'none' : 'inherit'};
-        `}
-      >
-        <AnimatePresence>
-          {show && (
-            <motion.aside
-              drag="x"
-              dragListener={false}
-              dragConstraints={{ right: 0 }}
-              dragElastic={0}
-              initial={{ x: '-100%' }}
-              onDragEnd={onClose}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'tween' }}
-              dragControls={dragControls}
-              className={className}
-            >
-              {children}
-            </motion.aside>
-          )}
-        </AnimatePresence>
-      </div>
+      <AnimatePresence>
+        {show && (
+          <motion.aside
+            drag="x"
+            dragListener={false}
+            dragConstraints={{ right: 0 }}
+            dragElastic={0}
+            initial={{ x: '-100%' }}
+            onDragEnd={onClose}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'tween' }}
+            dragControls={dragControls}
+            className={`absolute top-0 left-0 bottom-0 ${className}`}
+            css={css`
+              z-index: 10001;
+            `}
+          >
+            {children}
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {backdrop !== false && (
         <AnimatePresence>

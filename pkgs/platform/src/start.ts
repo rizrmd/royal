@@ -9,17 +9,22 @@ import { jsonPlugin } from './json'
 import { router as router } from './routes'
 import { authPlugin } from './session/session-register'
 import os from 'os'
-
 ;(BigInt.prototype as any).toJSON = function () {
   return this.toString()
 }
 
 const args = arg({})
-const mode = args._[0] as 'prod' | 'dev'
+const mode = args._[0] as 'prod' | 'dev' | 'dev-debug'
 const port = args._[1]
 
-export const start = async (port: string, mode: 'prod' | 'dev') => {
+export const start = async (
+  port: string,
+  _mode: 'prod' | 'dev' | 'dev-debug'
+) => {
   const server = Fastify()
+
+  const mode = _mode === 'dev-debug' ? 'dev' : _mode
+  const debug = _mode === 'dev-debug'
 
   const routes: RouteOptions[] = []
   server.addHook('onRoute', (route) => {
@@ -58,25 +63,32 @@ export const start = async (port: string, mode: 'prod' | 'dev') => {
 
   router(server, mode)
 
-  clearScreen()
-  welcomeToBase(mode, parseInt(port))
-
-  server.listen(port, '0.0.0.0')
-
-  const hostname = resolveHostname(undefined)
-
-  Object.values(os.networkInterfaces())
-    .flatMap((nInterface) => nInterface ?? [])
-    .filter((detail) => detail && detail.address && detail.family === 'IPv4')
-    .map((detail) => {
-      const type = detail.address.includes('127.0.0.1')
-        ? 'Local:   '
-        : 'Network: '
-      const host = detail.address.replace('127.0.0.1', hostname.name)
-      const url = `${'http'}://${host}:${port}`
-      return `${type} ${url}`
-    })
-    .forEach((msg) => log('platform', msg))
+  server.listen(port, '0.0.0.0', function (err, address) {
+    if (!err) {
+      const hostname = resolveHostname(undefined)
+      if (!debug) {
+        clearScreen()
+        welcomeToBase(mode, parseInt(port))
+      }
+      Object.values(os.networkInterfaces())
+        .flatMap((nInterface) => nInterface ?? [])
+        .filter(
+          (detail) => detail && detail.address && detail.family === 'IPv4'
+        )
+        .map((detail) => {
+          const type = detail.address.includes('127.0.0.1')
+            ? 'Local:   '
+            : 'Network: '
+          const host = detail.address.replace('127.0.0.1', hostname.name)
+          const url = `${'http'}://${host}:${port}`
+          return `${type} ${url}`
+        })
+        .forEach((msg) => log('platform', msg))
+    } else {
+      console.log(err)
+      process.exit(0)
+    }
+  })
 }
 
 start(port || '3200', mode)

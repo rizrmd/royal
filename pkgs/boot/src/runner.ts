@@ -70,7 +70,11 @@ export const runDev = (args?: string[]) => {
 
 export let platformRunner: ExecaChildProcess = null as any
 let lastPort = 3200
-export const runPlatform = async (mode: 'dev' | 'prod', port?: number) => {
+export const runPlatform = async (
+  mode: 'dev' | 'prod',
+  port?: number,
+  debug?: boolean
+) => {
   if (platformRunner !== null) {
     platformRunner.kill()
   }
@@ -81,7 +85,11 @@ export const runPlatform = async (mode: 'dev' | 'prod', port?: number) => {
 
   platformRunner = execa(
     join(dirs.root, 'node_modules', '.bin', 'esr'),
-    [join(dirs.pkgs.platform, 'src', 'start.ts'), mode, lastPort.toString()],
+    [
+      join(dirs.pkgs.platform, 'src', 'start.ts'),
+      mode + (debug ? '-debug' : ''),
+      lastPort.toString(),
+    ],
     {
       ...EXECA_FULL_COLOR,
       cwd: dirs.root,
