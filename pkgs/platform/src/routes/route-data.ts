@@ -1,6 +1,6 @@
 import { dirs, log } from 'boot'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import aes from 'js-crypto-aes'
+import aesjs from 'aes-js'
 import { join } from 'path'
 import zlib from 'zlib'
 import * as dbs from '../../../../app/dbs'
@@ -15,21 +15,11 @@ export const routeData = async (req: FastifyRequest, reply: FastifyReply) => {
 
       const enc = new TextEncoder()
       const sess = enc.encode(req.session.sessionId)
-      const iv = sess.slice(0, 12)
       const key = sess.slice(6, 6 + 16)
 
-      let raw = new Uint8Array()
-      try {
-        raw = await aes.decrypt(data, key, {
-          name: 'AES-GCM',
-          iv,
-          tagLength: 16,
-        })
-      } catch (e) {
-        console.log('Failed when decrypting sql')
-      }
-
-      const sql = new TextDecoder().decode(raw)
+      const aesCtr2 = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5))
+      const decryptedBytes = aesCtr2.decrypt(data)
+      const sql = aesjs.utils.utf8.fromBytes(decryptedBytes)
 
       if (sql) {
         try {
@@ -38,6 +28,7 @@ export const routeData = async (req: FastifyRequest, reply: FastifyReply) => {
             result: new Promise<null>((resolve) => resolve(null)),
             dbx: dbs.db,
           }
+
           new Function(`this.result = this.dbx.$queryRaw\`${sql}\``).bind(
             final
           )()

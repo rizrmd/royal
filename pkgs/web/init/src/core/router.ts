@@ -25,6 +25,7 @@ export const loadPage = (currentUrl: string) => {
   for (let [pageName, arg] of Object.entries(base.pages) as any) {
     params = matchRoute(currentUrl, arg[0])
     if (params) {
+      w.params = params
       importer = arg[2]
       layout = arg[1]
     }
@@ -36,7 +37,6 @@ export const loadPage = (currentUrl: string) => {
       return new Promise<{ default: React.FC<{ layout?: any }> }>(
         async (resolve) => {
           if (importer) {
-            w.params = params
             const page = (await importer()).default
             resolve({ default: page.component })
           }

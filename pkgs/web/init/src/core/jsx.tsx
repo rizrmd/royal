@@ -41,7 +41,42 @@ export const jsx = (...args: any[]) => {
     propsModified = true
   }
 
-  if (props.style) {
+  if (props.className && props.className.indexOf('btn-fade') >= 0) {
+    const findParent = (e: any) => {
+      let tag = e.target
+      while (
+        typeof tag.className !== 'string' ||
+        !tag.className ||
+        (tag.className &&
+          tag.className.indexOf &&
+          tag.className.indexOf('btn-fade') < 0)
+      ) {
+        tag = tag.parentNode
+      }
+      return tag
+    }
+    props.onPointerDown = (e: any) => {
+      const tag = findParent(e)
+      tag.style.opacity = 0.3
+    }
+    props.onPointerUp =
+      props.onPointerCancel =
+      props.onPointerOut =
+        (e: any) => {
+          const tag = findParent(e)
+          tag.style.opacity = 1
+        }
+
+    if (props.className.indexOf('transition-all') <= 0) {
+      props.className += ' transition-all'
+    }
+    propsModified = true
+  }
+
+  if (
+    typeof props.style === 'string' ||
+    (typeof props.style === 'object' && props.style.styles && props.style.name)
+  ) {
     props.css = css`
       ${props.style}
     `

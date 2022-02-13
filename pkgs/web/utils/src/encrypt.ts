@@ -1,5 +1,5 @@
-import aes from 'js-crypto-aes'
 import { retryFetch } from './retry-fetch'
+import aesjs from 'aes-js'
 
 export const getRandomBytes = (
   typeof self !== 'undefined' && (self.crypto || (self as any).msCrypto)
@@ -37,14 +37,10 @@ export const encrypt = async (msg: string) => {
 
   const enc = new TextEncoder()
   const sess = enc.encode(w.auth.sessionId)
-  const iv = sess.slice(0, 12)
   const key = sess.slice(6, 6 + 16)
 
-  const result = await aes.encrypt(enc.encode(msg), key, {
-    name: 'AES-GCM',
-    iv,
-    tagLength: 16,
-  })
+  const textBytes = aesjs.utils.utf8.toBytes(msg)
+  const aesCtr1 = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5))
 
-  return result
+  return aesCtr1.encrypt(textBytes)
 }

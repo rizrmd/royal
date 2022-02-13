@@ -10,6 +10,10 @@ import { router as router } from './routes'
 import { authPlugin } from './session/session-register'
 import os from 'os'
 
+;(BigInt.prototype as any).toJSON = function () {
+  return this.toString()
+}
+
 const args = arg({})
 const mode = args._[0] as 'prod' | 'dev'
 const port = args._[1]
