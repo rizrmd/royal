@@ -6,7 +6,7 @@ import { generateLayout, layoutPath } from './loader/layout'
 import { generatePage, generatePageSingle, pagePath } from './loader/page'
 import { platformRunner, runPlatform } from './runner'
 
-export const autoload = (mode: 'dev' | 'prod') => {
+export const autoload = async (mode: 'dev' | 'prod') => {
   if (mode === 'dev') {
     const layout = chokidar.watch(layoutPath.dir)
     layout.on('add', reloadLayout)
@@ -20,8 +20,8 @@ export const autoload = (mode: 'dev' | 'prod') => {
     })
     auth.on('all', reloadAuth)
   } else {
-    reloadLayout('add', '')
-    reloadPage('add', '')
+    await reloadLayout('add', '')
+    await reloadPage('add', '')
   }
 }
 

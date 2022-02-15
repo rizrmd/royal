@@ -8,6 +8,7 @@ import { dbsRemove } from './dbs/remove'
 import { dirs } from './dirs'
 import { basePull } from './git/base-pull'
 import { basePush } from './git/base-push'
+import { buildProd } from './prod'
 import { runDev, runPlatform, runPnpm } from './runner'
 const program = new Command()
 
@@ -65,10 +66,16 @@ dbs
 program
   .command('prod')
   .description('run as production')
+
+  .argument('[serve]', 'skip build process, just run the server')
+  .argument('[debug]', 'debug')
   .addOption(new Option('-p, --port <number>', 'port number'))
-  .action((opt) => {
-    autoload('prod')
-    runPlatform('prod', opt.port || 3200)
+  .action(async (serve, debug, opt) => {
+    await autoload('prod')
+    if (serve !== 'serve') {
+      await buildProd()
+    }
+    runPlatform('prod', opt.port || 3200, debug === 'debug')
   })
 
 program

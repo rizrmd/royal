@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { GlobalContext, useLocal } from 'web-utils'
 import { Base, loadPage } from './core/router'
 

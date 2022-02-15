@@ -49,7 +49,6 @@ Thumbs.db
 *.mov
 *.wmv
 
-app/mobile/capacitor.config.json
 app/mobile/www/index.html
 app/web/src/base/base.history-lock
 app/web/caches/page.db

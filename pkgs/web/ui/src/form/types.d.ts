@@ -25,6 +25,7 @@ type IField = {
     | 'select'
     | 'boolean'
     | 'belongs'
+    | 'custom'
     | 'unknown'
     | 'info'
     | 'section'
@@ -49,6 +50,7 @@ type IFormSchemaAbstract<K extends Record<string, IField>> = {
 type IFormProps = {
   schema?: Partial<IFormSchema>
   defaultValue?: any
+  className?: string
   onSubmit?: (ctx: DataContainer) => void
   init?: (ctx: DataContainer) => void | Promise<void>
   layout?: IFormLayout

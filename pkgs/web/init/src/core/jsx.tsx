@@ -58,14 +58,14 @@ export const jsx = (...args: any[]) => {
     }
     props.onPointerDown = (e: any) => {
       const tag = findParent(e)
-      tag.style.opacity = 0.3
+      if (tag) tag.style.opacity = 0.3
     }
     props.onPointerUp =
       props.onPointerCancel =
       props.onPointerOut =
         (e: any) => {
           const tag = findParent(e)
-          tag.style.opacity = 1
+          if (tag) tag.style.opacity = 1
         }
 
     if (props.className.indexOf('transition-all') <= 0) {

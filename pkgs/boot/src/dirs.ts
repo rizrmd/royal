@@ -7,6 +7,7 @@ export const dirs = {
   app: {
     dbs: join(root, 'app', 'dbs'),
     web: join(root, 'app', 'web'),
+    mobile: join(root, 'app', 'mobile'),
   },
   pkgs: {
     platform: join(root, 'pkgs', 'platform'),

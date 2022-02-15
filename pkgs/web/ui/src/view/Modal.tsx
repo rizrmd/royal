@@ -1,11 +1,13 @@
 /** @jsx jsx  */
-import { AnimatePresence, motion, useMotionValue } from 'framer-motion'
-import { FC, Fragment } from 'react'
+import { useMotionValue } from 'framer-motion'
+import { FC } from 'react'
 import { createPortal } from 'react-dom'
 
-export const Modal: FC<{ backdrop?: boolean }> = () => {
-  const x = useMotionValue(0)
-
+export const Modal: FC<{
+  backdrop?: boolean
+  onClose?: () => void
+  show?: boolean
+}> = ({ children, onClose, show }) => {
   if (!document.getElementById('floating-container')) {
     const div = document.createElement('div')
     div.id = 'floating-container'
@@ -13,7 +15,20 @@ export const Modal: FC<{ backdrop?: boolean }> = () => {
   }
 
   const container = document.getElementById('floating-container')
-  if (!container) return null
+  if (!container || !show) return null
 
-  return createPortal(<div></div>, container)
+  return createPortal(
+    <div
+      className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center"
+      css={css`
+        z-index: 20000;
+      `}
+      onClick={() => {
+        if (onClose) onClose()
+      }}
+    >
+      {children}
+    </div>,
+    container
+  )
 }

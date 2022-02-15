@@ -1,7 +1,8 @@
 import React, { lazy } from 'react'
 import { layouts } from '../../../../../app/web/types/layout'
 import { pages } from '../../../../../app/web/types/page'
-import { matchRoute } from 'web-utils'
+import newRouter from 'find-my-way'
+
 export type Base = {
   layouts: typeof layouts
   pages: typeof pages
@@ -19,17 +20,31 @@ export const loadPage = (currentUrl: string) => {
   const w = window as any
 
   const base = w.base as Base
+
+  if (!w.router) {
+    const router = newRouter({})
+
+    for (let [_, arg] of Object.entries(base.pages)) {
+      const [url] = arg
+      if (typeof url === 'string') {
+        router.on('GET', url, () => arg)
+      }
+    }
+    w.router = router
+  }
+
+  const route = w.router.find('GET', currentUrl)
+
   let params: any = null
   let importer: any = null
   let layout = 'default'
-  for (let [pageName, arg] of Object.entries(base.pages) as any) {
-    params = matchRoute(currentUrl, arg[0])
-    if (params) {
-      w.params = params
-      importer = arg[2]
-      layout = arg[1]
-    }
+  if (route) {
+    const routeFound = route.handler()
+    importer = routeFound[2]
+    layout = routeFound[1]
+    params = route.params
   }
+  w.params = params
 
   return {
     layout,

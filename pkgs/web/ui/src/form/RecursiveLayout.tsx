@@ -66,7 +66,7 @@ export const RecursiveLayout: FC<IRecursiveLayout> = ({
 
   return (
     <div
-      className={`flex items-stretch self-stretch ${
+      className={`flex flex-1 items-stretch self-stretch ${
         direction === 'row' ? 'space-x-2' : ''
       } flex-${direction}`}
       css={css`

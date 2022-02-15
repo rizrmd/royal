@@ -14,17 +14,17 @@ import os from 'os'
 }
 
 const args = arg({})
-const mode = args._[0] as 'prod' | 'dev' | 'dev-debug'
+const mode = args._[0] as 'prod' | 'prod-debug' | 'dev' | 'dev-debug'
 const port = args._[1]
 
 export const start = async (
   port: string,
-  _mode: 'prod' | 'dev' | 'dev-debug'
+  _mode: 'prod' | 'prod-debug' | 'dev' | 'dev-debug'
 ) => {
   const server = Fastify()
 
-  const mode = _mode === 'dev-debug' ? 'dev' : _mode
-  const debug = _mode === 'dev-debug'
+  const mode = _mode.replace('-debug', '') as 'prod' | 'dev'
+  const debug = _mode.indexOf('-debug') > 0
 
   const routes: RouteOptions[] = []
   server.addHook('onRoute', (route) => {
@@ -54,14 +54,13 @@ export const start = async (
         }
       },
     })
-  } else {
   }
 
   server.register(fastCookie)
   server.register(authPlugin)
   server.register(jsonPlugin)
 
-  router(server, mode)
+  await router(server, mode)
 
   server.listen(port, '0.0.0.0', function (err, address) {
     if (!err) {

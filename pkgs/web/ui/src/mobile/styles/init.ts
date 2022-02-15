@@ -24,6 +24,7 @@ export default (props: {
     }
 
     &.mobile-layout {
+      overflow-x: hidden;
       .safe-area-top {
         width: 100%;
         flex-grow: 0;

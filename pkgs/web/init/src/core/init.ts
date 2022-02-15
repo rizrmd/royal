@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { Fragment } from 'react'
+import React, { Fragment } from 'react'
 import { initDbs } from './dbs'
 import { jsx } from './jsx'
 import { initRouter } from './router'
@@ -9,6 +9,7 @@ export const init = () => {
   w.css = css
   w.jsx = jsx
   w.Fragment = Fragment
+  w.React = React
 
   if (w.Capacitor) {
     w.isMobile = true

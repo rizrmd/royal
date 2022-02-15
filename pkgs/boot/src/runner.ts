@@ -1,10 +1,18 @@
 import { execa, ExecaChildProcess } from 'execa'
-import { ensureDir, pathExists, readFileSync, writeFile } from 'fs-extra'
-import { join } from 'path'
 import { unzip } from 'fflate'
+import {
+  ensureDir,
+  pathExists,
+  readFileSync,
+  readJson,
+  writeFile,
+  writeJson,
+} from 'fs-extra'
+import os from 'os'
+import { join } from 'path'
 import { dbsRepair } from './dbs/reload'
 import { dirs } from './dirs'
-import { findFreePorts, waitUntil } from './utils'
+import { findFreePorts } from './utils'
 
 export const EXECA_FULL_COLOR = {
   cwd: dirs.root,
@@ -12,7 +20,7 @@ export const EXECA_FULL_COLOR = {
   env: { FORCE_COLOR: 'true' },
 } as any
 
-export const runDev = (args?: string[]) => {
+export const runDev = (args: string[]) => {
   return new Promise<void>(async (resolve) => {
     if (!(await pathExists(join(dirs.root, 'app')))) {
       const zipFile = readFileSync(join(dirs.pkgs.boot, 'app.zip'))
@@ -48,12 +56,12 @@ export const runDev = (args?: string[]) => {
     }
 
     const ports = await findFreePorts()
-    const port = ports.pop()?.toString() || '3000'
-    await writeFile(join(dirs.app.web, 'node_modules', 'viteport'), port)
+    const vitePort = ports.pop()?.toString() || '3000'
+    await writeFile(join(dirs.app.web, 'node_modules', 'viteport'), vitePort)
 
     const vite = execa(
       join(dirs.app.web, 'node_modules', '.bin', 'vite'),
-      [...(args || ['dev']), '--host', '--port', port],
+      [...(args || ['dev']), '--host', '--port', vitePort],
       { ...EXECA_FULL_COLOR, cwd: dirs.app.web }
     )
     let isDone = false

@@ -10,6 +10,7 @@ import { styles } from 'theme'
 export const Form: FC<IFormProps> = ({
   schema,
   layout,
+  className,
   defaultValue,
   onSubmit,
   init,
@@ -60,7 +61,7 @@ export const Form: FC<IFormProps> = ({
 
   return (
     <form
-      className="form"
+      className={`form${className ? ' ' + className : ''}`}
       css={styles.form()}
       onSubmit={(e) => {
         e.preventDefault()

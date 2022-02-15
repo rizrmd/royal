@@ -19,6 +19,7 @@ export const BaseField: FC<IBaseField> = ({ field, ctx: rawContext }) => {
     password: TextField,
     number: TextField,
     unknown: UnknownField,
+    custom: UnknownField,
     section: SectionField,
   } as Record<Exclude<IField['type'], undefined>, FC<any>>
 
