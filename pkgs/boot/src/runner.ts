@@ -1,14 +1,6 @@
 import { execa, ExecaChildProcess } from 'execa'
 import { unzip } from 'fflate'
-import {
-  ensureDir,
-  pathExists,
-  readFileSync,
-  readJson,
-  writeFile,
-  writeJson,
-} from 'fs-extra'
-import os from 'os'
+import { ensureDir, pathExists, readFileSync, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { dbsRepair } from './dbs/reload'
 import { dirs } from './dirs'
@@ -52,7 +44,9 @@ export const runDev = (args: string[]) => {
       (await pathExists(join(dirs.app.dbs, 'db', 'prisma', 'schema.prisma'))) &&
       !(await pathExists(join(dirs.app.dbs, 'db', 'node_modules', '.prisma')))
     ) {
-      await dbsRepair('db')
+      if (!(await dbsRepair('db'))) {
+        return
+      }
     }
 
     const ports = await findFreePorts()

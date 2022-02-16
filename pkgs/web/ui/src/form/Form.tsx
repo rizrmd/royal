@@ -53,6 +53,7 @@ export const Form: FC<IFormProps> = ({
   } as any
 
   dataContext.submit = () => {
+    // lakukan validasi dulu
     if (onSubmit) onSubmit(dataContext)
   }
 

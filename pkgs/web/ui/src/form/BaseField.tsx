@@ -2,6 +2,7 @@
 import { FC, useContext } from 'react'
 import { IBaseField, IField } from './types'
 import { TextField } from './fields/TextField'
+import { Checkbox } from './fields/Checkbox'
 import { UnknownField } from './fields/UnknownField'
 import { SectionField } from './fields/SectionField'
 import { BelongsField } from './fields/BelongsField'
@@ -17,6 +18,7 @@ export const BaseField: FC<IBaseField> = ({ field, ctx: rawContext }) => {
     text: TextField,
     string: TextField,
     password: TextField,
+    checkbox: Checkbox,
     number: TextField,
     unknown: UnknownField,
     custom: UnknownField,

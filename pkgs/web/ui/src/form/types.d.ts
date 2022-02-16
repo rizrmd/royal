@@ -21,6 +21,7 @@ type IField = {
     | 'money'
     | 'multiline'
     | 'date'
+    | 'checkbox'
     | 'datetime'
     | 'select'
     | 'boolean'

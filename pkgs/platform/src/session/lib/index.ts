@@ -91,7 +91,9 @@ function onSend(options: ISessionOptions) {
       session.expires = request.sessionStore.expires()
       session.cookie.expires = session.expires
       request.sessionStore.set(session.sessionId, session).then(() => {
-        const cookie = session.cookie.options(isConnectionSecure(request))
+        const cookie = session.cookie.options
+          ? session.cookie.options(isConnectionSecure(request))
+          : session.cookie
         reply.setCookie(options.cookieName, session.encryptedSessionId, cookie)
         done()
       })

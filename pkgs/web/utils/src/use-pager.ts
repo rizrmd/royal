@@ -20,6 +20,13 @@ export const usePager = <T>(props: IUsePager<T>) => {
     pageSize: props.pageSize || 50,
     loading: false,
     hasMore: true,
+    reload: async () => {
+      meta.currentPage = 0
+      meta.data.splice(0, meta.data.length)
+      meta.dataPerPage.splice(0, meta.dataPerPage.length)
+      meta.hasMore = true
+      meta.next()
+    },
     next: async () => {
       if (!meta.hasMore) return []
 
@@ -29,7 +36,7 @@ export const usePager = <T>(props: IUsePager<T>) => {
       const data = await props.query({
         currentPage: meta.currentPage,
         pageSize: meta.pageSize,
-        skip: meta.pageSize * meta.currentPage,
+        skip: meta.pageSize * (meta.currentPage - 1),
         take: meta.pageSize,
       })
       meta.dataPerPage.push(data)
@@ -37,7 +44,7 @@ export const usePager = <T>(props: IUsePager<T>) => {
         meta.data.push(i)
       }
 
-      if (data.length === 0) {
+      if (data.length < meta.pageSize) {
         meta.hasMore = false
       }
 
@@ -46,30 +53,34 @@ export const usePager = <T>(props: IUsePager<T>) => {
 
       if (props.onChange) {
         const pager = { ...meta } as any
-        delete pager.next
-        delete pager.render
+        for (let [k, v] of Object.entries(pager)) {
+          if (typeof v === 'function') {
+            delete pager[k]
+          }
+        }
         props.onChange(pager)
       }
 
       return data
     },
     render: () => {
-      if (internal.current.mounted) {
+      if (meta.mounted) {
         _render({})
       }
     },
+    mounted: true,
   })
-  const internal = useRef({ mounted: true })
   useEffect(() => {
-    if (props.init) {
+    if (props.init && Object.keys(props.init).length > 0) {
       for (let [k, v] of Object.entries(props.init)) {
         ;(meta as any)[k] = v
       }
+      meta.render()
+    } else {
+      meta.next()
     }
-    meta.next()
-    meta.render()
     return () => {
-      internal.current.mounted = false
+      meta.mounted = false
     }
   }, [])
   const [__, _render] = useState({})

@@ -1,5 +1,5 @@
 import { execa } from 'execa'
-import { copy, move, pathExists, remove } from 'fs-extra'
+import { copy, move, pathExists, readFile, remove } from 'fs-extra'
 import { join } from 'path'
 import { dirs } from '..'
 import { dbsAdd } from './add'
@@ -27,6 +27,18 @@ export const dbsGenerate = async (name: string) => {
 
 export const dbsRepair = async (name: string) => {
   console.log('Repairing prisma: ' + name)
+
+  if (!(await pathExists(join(dirs.app.dbs, name, '.env')))) {
+    console.log(`Please edit database connection file: 
+        ${join(dirs.app.dbs, name, '.env')}`)
+    return false
+  } else if (
+    (await readFile(join(dirs.app.dbs, name, '.env'))).toString() === ''
+  ) {
+    console.log(`Please edit database connection file: 
+        ${join(dirs.app.dbs, name, '.env')}`)
+    return false
+  }
 
   if (await pathExists(join(dirs.app.dbs, name, 'prisma', 'schema.prisma'))) {
     await copy(
@@ -63,4 +75,5 @@ export const dbsRepair = async (name: string) => {
     stdio: 'inherit',
     cwd: join(dirs.app.dbs, name),
   })
+  return true
 }

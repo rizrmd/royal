@@ -2,8 +2,8 @@
 import { FC, useContext, Fragment } from 'react'
 import { IBaseField } from '../types'
 
-interface ITextField extends IBaseField {}
-export const TextField: FC<ITextField> = ({ ctx, field }) => {
+interface ICheckbox extends IBaseField {}
+export const Checkbox: FC<ICheckbox> = ({ ctx, field }) => {
   if (!field.name || !field.type) return null
 
   const cx = useContext(ctx)
@@ -16,13 +16,11 @@ export const TextField: FC<ITextField> = ({ ctx, field }) => {
   return (
     <Fragment>
       <label class="label">
-        <span class="label-text">
-          {field.label}
-          {field.required && <span className="text-red-800">*</span>}
-        </span>
+        <span class="label-text">{field.label}</span>
       </label>
       <div class="relative">
         {field.prefix}
+
         <input
           type={type}
           value={value}
@@ -37,9 +35,9 @@ export const TextField: FC<ITextField> = ({ ctx, field }) => {
           }}
           class="field-body"
         />
+
         {field.suffix}
       </div>
-      {cx.error[fieldName]}
     </Fragment>
   )
 }
