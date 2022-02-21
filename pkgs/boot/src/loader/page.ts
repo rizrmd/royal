@@ -38,7 +38,7 @@ export const generatePage = async () => {
     } catch (e) {}
   }
 
-  const output = `export const pages = {
+  const output = `export default {
   ${Object.entries(pageOutput.list)
     .map((arg: any) => {
       const [key, value] = arg

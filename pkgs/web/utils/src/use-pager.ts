@@ -52,10 +52,13 @@ export const usePager = <T>(props: IUsePager<T>) => {
       meta.render()
 
       if (props.onChange) {
-        const pager = { ...meta } as any
-        for (let [k, v] of Object.entries(pager)) {
-          if (typeof v === 'function') {
-            delete pager[k]
+        let pager = meta
+        if (props.init) {
+          pager = { ...meta }
+          for (let [k, v] of Object.entries(pager)) {
+            if (typeof v === 'function') {
+              delete (pager as any)[k]
+            }
           }
         }
         props.onChange(pager)

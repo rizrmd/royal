@@ -1,6 +1,6 @@
 import React, { lazy } from 'react'
-import { layouts } from '../../../../../app/web/types/layout'
-import { pages } from '../../../../../app/web/types/page'
+import layouts from '../../../../../app/web/types/layout'
+import pages from '../../../../../app/web/types/page'
 import newRouter from 'find-my-way'
 
 export type Base = {

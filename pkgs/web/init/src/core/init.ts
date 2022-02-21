@@ -6,26 +6,33 @@ import { initRouter } from './router'
 
 export const init = () => {
   const w = window as any
-  w.css = css
-  w.jsx = jsx
-  w.Fragment = Fragment
-  w.React = React
+  if (!w.css) {
+    w.css = css
+    w.jsx = jsx
+    w.Fragment = Fragment
+    w.React = React
 
-  if (w.Capacitor) {
-    w.isMobile = true
-    w.mobile = {
-      ready: false,
-      insets: null,
+    if (w.Capacitor) {
+      w.isMobile = true
+      w.mobile = {
+        ready: false,
+        insets: null,
+      }
     }
-  }
 
-  w.navigate = (href: string) => {
-    history.pushState({}, '', href)
-    w.appRoot.render()
+    w.navigate = (href: string) => {
+      if (w.appRoot.unmounted) {
+        location.href = href
+        return
+      }
+      history.pushState({}, '', href)
+      w.appRoot.render()
+    }
+    window.addEventListener('popstate', () => {
+      w.appRoot.render()
+    })
+
+    initRouter()
+    initDbs()
   }
-  window.addEventListener('popstate', () => {
-    w.appRoot.render()
-  })
-  initRouter()
-  initDbs()
 }

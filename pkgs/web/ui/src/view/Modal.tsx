@@ -28,9 +28,9 @@ export const Modal: FC<{
     if (animate === false) {
       local.anim = {}
       local.bganim = {}
-    } else if (animate === 'fade' || animate === undefined) {
+    } else if (animate === 'fade') {
       local.anim = local.bganim
-    } else if (animate === 'bottom') {
+    } else if (animate === 'bottom' || animate === undefined) {
       local.anim = {
         initial: { y: '100%' },
         animate: { y: 0 },
@@ -73,13 +73,13 @@ export const Modal: FC<{
             <motion.div
               {...local.anim}
               transition={{ mode: 'tween' }}
-              className="absolute inset-0 flex items-center justify-center"
+              className="absolute pointer-events-none inset-0 flex items-center justify-center"
               css={css`
                 z-index: ${global.counter + 20000 + 1};
+                > * {
+                  pointer-events: all;
+                }
               `}
-              onClick={() => {
-                if (onClose) onClose()
-              }}
             >
               {children}
             </motion.div>
@@ -90,6 +90,9 @@ export const Modal: FC<{
                 pointer-events: ${!show ? 'none' : 'all'};
                 z-index: ${global.counter + 20000};
               `}
+              onPointerDown={() => {
+                if (onClose) onClose()
+              }}
             />
           </Fragment>
         )}

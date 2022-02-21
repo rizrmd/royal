@@ -9,7 +9,9 @@ export const start = ({ registerSW }: { registerSW: any }) => {
   const rootNode = document.getElementById('root')
   ReactDOM.render(<App />, rootNode)
 
-  const updateSW = registerSW({
-    onOfflineReady() {},
-  })
+  if (false) {
+    registerSW({
+      onOfflineReady() {},
+    })
+  }
 }

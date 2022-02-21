@@ -19,7 +19,7 @@ export const generateLayout = async () => {
       .substring(dirs.app.web.length, i.length - 4)
       .replace(/\\/gi, '/')}')`
   }
-  const output = `export const layouts = {
+  const output = `export default {
   ${Object.entries(newLayouts)
     .map((arg: any) => {
       const [key, value] = arg

@@ -17,7 +17,6 @@ export const App = () => {
       Page: null as any,
     },
     global: new WeakMap(),
-    unmounted: false,
   })
   w.appRoot = local
 
@@ -32,7 +31,7 @@ export const App = () => {
 
   useEffect(() => {
     return () => {
-      local.unmounted = true
+      location.reload()
     }
   }, [])
 
@@ -45,7 +44,7 @@ export const App = () => {
       value={{
         global: local.global,
         render: () => {
-          if (!local.unmounted) local.render()
+          local.render()
         },
       }}
     >

@@ -49,6 +49,7 @@ Thumbs.db
 *.mov
 *.wmv
 
+app/web/build
 app/mobile/www/index.html
 app/web/src/base/base.history-lock
 app/web/caches/page.db
