@@ -6,6 +6,7 @@ import {
   readFileSync,
   readJson,
   writeFile,
+  writeFileSync,
   writeJson,
 } from 'fs-extra'
 import { join } from 'path'

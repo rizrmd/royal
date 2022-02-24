@@ -33,6 +33,7 @@ export const startDev = async ({ server, routes }: IStartDev) => {
 <script>
   window.ips = ${JSON.stringify(settings.localIP)};
   window.mode = ${JSON.stringify(settings.mode)};
+  window.sidkey = ${JSON.stringify(settings.sidkey)};
 </script>
 </html>`
     )

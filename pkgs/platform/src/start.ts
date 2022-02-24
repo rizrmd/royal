@@ -1,9 +1,11 @@
 import arg from 'arg'
 import { clearScreen, log, welcomeToBase } from 'boot'
+import crypto from 'crypto'
 import Fastify, { RouteOptions } from 'fastify'
 import fastCookie from 'fastify-cookie'
 import os from 'os'
 import { settings } from 'src'
+import { waitUntil } from '../../web/ui/node_modules/web-utils/src'
 import { startDev } from './dev'
 import { jsonPlugin } from './json'
 import { router } from './routes'
@@ -37,13 +39,15 @@ export const start = async (
   server.addHook('onRoute', (route) => {
     routes.push(route)
   })
-  if (mode === 'dev') {
-    await startDev({ server, routes })
-  }
 
+  settings.sidkey = crypto.createHash('md5').update(process.cwd()).digest('hex')
   server.register(fastCookie)
   server.register(authPlugin)
   server.register(jsonPlugin)
+
+  if (mode === 'dev') {
+    await startDev({ server, routes })
+  }
   await router(server, mode, port)
 
   server.listen(port, '0.0.0.0', function (err, address) {

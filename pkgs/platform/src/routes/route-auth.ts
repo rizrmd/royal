@@ -5,12 +5,12 @@ import logout from '../../../../app/web/src/auth/logout'
 import { allowCors } from 'src/cors'
 
 const formatSession = (req: FastifyRequest) => {
-  const session = { ...req.session }
+  // const session = { ...req.session }
 
-  delete (session as any).encryptedSessionId
-  delete (session as any).cookie
+  // delete (session as any).encryptedSessionId
+  // delete (session as any).cookie
 
-  return session
+  return req.session
 }
 
 export const routeAuth = async (req: FastifyRequest, reply: FastifyReply) => {

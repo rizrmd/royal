@@ -1,5 +1,5 @@
 import { Command, Option } from 'commander'
-import { pathExists } from 'fs-extra'
+import { pathExists, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { autoload } from './autoload'
 import { dbsAdd, reloadDbs } from './dbs/add'
@@ -19,6 +19,22 @@ program
   .argument('[debug]', 'run with debugging')
   .addOption(new Option('-p, --port <number>', 'port number'))
   .action(async (arg, opt) => {
+    if (await pathExists(join(dirs.app.web))) {
+      if (!(await pathExists(join(dirs.app.web, 'types', 'page.ts')))) {
+        await writeFile(
+          join(dirs.app.web, 'types', 'page.ts'),
+          'export default {}'
+        )
+      }
+
+      if (!(await pathExists(join(dirs.app.web, 'types', 'layout.ts')))) {
+        await writeFile(
+          join(dirs.app.web, 'types', 'layout.ts'),
+          'export default {}'
+        )
+      }
+    }
+
     await runDev(['dev'], opt.port || 3200)
     autoload('dev')
 

@@ -19,7 +19,8 @@ export const allowCors = (req: FastifyRequest, reply: FastifyReply) => {
         `${origin.protocol}//${origin.hostname}:${origin.port}`
       )
       reply.header('Access-Control-Allow-Methods', `*`)
-      reply.header('Access-Control-Allow-Headers', `*`)
+      reply.header('Access-Control-Allow-Headers', `Content-Type, x-sid, *`)
+      reply.header('Access-Control-Allow-Credentials', 'true')
       return true
     }
   }

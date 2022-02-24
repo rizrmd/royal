@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { waitUntil } from '.'
 import { retryFetch } from './retry-fetch'
 
 const rfetch = retryFetch({
@@ -27,6 +26,7 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
       setLoading(true)
       ref.current.activity = 'logging-in'
       render()
+
       const res = await rfetch(`${w.baseurl}/auth/login`, {
         method: 'POST',
         headers: {
@@ -34,7 +34,9 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
         },
         body: JSON.stringify(credentials),
       })
+
       const json = await res.json()
+
       setUser(json)
       setLoading(false)
       ref.current.activity = 'idle'
@@ -94,6 +96,18 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
     ref.current.ready = !loading
   }
   const setUser = (val: any) => {
+    const c = val.cookie
+
+    if (c) {
+      w.session = {
+        name: c.name,
+        sid: val.encryptedSessionId,
+      }
+
+      localStorage[c.name] = w.session.sid
+      delete val.cookie
+    }
+
     if (!val.role) {
       val.role = 'guest'
     }

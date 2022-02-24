@@ -85,6 +85,31 @@ export const retryFetch = function <
 
     return new Promise(function (resolve, reject): void {
       const extendedFetch = function (attempt: number): void {
+        const w = window as any
+        if (input.startsWith(w.baseurl)) {
+          if (new URL(w.baseurl).hostname !== window.location.hostname) {
+            console.log()
+          }
+        }
+
+        if (!init) {
+          init = {}
+        }
+        if (!init.credentials) {
+          init.credentials = 'include'
+        }
+
+        if (!init.headers) {
+          init.headers = {}
+        }
+
+        let sid =
+          w.session && w.session.sid ? w.session.sid : localStorage[w.sidkey]
+
+        if (sid) {
+          init.headers['x-sid'] = sid
+        }
+
         fetch(input, init)
           .then(function (response: Response): void {
             if (retryOnFn(attempt, frp.retries, null, response)) {

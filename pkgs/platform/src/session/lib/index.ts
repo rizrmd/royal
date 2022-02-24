@@ -1,6 +1,7 @@
 import cookieSignature from 'cookie-signature'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
+import { settings } from 'src'
 import { Cookie } from './cookie'
 import { Session } from './session'
 import Store from './store'
@@ -16,6 +17,10 @@ function ensureDefaults(options: any): ISessionOptions {
   options.store = options.store || new Store()
   options.cookieName = options.cookieName || 'royal-session-id'
   options.cookie = options.cookie || {}
+  options.cookie.name = options.cookieName
+
+  settings.sidkey = options.cookieName
+
   options.cookie.secure = option(options.cookie, 'secure', true)
   options.saveUninitialized = option(options, 'saveUninitialized', true)
   options.secret = Array.isArray(options.secret)
@@ -61,7 +66,9 @@ function onRequest(options: ISessionOptions) {
         if (url && url.indexOf(cookieOpts.path || '/') !== 0) {
           return
         }
-        const sessionId = request.cookies[options.cookieName]
+
+        let sessionId = request.headers['x-sid'] as string
+        if (!sessionId) sessionId = request.cookies[options.cookieName]
         const secret = options.secret[0]
         if (!sessionId) {
           cookieOpts.expires = request.sessionStore.expires()

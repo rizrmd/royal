@@ -5,6 +5,7 @@ export class Cookie {
   expires: Date | undefined
   sameSite: boolean | 'lax' | 'strict' | 'none' | undefined
   domain: string
+  name: string
 
   constructor(cookieOpts: any) {
     this.path = cookieOpts.path || '/'
@@ -14,6 +15,7 @@ export class Cookie {
     this.expires = getExpires(cookieOpts)
     this.sameSite = cookieOpts.sameSite || null
     this.domain = cookieOpts.domain || null
+    this.name = cookieOpts.name
   }
 
   options(secureConnection: boolean) {

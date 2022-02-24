@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { layouts } from '../../../../app/web/types/layout'
+import layouts from '../../../../app/web/types/layout'
 
 type IPage = {
   url: string

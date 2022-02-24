@@ -29,7 +29,10 @@ export const dbsRepair = async (name: string) => {
   console.log('Repairing prisma: ' + name)
 
   if (!(await pathExists(join(dirs.app.dbs, name, '.env')))) {
-    console.log(`Please edit database connection file: 
+    console.log(`\n\n
+    
+    Database environment not initialized
+    Please edit database connection file: 
         ${join(dirs.app.dbs, name, '.env')}`)
     return false
   } else if (

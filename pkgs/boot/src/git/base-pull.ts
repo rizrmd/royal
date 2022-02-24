@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { copy, pathExists, readdir, remove } from 'fs-extra'
+import { copy, pathExists, remove } from 'fs-extra'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/node'
 import { tmpdir } from 'os'

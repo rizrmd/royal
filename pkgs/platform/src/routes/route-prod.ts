@@ -21,6 +21,7 @@ export const routeProd = async (server: FastifyInstance, port: string) => {
 <script>
   window.ips = ${JSON.stringify(settings.localIP)};
   window.mode = ${JSON.stringify(settings.mode)};
+  window.sidkey = ${JSON.stringify(settings.sidkey)};
 </script>
 </html>`
       )

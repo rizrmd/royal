@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 import fastifySession from './lib'
 import Store from './lib/store'
-import crypto from 'crypto'
+import { settings } from 'src'
 
 export const authPlugin = fp(function (
   server: FastifyInstance,
@@ -16,7 +16,7 @@ export const authPlugin = fp(function (
         'XDGKpja1kog7xuGU1lFzKDFvTY3PbBIn0B5BTAhoGz7daATEKUDOTn0nxUJ5tW9Z',
       store: new Store(),
       cookie: {},
-      cookieName: crypto.createHash('md5').update(process.cwd()).digest('hex'),
+      cookieName: settings.sidkey,
     })
     server.addHook('onResponse', (req: any) => {
       if (req.session.authenticated === false) {
