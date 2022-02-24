@@ -26,20 +26,4 @@ export const basePull = async () => {
 
   await remove(join(dirs.root, 'pkgs'))
   await copy(join(dir, 'pkgs'), join(dirs.root, 'pkgs'))
-
-  for (let d of await readdir(join(dirs.root, 'pkgs'))) {
-    let dir = join(dirs.root, 'pkgs', d, 'node_modules')
-    if (await pathExists(dir)) {
-      await remove(dir)
-    }
-
-    if (d === 'web') {
-      for (let d of await readdir(dir)) {
-        const subdir = join(dir, d, 'node_modules')
-        if (await pathExists(subdir)) {
-          await remove(subdir)
-        }
-      }
-    }
-  }
 }
