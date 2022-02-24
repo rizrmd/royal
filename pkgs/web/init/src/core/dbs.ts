@@ -10,7 +10,7 @@ export const initDbs = () => {
         get(_, name) {
           const w: any = window
 
-          let baseUrl = ''
+          let baseUrl = w.baseurl
           if (!w.is_dev && w.hostname) {
             baseUrl = `${w.hostname}`
           }
@@ -47,14 +47,13 @@ export const initDbs = () => {
                 headers: {
                   Accept: 'application/json',
                   'Content-Type': 'text/plain',
+                  'x-sid': w.auth.sessionId,
                 },
                 body: encrypted,
               }
 
               const res = await fetch(url, options)
               return await res.json()
-
-              return []
             }
           }
 

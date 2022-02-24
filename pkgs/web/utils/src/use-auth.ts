@@ -27,7 +27,7 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
       setLoading(true)
       ref.current.activity = 'logging-in'
       render()
-      const res = await rfetch('/auth/login', {
+      const res = await rfetch(`${w.baseurl}/auth/login`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -39,26 +39,26 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
       setLoading(false)
       ref.current.activity = 'idle'
       render()
-      return json;
+      return json
     },
     logout: async () => {
       setLoading(true)
       ref.current.activity = 'logging-out'
       render()
-      const res = await rfetch('/auth/logout')
+      const res = await rfetch(`${w.baseurl}/auth/logout`)
       const json = await res.json()
       setUser(json)
       setLoading(false)
       ref.current.activity = 'idle'
       render()
-      return json;
+      return json
     },
     reload: async () => {
       setLoading(true)
       ref.current.activity = 'reloading'
 
       render()
-      const res = await rfetch('/auth/data')
+      const res = await rfetch(`${w.baseurl}/auth/data`)
       setUser(await res.json())
       setLoading(false)
       ref.current.activity = 'idle'
@@ -68,7 +68,7 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
       setLoading(true)
       ref.current.activity = 'saving'
       render()
-      const res = await rfetch('/auth/set-data', {
+      const res = await rfetch(`${w.baseurl}/auth/set-data`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -104,9 +104,9 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
 
   useEffect(() => {
     ;(async () => {
-      const res = await rfetch('/auth/data')
+      const res = await rfetch(`${w.baseurl}/auth/data`)
       setUser(await res.json())
-      if(!auth.initialized) auth.initialized = true
+      if (!auth.initialized) auth.initialized = true
       setLoading(false)
       if (arg && arg.onReady) {
         arg.onReady()

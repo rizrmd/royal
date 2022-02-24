@@ -19,7 +19,7 @@ program
   .argument('[debug]', 'run with debugging')
   .addOption(new Option('-p, --port <number>', 'port number'))
   .action(async (arg, opt) => {
-    await runDev(['dev'])
+    await runDev(['dev'], opt.port || 3200)
     autoload('dev')
 
     if (arg === 'debug') {

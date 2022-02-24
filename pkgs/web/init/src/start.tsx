@@ -1,10 +1,15 @@
-import React from 'react'
 import ReactDOM from 'react-dom'
-import { init } from './core/init'
 import { App } from './app'
-
-export const start = ({ registerSW }: { registerSW: any }) => {
-  init()
+import { init } from './core/init'
+export type IBaseUrl = { mode: 'dev' | 'prod'; ips: string[] }
+export const start = ({
+  registerSW,
+  baseUrl,
+}: {
+  registerSW: any
+  baseUrl: (props: IBaseUrl) => string
+}) => {
+  init(baseUrl)
 
   const rootNode = document.getElementById('root')
   ReactDOM.render(<App />, rootNode)

@@ -10,7 +10,7 @@ export const MobileLayout: FC<IMobileLayoutProps> = ({ children }) => {
   if (!mobile.ready) return null
   return (
     <div
-      class="mobile-layout flex flex-col flex-1 w-full h-screen"
+      className="mobile-layout flex flex-col flex-1 w-full h-screen"
       css={styles.init({ insets: mobile.insets })}
     >
       <div className="safe-area-top"></div>

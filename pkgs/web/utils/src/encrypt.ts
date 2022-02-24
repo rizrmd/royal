@@ -30,13 +30,14 @@ export const encrypt = async (msg: string) => {
   const w = window as any
 
   if (!w.auth) {
-    const res = await rfetch('/auth/data')
+    const res = await rfetch(`${w.baseurl}/auth/data`)
     const auth = await res.json()
     w.auth = auth
   }
 
   const enc = new TextEncoder()
   const sess = enc.encode(w.auth.sessionId)
+
   const key = sess.slice(6, 6 + 16)
 
   const textBytes = aesjs.utils.utf8.toBytes(msg)

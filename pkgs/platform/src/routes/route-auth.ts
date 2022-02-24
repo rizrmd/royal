@@ -2,6 +2,7 @@ import * as dbs from '../../../../app/dbs'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import login from '../../../../app/web/src/auth/login'
 import logout from '../../../../app/web/src/auth/logout'
+import { allowCors } from 'src/cors'
 
 const formatSession = (req: FastifyRequest) => {
   const session = { ...req.session }
@@ -15,6 +16,13 @@ const formatSession = (req: FastifyRequest) => {
 export const routeAuth = async (req: FastifyRequest, reply: FastifyReply) => {
   await req.handleSession()
   const url = req.url
+
+  if (allowCors(req, reply)) {
+    if (req.method === 'OPTIONS') {
+      reply.send('{"status":"ok"}')
+      return
+    }
+  }
 
   switch (url) {
     case '/auth/set-data':

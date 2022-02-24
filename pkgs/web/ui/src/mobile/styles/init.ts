@@ -4,11 +4,13 @@ export default (props: {
 }) => {
   return css`
     * {
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none !important;
-      user-select: none !important;
+      @supports not (-webkit-touch-callout: none) {
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+      }
       touch-action: manipulation;
     }
 

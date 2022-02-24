@@ -1,6 +1,13 @@
 import { execa, ExecaChildProcess } from 'execa'
 import { unzip } from 'fflate'
-import { ensureDir, pathExists, readFileSync, writeFile } from 'fs-extra'
+import {
+  ensureDir,
+  pathExists,
+  readFileSync,
+  readJson,
+  writeFile,
+  writeJson,
+} from 'fs-extra'
 import { join } from 'path'
 import { dbsRepair } from './dbs/reload'
 import { dirs } from './dirs'
@@ -12,7 +19,7 @@ export const EXECA_FULL_COLOR = {
   env: { FORCE_COLOR: 'true' },
 } as any
 
-export const runDev = (args: string[]) => {
+export const runDev = (args: string[], port: number) => {
   return new Promise<void>(async (resolve) => {
     if (!(await pathExists(join(dirs.root, 'app')))) {
       const zipFile = readFileSync(join(dirs.pkgs.boot, 'app.zip'))

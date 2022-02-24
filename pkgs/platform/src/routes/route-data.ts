@@ -4,24 +4,78 @@ import aesjs from 'aes-js'
 import { join } from 'path'
 import zlib from 'zlib'
 import * as dbs from '../../../../app/dbs'
+import { allowCors } from 'src/cors'
 
 export const routeData = async (req: FastifyRequest, reply: FastifyReply) => {
   let reqBody = '' as any
-
+  if (allowCors(req, reply)) {
+    if (req.method === 'OPTIONS') {
+      reply.send('{"status":"ok"}')
+      return
+    }
+  }
   await req.handleSession()
+
+  let role = req.session.role || 'guest'
+  let dbAuth = null as any
+  if (role) {
+    try {
+      dbAuth = require(join(
+        dirs.app.web,
+        `src/auth/roles/${role}/db-auth`
+      )).default
+
+      let reqBody = req.body
+      if (!(req.body instanceof Buffer)) {
+        if (dbAuth && !dbAuth(reqBody)) {
+          reply.code(403).send('{"status":"forbidden"}')
+          return undefined
+        }
+      }
+    } catch (e) {}
+  }
+
   if (req.body instanceof Buffer) {
     if (req.url === '/__data/query') {
       const data = req.body
 
-      const enc = new TextEncoder()
-      const sess = enc.encode(req.session.sessionId)
-      const key = sess.slice(6, 6 + 16)
+      let sql = ''
+      try {
+        const enc = new TextEncoder()
+        const sess = enc.encode(req.headers['x-sid'] as any)
+        const key = sess.slice(6, 6 + 16)
 
-      const aesCtr2 = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5))
-      const decryptedBytes = aesCtr2.decrypt(data)
-      const sql = aesjs.utils.utf8.fromBytes(decryptedBytes)
+        const aesCtr2 = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5))
+        const decryptedBytes = aesCtr2.decrypt(data)
+        sql = aesjs.utils.utf8.fromBytes(decryptedBytes)
+      } catch (e) {
+        console.log('')
+        log('error', 'Failed when decrypting raw query sql:')
+        console.error(`${sql}\n\n`, e)
+        reqBody = {}
+      }
+
+      if (sql.toLowerCase().indexOf('select') < 0) {
+        console.log('')
+        log('error', 'Failed when decrypting raw query sql:')
+        console.error(`${sql}\n\n`)
+      }
 
       if (sql) {
+        if (
+          dbAuth &&
+          !dbAuth({
+            action: 'query',
+            db: 'db',
+            table: '',
+            params: '',
+            query: sql,
+          })
+        ) {
+          reply.send([])
+          return
+        }
+
         try {
           let result = null as any
           let final = {
@@ -41,6 +95,8 @@ export const routeData = async (req: FastifyRequest, reply: FastifyReply) => {
           console.log('')
           log('error', 'Failed when executing sql:')
           console.error(`${sql}\n\n`, e)
+          reply.send([])
+          return
         }
       }
     } else {
@@ -62,21 +118,6 @@ export const routeData = async (req: FastifyRequest, reply: FastifyReply) => {
     } = reqBody as any
 
     const db = dbs[body.db]
-
-    let role = req.session.role || 'guest'
-    if (role) {
-      try {
-        const dbAuth = require(join(
-          dirs.app.web,
-          `src/auth/roles/${role}/db-auth`
-        )).default
-
-        if (!dbAuth(body)) {
-          reply.code(403).send('{"status":"forbidden"}')
-          return
-        }
-      } catch (e) {}
-    }
 
     if (!db) {
       reply.code(403).send('{"status":"forbidden"}')

@@ -30,14 +30,12 @@ export const buildProd = async () => {
   vite.stderr?.pipe(process.stdout)
   await vite
 
-  if (await pathExists(join(dirs.app.mobile, 'www'))) {
+  const capConfigFile = join(dirs.app.mobile, 'capacitor.config.json')
+  if (await pathExists(capConfigFile)) {
     await remove(join(dirs.app.mobile, 'www'))
     await copy(join(dirs.app.web, 'build'), join(dirs.app.mobile, 'www'))
     await runPnpm(['cap', 'sync'], dirs.app.mobile)
-  }
 
-  const capConfigFile = join(dirs.app.mobile, 'capacitor.config.json')
-  if (await pathExists(capConfigFile)) {
     const json = await readJson(capConfigFile)
     delete json.server
     await writeJson(capConfigFile, json, { spaces: 2 })

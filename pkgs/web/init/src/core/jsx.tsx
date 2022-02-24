@@ -105,5 +105,5 @@ export const jsx = (...args: any[]) => {
     return emotion.jsx(tag, props, ...args.slice(2))
   }
 
-  return emotion.jsx(...args)
+  return emotion.jsx.apply(null, args as any)
 }
