@@ -9,6 +9,7 @@ interface IUseTree<T, K extends Record<string, any>> {
   init?: any
   autoLoadChildren?: boolean
   onReady?: () => void
+  onItemInit?: (item: TreeItem<T, K>, parent?: TreeItem<T, K>) => void
   onChange?: (tree: any) => void
   query: (props: { level: number; parent?: any }) => Promise<T[]>
 }
@@ -73,6 +74,18 @@ export const useTree = <T, K>(props: IUseTree<T, K>) => {
           }
         }
       },
+      loadChildren: async (item: any) => {
+        item._tree.status = 'loading'
+        local.render()
+        item._tree.children = await loadTree(
+          item._tree.level + 1,
+          (item as any)[props.primaryKey]
+        )
+
+        item._tree.status = 'loaded'
+        local.render()
+        return item._tree.children
+      },
       flatten: () => {
         const list: TreeItem<T, K>[] = []
         const walk = (e: TreeItem<T, K>) => {
@@ -80,7 +93,9 @@ export const useTree = <T, K>(props: IUseTree<T, K>) => {
           for (let child of e._tree.children) {
             list.push(child)
             if (child._tree.children.length > 0) {
-              walk(child)
+              for (let tchild of child._tree.children) {
+                walk(tchild)
+              }
             }
           }
         }
@@ -100,6 +115,7 @@ export const useTree = <T, K>(props: IUseTree<T, K>) => {
               rowLoadings={local.rowLoadings}
               primaryKey={props.primaryKey}
               autoload={props.autoLoadChildren}
+              onItemInit={props.onItemInit}
               children={children}
               loadChildren={loadTree}
             />
@@ -112,6 +128,7 @@ export const useTree = <T, K>(props: IUseTree<T, K>) => {
                     return (
                       <ChildContainer
                         key={index}
+                        onItemInit={props.onItemInit}
                         item={item}
                         rowLoadings={local.rowLoadings}
                         renderRoot={render}
@@ -181,6 +198,7 @@ type ITreeChildren<T, K> = FC<{
   autoload?: boolean
   children: any
   rowLoadings: Record<any, true>
+  onItemInit?: (item: TreeItem<T, K>, parent?: TreeItem<T, K>) => void
   renderRoot: () => void
 }>
 const TreeChildren: ITreeChildren<any, any> = ({
@@ -190,6 +208,7 @@ const TreeChildren: ITreeChildren<any, any> = ({
   loadChildren,
   autoload,
   rowLoadings,
+  onItemInit,
   children,
   renderRoot,
 }) => {
@@ -203,6 +222,7 @@ const TreeChildren: ITreeChildren<any, any> = ({
             item={e}
             rowLoadings={rowLoadings}
             primaryKey={primaryKey}
+            onItemInit={onItemInit}
             loadChildren={loadChildren}
             autoload={autoload}
             children={children}
@@ -219,6 +239,7 @@ type IChildContainer<T, K> = React.FC<{
   item: TreeItem<T, K>
   autoload?: boolean
   primaryKey: string
+  onItemInit?: (item: TreeItem<T, K>, parent?: TreeItem<T, K>) => void
   rowLoadings: Record<string, true>
   loadChildren: (level: number, parentKey: any) => Promise<TreeItem<T, K>[]>
   children: any
@@ -232,6 +253,7 @@ const ChildContainer: IChildContainer<any, any> = ({
   rowLoadings: rowStatus,
   children,
   parent,
+  onItemInit,
   loadChildren,
   renderRoot,
 }) => {
@@ -239,7 +261,7 @@ const ChildContainer: IChildContainer<any, any> = ({
     if (item._tree.status === 'init' && autoload !== false) {
       item._tree.status = 'loading'
       rowStatus[item[primaryKey]] = true
-      local.render()
+      renderRoot()
       item._tree.children = await loadChildren(
         item._tree.level + 1,
         (item as any)[primaryKey]
@@ -255,6 +277,9 @@ const ChildContainer: IChildContainer<any, any> = ({
       delete rowStatus[item[primaryKey]]
       local.render()
       renderRoot()
+      if (onItemInit) {
+        onItemInit(item, parent)
+      }
     }
   })
   return (
@@ -271,6 +296,7 @@ const ChildContainer: IChildContainer<any, any> = ({
                 items={items ? items : item._tree.children}
                 primaryKey={primaryKey}
                 autoload={autoload}
+                onItemInit={onItemInit}
                 rowLoadings={rowStatus}
                 children={children}
                 loadChildren={loadChildren}
