@@ -4,5 +4,4 @@ packages:
   - 'app/dbs/**'
   - 'pkgs/**'
   - 'pkgs/web/**'
-  - 'pkgs/mobile/**'
   - 'build/pkgs'

@@ -118,10 +118,12 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
 
   useEffect(() => {
     ;(async () => {
-      const res = await rfetch(`${w.baseurl}/auth/data`)
-      setUser(await res.json())
-      if (!auth.initialized) auth.initialized = true
-      setLoading(false)
+      if (!w.auth.initialized) {
+        const res = await rfetch(`${w.baseurl}/auth/data`)
+        setUser(await res.json())
+        if (!auth.initialized) auth.initialized = true
+        setLoading(false)
+      }
       if (arg && arg.onReady) {
         arg.onReady()
       }

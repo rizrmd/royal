@@ -1,2 +1,2 @@
-export * from "./Login1";
-export * from "./Login2";
+export * from './WebLogin'
+export * from './Login2'

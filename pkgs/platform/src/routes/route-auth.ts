@@ -2,6 +2,7 @@ import * as dbs from '../../../../app/dbs'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import login from '../../../../app/web/src/auth/login'
 import logout from '../../../../app/web/src/auth/logout'
+import ext from '../../../../app/ext/src/index'
 import { allowCors } from 'src/cors'
 
 const formatSession = (req: FastifyRequest) => {
@@ -45,6 +46,7 @@ export const routeAuth = async (req: FastifyRequest, reply: FastifyReply) => {
         db: dbs.db,
         dbs: dbs,
         req,
+        ext,
         reply,
       })
       reply.send(formatSession(req))
@@ -53,6 +55,7 @@ export const routeAuth = async (req: FastifyRequest, reply: FastifyReply) => {
       await logout({
         sid: req.session.sessionId,
         db: dbs.db,
+        ext,
         dbs: dbs,
         req,
         reply,

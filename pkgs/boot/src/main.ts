@@ -1,5 +1,5 @@
 import { Command, Option } from 'commander'
-import { pathExists, writeFile } from 'fs-extra'
+import { pathExists, writeFile, readFile } from 'fs-extra'
 import { join } from 'path'
 import { autoload } from './autoload'
 import { dbsAdd, reloadDbs } from './dbs/add'
@@ -19,6 +19,14 @@ program
   .argument('[debug]', 'run with debugging')
   .addOption(new Option('-p, --port <number>', 'port number'))
   .action(async (arg, opt) => {
+    const extPath = join(dirs.app.ext, 'src', 'index.ts')
+    if (await pathExists(extPath)) {
+      const ext = await readFile(extPath, 'utf-8')
+      if (!ext) {
+        await writeFile(extPath, 'export default {}')
+      }
+    }
+
     if (await pathExists(join(dirs.app.web))) {
       if (!(await pathExists(join(dirs.app.web, 'types', 'page.ts')))) {
         await writeFile(

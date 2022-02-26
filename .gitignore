@@ -52,9 +52,12 @@ Thumbs.db
 app/web/build
 app/mobile/www/index.html
 app/web/src/base/base.history-lock
+app/web/types/layout.ts
+app/web/types/page.ts
 app/web/caches/page.db
 sessions.db
 app/web/src/base/base.history-lock
+
 /build
 /pkgs/**/build
 /pkgs/**/build/*

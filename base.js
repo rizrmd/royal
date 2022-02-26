@@ -1,5 +1,5 @@
-const { spawn } = require('child_process')
 const fs = require('fs')
+const { spawn } = require('child_process')
 
 const start = () => {
   if (process.argv.length < 3) {
@@ -14,7 +14,7 @@ const start = () => {
 if (!fs.existsSync('node_modules')) {
   const pnpm = spawn('pnpm', ['i'], { stdio: 'inherit' })
 
-  pnpm.on('exit', function () {
+  pnpm.on('exit', function() {
     start()
   })
 } else {

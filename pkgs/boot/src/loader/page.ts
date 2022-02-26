@@ -1,6 +1,5 @@
 import { writeFile } from 'fs-extra'
-import { basename, join } from 'path'
-import { format } from 'prettier'
+import { join } from 'path'
 import { dirs } from '..'
 import { walkDir } from '../utils'
 
@@ -70,7 +69,7 @@ export const generatePageSingle = async (path: string) => {
   if (expected !== pageOutput.list[name]) {
     pageOutput.list[name] = expected
 
-    const output = `export const pages = {
+    const output = `export default {
   ${Object.entries(pageOutput.list)
     .map((arg: any) => {
       const [key, value] = arg
