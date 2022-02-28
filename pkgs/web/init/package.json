@@ -5,7 +5,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.7.1",
+    "@babel/core": "^7.17.5",
+    "@emotion/react": "^11.8.1",
     "find-my-way": "^5.2.0",
     "lodash.find": "^4.6.0",
     "react": "17.0.2",
@@ -13,8 +14,6 @@
     "web-utils": "workspace:^"
   },
   "devDependencies": {
-    "@types/lodash.find": "^4.6.6",
-    "@types/react": "*",
-    "@types/react-dom": "*"
+    "@types/lodash.find": "^4.6.6"
   }
 }

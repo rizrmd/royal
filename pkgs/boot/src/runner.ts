@@ -67,9 +67,19 @@ export const runDev = (args: string[], port: number) => {
       { ...EXECA_FULL_COLOR, cwd: dirs.app.web }
     )
     let isDone = false
+    console.log('  Preparing Dev Server')
     vite.stdout?.on('data', (e) => {
-      process.stdout.write(e)
-      if (e.indexOf('localhost') > 0 && !isDone) {
+      if (!isDone) {
+        const rows = e.toString('utf-8').split('\n')
+        for (let i of rows) {
+          if (i.indexOf('ready') > 0) {
+            process.stdout.write(i + '\n')
+          }
+        }
+      } else {
+        process.stdout.write(e)
+      }
+      if (e.indexOf('ready') >= 0 && !isDone) {
         isDone = true
         resolve()
       }
@@ -92,7 +102,6 @@ export const runPlatform = async (
   if (port) {
     lastPort = port
   }
-
   platformRunner = execa(
     join(dirs.root, 'node_modules', '.bin', 'esr'),
     [

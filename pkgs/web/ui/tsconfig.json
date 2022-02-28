@@ -15,12 +15,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@emotion/react",
-    "types": ["react/next", "react-dom/next"]
+    "paths": {
+      "react": ["../../../app/web/types/react"],
+      "react/jsx-runtime": ["../../../app/web/types/react/jsx-runtime"],
+      "react-dom": ["../../../app/web/types/react-dom/next"]
+    }
   },
-  "include": [
-    "../../../app/web/types/**/*",
-    "../../../app/web/types/react-dom/**/*",
-    "../../../app/web/types/react-react/**/*"
-  ]
+  "include": ["./src/**/*", "../../../app/web/types/**/*"]
 }

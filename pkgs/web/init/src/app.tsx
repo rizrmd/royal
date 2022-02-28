@@ -1,7 +1,8 @@
 /** @jsx jsx */
-import { lazy, Suspense, useEffect } from 'react'
+import { Component, lazy, Suspense, useEffect } from 'react'
 import { GlobalContext, useLocal } from 'web-utils'
 import { Base, loadPage } from './core/router'
+import ErrorBoundary from './error'
 
 export const App = () => {
   const w = window as any
@@ -49,11 +50,15 @@ export const App = () => {
       }}
     >
       <Suspense fallback={LastLayout ? <LastLayout /> : null}>
-        <Layout>
-          <Suspense fallback={null}>
-            <Page />
-          </Suspense>
-        </Layout>
+        <ErrorBoundary>
+          <Layout>
+            <Suspense fallback={null}>
+              <ErrorBoundary>
+                <Page />
+              </ErrorBoundary>
+            </Suspense>
+          </Layout>
+        </ErrorBoundary>
       </Suspense>
     </GlobalContext.Provider>
   )

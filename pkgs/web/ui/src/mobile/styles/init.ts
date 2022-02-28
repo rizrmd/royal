@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 export default (props: {
   insets: { bottom: number; top: number; left: number; right: number }
 }) => {

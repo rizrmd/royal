@@ -1,5 +1,4 @@
 /** @jsx jsx  */
-import { css } from '@emotion/react'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { FC, Fragment, useEffect } from 'react'
 import { useLocal } from 'web-utils'

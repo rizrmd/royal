@@ -18,6 +18,7 @@
     "lodash.padend": "^4.6.1",
     "lodash.padstart": "^4.6.1",
     "prettier": "^2.5.1",
+    "pretty-error": "^4.0.0",
     "prompt": "^1.2.1",
     "prompts": "^2.4.2"
   },
