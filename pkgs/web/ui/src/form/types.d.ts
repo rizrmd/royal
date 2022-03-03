@@ -51,6 +51,7 @@ type IFormProps = {
   schema?: Partial<IFormSchema>
   defaultValue?: any
   className?: string
+  css?: any
   onSubmit?: (ctx: DataContainer) => void
   init?: (ctx: DataContainer) => void | Promise<void>
   layout?: IFormLayout
@@ -64,6 +65,7 @@ type IFormLayout = (
       layout: (layout: any) => React.ReactElement
     ) => React.ReactElement)
   | IFormLayout
+  | (IField & { name: string })
 )[]
 
 type DataContainer = {
@@ -92,10 +94,4 @@ type IFuncLayout = {
     ctx: DataContainer,
     layout: (layout: IFormLayout) => ReactElement
   ) => ReactElement
-}
-
-declare module 'react' {
-  interface Attributes {
-    css?: Interpolation<Theme>
-  }
 }

@@ -67,13 +67,13 @@ export const runDev = (args: string[], port: number) => {
       { ...EXECA_FULL_COLOR, cwd: dirs.app.web }
     )
     let isDone = false
-    console.log('  Preparing Dev Server')
+    console.log('Preparing Dev Server')
     vite.stdout?.on('data', (e) => {
       if (!isDone) {
         const rows = e.toString('utf-8').split('\n')
         for (let i of rows) {
           if (i.indexOf('ready') > 0) {
-            process.stdout.write(i + '\n')
+            process.stdout.write(i.trim() + '\n')
           }
         }
       } else {

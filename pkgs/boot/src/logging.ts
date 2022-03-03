@@ -140,8 +140,6 @@ export const logo = () => {
 }
 
 export const welcomeToBase = (mode: 'dev' | 'prod', port: number) => {
-  clearScreen()
-
   console.log(
     logo() +
       ` ${

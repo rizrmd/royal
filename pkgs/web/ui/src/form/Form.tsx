@@ -13,6 +13,7 @@ export const Form: FC<IFormProps> = ({
   className,
   defaultValue,
   onSubmit,
+  css,
   init,
 }) => {
   const local = useLocal(
@@ -29,7 +30,11 @@ export const Form: FC<IFormProps> = ({
         local.schema = await prepareSchemaFromDb(schema)
       }
 
-      local.layout = await prepareLayout(local.schema, layout)
+      if (!local.schema.fields) {
+        local.schema.fields = {}
+      }
+
+      local.layout = prepareLayout(local.schema, layout)
 
       for (let field of Object.values(local.schema.fields)) {
         if (field.defaultValue && field.name) {
@@ -63,7 +68,7 @@ export const Form: FC<IFormProps> = ({
   return (
     <form
       className={`form${className ? ' ' + className : ''}`}
-      css={styles.form()}
+      css={styles.form(css)}
       onSubmit={(e) => {
         e.preventDefault()
         if (onSubmit) onSubmit(dataContext)

@@ -11,7 +11,7 @@ export const PopupList: FC<{ children: ReactElement; className?: string }> = ({
       if (!document.body.querySelector('#popover-container')) {
         const container = document.createElement('div')
         container.id = 'popover-container'
-        document.body.append(container.id)
+        document.body.append(container)
       }
       const div = document.body.querySelector(
         '#popover-container'

@@ -2,25 +2,42 @@
 import { FC, Fragment, isValidElement, ReactElement } from 'react'
 import { BaseField } from './BaseField'
 import { FuncLayout } from './FuncLayout'
-import { IRecursiveLayout } from './types'
+import { IField, IRecursiveLayout } from './types'
 import { prepareField } from './utils/prepare-field'
 import { prepareLayout } from './utils/prep-layout'
+import { useContext } from 'react'
 
 export const RecursiveLayout: FC<IRecursiveLayout> = ({
   layout,
   direction,
   schema,
-  ctx,
+  ctx: rawContext,
 }) => {
+  const ctx = useContext(rawContext)
   const childs: ReactElement[] = []
   for (let s of layout) {
-    if (!s) continue
-    if (typeof s === 'string') {
-      if (s === '...') {
+    let f = s
+    if (!f) continue
+
+    if (typeof f === 'object' && !Array.isArray(f) && !isValidElement(f)) {
+      const field = f as IField
+      if (field.name) {
+        if (!schema.fields[field.name]) {
+          schema.fields[field.name] = f
+          if (f.defaultValue) {
+            ctx.data[field.name] = f.defaultValue
+          }
+        }
+        f = field.name
+      }
+    }
+
+    if (typeof f === 'string') {
+      if (f === '...') {
         const expandLayout = prepareLayout(schema)
         childs.push(
           <RecursiveLayout
-            ctx={ctx}
+            ctx={rawContext}
             layout={expandLayout}
             schema={schema}
             direction={direction}
@@ -29,37 +46,37 @@ export const RecursiveLayout: FC<IRecursiveLayout> = ({
         continue
       }
 
-      let colName = s
+      let colName = f
       let overrideLabel = ''
-      if (!s.startsWith('::') && s.indexOf(':') > 0) {
-        colName = s.split(':').shift() || ''
-        overrideLabel = s.split(':').pop() || ''
+      if (!f.startsWith('::') && f.indexOf(':') > 0) {
+        colName = f.split(':').shift() || ''
+        overrideLabel = f.split(':').pop() || ''
+      }
+
+      if (!schema.fields[colName]) {
+        schema.fields[colName] = {}
       }
 
       let field = schema.fields[colName]
-        ? { ...schema.fields[colName] }
-        : undefined
-
       field = prepareField(colName, schema, field)
 
       if (field) {
         if (overrideLabel) field.label = overrideLabel
-
-        childs.push(<BaseField field={field} ctx={ctx} />)
+        childs.push(<BaseField field={field} ctx={rawContext} />)
       }
-    } else if (isValidElement(s)) {
-      childs.push(s)
-    } else if (Array.isArray(s)) {
+    } else if (isValidElement(f)) {
+      childs.push(f)
+    } else if (Array.isArray(f)) {
       childs.push(
         <RecursiveLayout
-          ctx={ctx}
-          layout={s}
+          ctx={rawContext}
+          layout={f}
           schema={schema}
           direction={direction === 'row' ? 'col' : 'row'}
         />
       )
-    } else if (typeof s === 'function') {
-      childs.push(<FuncLayout func={s} schema={schema} ctx={ctx} />)
+    } else if (typeof f === 'function') {
+      childs.push(<FuncLayout func={f} schema={schema} ctx={rawContext} />)
     }
   }
 

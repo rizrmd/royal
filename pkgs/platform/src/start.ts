@@ -4,8 +4,8 @@ import crypto from 'crypto'
 import Fastify, { RouteOptions } from 'fastify'
 import fastCookie from 'fastify-cookie'
 import os from 'os'
+import PrettyError from 'pretty-error'
 import { settings } from 'src'
-import { waitUntil } from '../../web/ui/node_modules/web-utils/src'
 import { startDev } from './dev'
 import { jsonPlugin } from './json'
 import { router } from './routes'
@@ -13,6 +13,8 @@ import { authPlugin } from './session/session-register'
 ;(BigInt.prototype as any).toJSON = function () {
   return this.toString()
 }
+
+PrettyError.start()
 
 const args = arg({})
 const mode = args._[0] as 'prod' | 'prod-debug' | 'dev' | 'dev-debug'
@@ -52,10 +54,7 @@ export const start = async (
 
   server.listen(port, '0.0.0.0', function (err, address) {
     if (!err) {
-      if (!debug) {
-        clearScreen()
-        welcomeToBase(mode, parseInt(port))
-      }
+      welcomeToBase(mode, parseInt(port))
       localIP
         .map((address) => {
           const type = address.includes('127.0.0.1') ? 'Local:   ' : 'Network: '

@@ -10,7 +10,10 @@ import { basePull } from './git/base-pull'
 import { basePush } from './git/base-push'
 import { buildProd } from './prod'
 import { runDev, runPlatform, runPnpm } from './runner'
+import PrettyError from 'pretty-error'
 const program = new Command()
+
+PrettyError.start()
 
 program
   .name('node base')

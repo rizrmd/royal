@@ -12,7 +12,6 @@ export const prepareLayout = (
         nlayout.push(k)
       }
     }
-
     return nlayout
   }
 

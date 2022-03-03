@@ -1,4 +1,4 @@
-export default () => css`
+export default (inputCSS: any) => css`
   &.form {
     .field {
       display: flex;
@@ -31,5 +31,7 @@ export default () => css`
         padding-bottom: 0px;
       }
     }
+
+    ${inputCSS}
   }
 `
