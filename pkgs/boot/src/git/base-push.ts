@@ -1,7 +1,7 @@
 import fs from 'fs'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/node'
-import { copy, pathExists, readdir, remove } from 'fs-extra'
+import { copy, ensureDir, pathExists, readdir, remove } from 'fs-extra'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import inq from 'inquirer'
@@ -99,9 +99,11 @@ export const basePush = async (arg: string[]) => {
 
 const copyPkgs = async (dir: string, to: string) => {
   const subdir = dir.substring(join(dirs.root, 'pkgs').length)
+
+  await remove(join(to, subdir))
+  await ensureDir(join(to, subdir))
   for (let i of await readdir(dir)) {
     if (i !== 'node_modules' && i !== 'build') {
-      await remove(join(to, 'pkgs', subdir, i))
       await copy(join(dir, i), join(to, 'pkgs', subdir, i))
     }
   }
