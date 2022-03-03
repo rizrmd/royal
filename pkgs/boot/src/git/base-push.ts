@@ -65,11 +65,12 @@ export const basePush = async (arg: string[]) => {
   done = timelog('base', 'Committing repository')
   const status = await git.statusMatrix({ dir: dir, fs })
   await Promise.all(
-    status.map(([filepath, , worktreeStatus]) =>
+    status.map((x: any) => {
+      const [filepath, , worktreeStatus] = x
       worktreeStatus
         ? git.add({ fs, dir, filepath: filepath })
         : git.remove({ fs, dir, filepath: filepath })
-    )
+    })
   )
 
   await git.commit({
@@ -86,7 +87,7 @@ export const basePush = async (arg: string[]) => {
     http,
     url: 'https://github.com/rizkyramadhan/royal',
     dir,
-    onAuth: (url) => {
+    onAuth: () => {
       return {
         username: 'token',
         password: token.replaceAll('#', ''),
@@ -100,6 +101,7 @@ const copyPkgs = async (dir: string, to: string) => {
   const subdir = dir.substring(join(dirs.root, 'pkgs').length)
   for (let i of await readdir(dir)) {
     if (i !== 'node_modules' && i !== 'build') {
+      await remove(join(to, 'pkgs', subdir, i))
       await copy(join(dir, i), join(to, 'pkgs', subdir, i))
     }
   }

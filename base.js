@@ -14,7 +14,7 @@ const start = () => {
 if (!fs.existsSync('node_modules')) {
   const pnpm = spawn('pnpm', ['i'], { stdio: 'inherit' })
 
-  pnpm.on('exit', function() {
+  pnpm.on('exit', function (code) {
     start()
   })
 } else {

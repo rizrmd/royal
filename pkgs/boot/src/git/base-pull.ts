@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { copy, pathExists, remove } from 'fs-extra'
+import { copy, pathExists, readdir, remove } from 'fs-extra'
 import git from 'isomorphic-git'
 import http from 'isomorphic-git/http/node'
 import { tmpdir } from 'os'
@@ -26,4 +26,16 @@ export const basePull = async () => {
 
   await remove(join(dirs.root, 'pkgs'))
   await copy(join(dir, 'pkgs'), join(dirs.root, 'pkgs'))
+
+  for (let [k, v] of Object.entries(dirs.pkgs)) {
+    if (k !== 'web') {
+      await remove(join(v, 'node_modules'))
+    } else {
+      const webDirs = await readdir(v)
+      for (let d of webDirs) {
+        await remove(join(v, d, 'node_modules'))
+      }
+    }
+  }
+  await remove(join(dirs.root, 'node_modules'))
 }
