@@ -100,8 +100,8 @@ export const basePush = async (arg: string[]) => {
 const copyPkgs = async (dir: string, to: string) => {
   const subdir = dir.substring(join(dirs.root, 'pkgs').length)
 
-  await remove(join(to, subdir))
-  await ensureDir(join(to, subdir))
+  await remove(join(to, 'pkgs', subdir))
+  await ensureDir(join(to, 'pkgs', subdir))
   for (let i of await readdir(dir)) {
     if (i !== 'node_modules' && i !== 'build') {
       await copy(join(dir, i), join(to, 'pkgs', subdir, i))
