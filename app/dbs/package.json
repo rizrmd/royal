@@ -1,8 +1,0 @@
-{
-  "name": "dbs",
-  "version": "1.0.0",
-  "types": "./index.ts",
-  "license": "MIT",
-  "private": true,
-  "dependencies": {}
-}
