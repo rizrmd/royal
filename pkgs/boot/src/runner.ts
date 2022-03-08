@@ -45,6 +45,7 @@ export const runDev = (args: string[], port: number) => {
       })
 
       await runPnpm(['i'], dirs.root)
+
     }
 
     if (
@@ -68,7 +69,7 @@ export const runDev = (args: string[], port: number) => {
     )
     let isDone = false
     console.log('Preparing Dev Server')
-    vite.stdout?.on('data', (e) => {
+    vite.stdout?.on('data', (e: any) => {
       if (!isDone) {
         const rows = e.toString('utf-8').split('\n')
         for (let i of rows) {

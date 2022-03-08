@@ -1,4 +1,4 @@
-import { ReactElement } from 'web-app/types/react'
+import { ReactElement } from '../../../../../app/web/types/react'
 
 type IMobileLayoutProps = {}
 
