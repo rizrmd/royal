@@ -1,14 +1,6 @@
 import { execa, ExecaChildProcess } from 'execa'
 import { unzip } from 'fflate'
-import {
-  ensureDir,
-  pathExists,
-  readFileSync,
-  readJson,
-  writeFile,
-  writeFileSync,
-  writeJson,
-} from 'fs-extra'
+import { ensureDir, pathExists, readFileSync, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { dbsRepair } from './dbs/reload'
 import { dirs } from './dirs'
@@ -45,7 +37,6 @@ export const runDev = (args: string[], port: number) => {
       })
 
       await runPnpm(['i'], dirs.root)
-
     }
 
     if (
@@ -68,6 +59,7 @@ export const runDev = (args: string[], port: number) => {
       { ...EXECA_FULL_COLOR, cwd: dirs.app.web }
     )
     let isDone = false
+
     console.log('Preparing Dev Server')
     vite.stdout?.on('data', (e: any) => {
       if (!isDone) {
