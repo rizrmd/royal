@@ -6,8 +6,8 @@
   "private": true,
   "dependencies": {
     "framer-motion": "^6.2.6",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "rc",
+    "react-dom": "rc",
     "web-ui": "workspace:^",
     "web-utils": "workspace:^"
   }

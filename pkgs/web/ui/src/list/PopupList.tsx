@@ -1,5 +1,5 @@
 import { FC, ReactElement } from 'react'
-import { Popover } from 'react-tiny-popover'
+import { Popover } from '../view'
 import { useLocal } from 'web-utils'
 export const PopupList: FC<{ children: ReactElement; className?: string }> = ({
   children,

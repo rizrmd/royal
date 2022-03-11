@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom'
+import * as ReactDOMClient from 'react-dom/client'
 import { App } from './app'
 import { init } from './core/init'
 export type IBaseUrl = { mode: 'dev' | 'prod'; ips: string[] }
@@ -12,7 +12,10 @@ export const start = ({
   init(baseUrl)
 
   const rootNode = document.getElementById('root')
-  ReactDOM.render(<App />, rootNode)
+  if (rootNode) {
+    const root = ReactDOMClient.createRoot(rootNode)
+    root.render(<App />)
+  }
 
   if (false) {
     registerSW({

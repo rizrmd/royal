@@ -8,9 +8,8 @@
     "framer-motion": "^6.2.8",
     "lodash.startcase": "^4.4.0",
     "path-to-regexp": "^6.2.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-tiny-popover": "^7.0.1",
+    "react": "rc",
+    "react-dom": "rc",
     "theme": "workspace:^",
     "web-utils": "workspace:^"
   },

@@ -18,7 +18,7 @@
     "paths": {
       "react": ["../../../app/web/types/react"],
       "react/jsx-runtime": ["../../../app/web/types/react/jsx-runtime"],
-      "react-dom": ["../../../app/web/types/react-dom/next"]
+      "react-dom": ["../../../app/web/types/react-dom"]
     }
   },
   "include": ["./src/**/*", "../../../app/web/types/**/*"]

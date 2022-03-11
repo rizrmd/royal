@@ -1,6 +1,6 @@
 import { Command, Option } from 'commander'
 import { pathExists, writeFile, readFile } from 'fs-extra'
-import { join } from 'path'
+import { join, resolve } from 'path'
 import { autoload } from './autoload'
 import { dbsAdd, reloadDbs } from './dbs/add'
 import { dbsGenerate, dbsInspect as dbsInspect } from './dbs/reload'
@@ -11,6 +11,7 @@ import { basePush } from './git/base-push'
 import { buildProd } from './prod'
 import { runDev, runPlatform, runPnpm } from './runner'
 import PrettyError from 'pretty-error'
+import { migrateOld } from './old/migrate'
 const program = new Command()
 
 PrettyError.start()
@@ -124,6 +125,15 @@ program
     }
 
     runPnpm(['i', ...opt.args.slice(1)], dir)
+  })
+
+program
+  .command('old')
+  .description('migrate from old base')
+
+  .argument('<path>', 'path to old base')
+  .action(async (path) => {
+    await migrateOld(path)
   })
 
 program
