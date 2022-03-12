@@ -68,7 +68,7 @@ export const migrateComponent = async (
                   arr[0] = `pkgs/${arr[0].replace('-', '/')}`
                 }
 
-                if (from === 'web-init/src/window') {
+                if (from === 'types/window') {
                   return
                 }
 
@@ -107,7 +107,7 @@ export const migrateComponent = async (
                   absPath ===
                   join(args.root, 'pkgs', 'web', 'init', 'src', 'window')
                 ) {
-                  rpath = 'web-init/src/window'
+                  rpath = 'types/window'
                 } else {
                   referencing.push(absPath)
                 }
@@ -165,9 +165,6 @@ export const migrateComponent = async (
         if (await pathExists(join(mpath, npath.substring(args.root.length))))
           continue
 
-        if (npath.indexOf('window') >= 0) {
-          console.log(`\n\n${npath}\n${path}\n\n`)
-        }
         await migrateComponent(npath, args)
       }
     }

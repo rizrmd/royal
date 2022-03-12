@@ -58,14 +58,19 @@ export default new pc.PrismaClient() as unknown as pc.PrismaClient
 export const reloadDbs = async () => {
   const imports = []
   const exports = []
-  const types = []
+  const dbs = []
+  const wndw = []
   const list = []
 
   for (let k of await readdir(dirs.app.dbs, { withFileTypes: true })) {
     if (k.isDirectory()) {
       list.push(k.name)
-      types.push(
+      dbs.push(
         `const ${k.name}: typeof dbs.${k.name} & { query: (sql: string) => Promise<any> }`
+      )
+
+      wndw.push(
+        `${k.name}: typeof dbs.${k.name} & { query: (sql: string) => Promise<any> }`
       )
       imports.push(`import _${k.name} from './${k.name}/index'`)
       exports.push(`export const ${k.name} = _${k.name}`)
@@ -83,9 +88,20 @@ export const reloadDbs = async () => {
 import type * as dbs from 'dbs'
 
 declare global {
-  ${types.join('\n  ')}
+  ${dbs.join('\n  ')}
 }
   `
+  )
+
+  await writeFile(
+    join(dirs.app.web, 'types', 'window.d.ts'),
+    `\
+import type * as dbs from 'dbs'
+
+export interface BaseWindow {
+  ${wndw.join('\n  ')}
+}
+`
   )
 
   await writeFile(
