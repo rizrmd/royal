@@ -1,6 +1,7 @@
 packages:
   # all packages in subdirs of packages/ and components/
   - 'app/**'
+  - 'app/patch/**'
   - 'app/dbs/**'
   - 'pkgs/**'
   - 'pkgs/web/**'

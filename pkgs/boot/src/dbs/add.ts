@@ -100,6 +100,8 @@ import type * as dbs from 'dbs'
 
 export interface BaseWindow {
   ${wndw.join('\n  ')}
+  navigate: (url:string) => void
+  user: { role: string } & Record<string, any>
 }
 `
   )

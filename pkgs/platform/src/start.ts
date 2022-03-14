@@ -1,11 +1,12 @@
 import arg from 'arg'
-import { clearScreen, log, welcomeToBase } from 'boot'
+import { log, welcomeToBase } from 'boot'
 import crypto from 'crypto'
 import Fastify, { RouteOptions } from 'fastify'
 import fastCookie from 'fastify-cookie'
 import os from 'os'
 import PrettyError from 'pretty-error'
 import { settings } from 'src'
+import { declareApi } from './api/platform-api'
 import { startDev } from './dev'
 import { jsonPlugin } from './json'
 import { router } from './routes'
@@ -37,18 +38,15 @@ export const start = async (
   settings.localIP = localIP
   settings.mode = mode
 
-  const routes: RouteOptions[] = []
-  server.addHook('onRoute', (route) => {
-    routes.push(route)
-  })
-
   settings.sidkey = crypto.createHash('md5').update(process.cwd()).digest('hex')
   server.register(fastCookie)
   server.register(authPlugin)
   server.register(jsonPlugin)
 
+  await declareApi(server, mode)
+
   if (mode === 'dev') {
-    await startDev({ server, routes })
+    await startDev({ server })
   }
   await router(server, mode, port)
 

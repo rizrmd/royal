@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { FC, ReactElement, useEffect, useRef, useState } from 'react'
 
 export const useLocal = <T extends any>(
   data: T,

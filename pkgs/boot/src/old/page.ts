@@ -9,6 +9,7 @@ import { format } from 'prettier'
 import ts from 'typescript'
 import { dirs } from '../dirs'
 import { applyTextChanges } from './component'
+import { convertMobx } from './mobx'
 import { ServiceHost } from './service-host'
 
 export const migrateOldPage = async (
@@ -55,6 +56,16 @@ export const migrateOldPage = async (
         traverse(parsed, {
           enter: (path) => {
             const c = path.node
+
+            if (c.type === 'ImportDeclaration') {
+              const from = c.source.value
+
+              if (from.indexOf('mobx') >= 0) {
+                convertMobx(c)
+                return
+              }
+            }
+
             if (c.type.toLowerCase().indexOf('jsx') >= 0) {
               if (
                 c.type === 'JSXOpeningElement' ||

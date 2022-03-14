@@ -114,6 +114,7 @@ export const useAuth = (arg?: { onReady: () => void | Promise<void> }) => {
 
     auth.user = val
     ref.current.user = val
+    w.user = val
   }
 
   useEffect(() => {

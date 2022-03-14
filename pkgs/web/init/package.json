@@ -6,7 +6,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "^7.17.5",
-    "@emotion/react": "^11.8.1",
+    "@emotion/react": "^11.8.2",
     "find-my-way": "^5.2.0",
     "lodash.find": "^4.6.0",
     "react": "rc",

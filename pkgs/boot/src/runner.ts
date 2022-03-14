@@ -12,7 +12,7 @@ export const EXECA_FULL_COLOR = {
   env: { FORCE_COLOR: 'true' },
 } as any
 
-export const runDev = (args: string[], port: number) => {
+export const runDev = (args: string[], port: number, force: boolean) => {
   return new Promise<void>(async (resolve) => {
     if (!(await pathExists(join(dirs.root, 'app')))) {
       const zipFile = readFileSync(join(dirs.pkgs.boot, 'app.zip'))
@@ -55,7 +55,13 @@ export const runDev = (args: string[], port: number) => {
 
     const vite = execa(
       join(dirs.app.web, 'node_modules', '.bin', 'vite'),
-      [...(args || ['dev']), '--host', '--port', vitePort],
+      [
+        ...(args || ['dev']),
+        '--host',
+        force ? '--force' : '',
+        '--port',
+        vitePort,
+      ],
       { ...EXECA_FULL_COLOR, cwd: dirs.app.web }
     )
     let isDone = false

@@ -4,7 +4,6 @@ import { pathExists, readFile, writeFile } from 'fs-extra'
 import mime from 'mime-types'
 import { join, resolve } from 'path'
 import { settings } from 'src'
-import { allowCors } from 'src/cors'
 import { detectContentType } from './content-type'
 
 export const routeProd = async (server: FastifyInstance, port: string) => {

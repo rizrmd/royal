@@ -1,5 +1,5 @@
 import { dirs } from 'boot'
-import { FastifyInstance, RouteOptions } from 'fastify'
+import { FastifyInstance } from 'fastify'
 import fastProxy from 'fastify-http-proxy'
 import { pathExists, readFile, readJson, writeJson } from 'fs-extra'
 import fetch from 'node-fetch'
@@ -9,9 +9,8 @@ import baseUrl from '../../../app/web/src/baseurl'
 
 type IStartDev = {
   server: FastifyInstance
-  routes: RouteOptions[]
 }
-export const startDev = async ({ server, routes }: IStartDev) => {
+export const startDev = async ({ server }: IStartDev) => {
   const vitePortFile = join(dirs.app.web, 'node_modules', 'viteport')
   const vitePort = (await readFile(vitePortFile)) || '3200'
   let html = ''
@@ -51,19 +50,19 @@ export const startDev = async ({ server, routes }: IStartDev) => {
         reply.send(html)
       }
 
-      let route = { data: null as any, path: '//' }
-      // simple and dumb route matching, should be using FindMyWay route.find
-      for (let r of routes) {
-        const cur = r.url.replace(/\*/gi, '')
-        if (req.url.startsWith(cur)) {
-          if (route.path.length <= cur.length) {
-            route.path = cur
-            route.data = r
-          }
+      try {
+        // TODO: this is still using modified fastify to expose 'router' internal.
+        const route = server['router'].find(req.method, req.url, {})
+        if (
+          route &&
+          route.store &&
+          route.store.config.url !== '/*' &&
+          route.store.config.url !== '/'
+        ) {
+          route.handler(req, reply)
         }
-      }
-      if (route.data) {
-        route.data.handler(req, reply)
+      } catch (e) {
+        console.log(e)
       }
     },
   })

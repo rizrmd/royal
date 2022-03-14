@@ -1,12 +1,20 @@
-import { writeFile } from 'fs-extra'
+import { writeFile, readFile } from 'fs-extra'
 import { join } from 'path'
 import { dirs } from '..'
 import { walkDir } from '../utils'
 import PrettyError from 'pretty-error'
+import { parse } from '@babel/core'
+import pluginJsx from '@babel/plugin-syntax-jsx'
+import pluginTs from '@babel/plugin-syntax-typescript'
+import traverse from '@babel/traverse'
 
 export const pagePath = {
   out: join(dirs.app.web, 'types', 'page.ts'),
   dir: join(dirs.app.web, 'src', 'base', 'page'),
+}
+
+export const apiPath = {
+  dir: join(dirs.app.web, 'src', 'api'),
 }
 
 export const pageOutput = {
@@ -26,13 +34,42 @@ export const generatePage = async () => {
         .substring(join(dirs.app.web, 'src', 'base', 'page').length + 1)
         .replace(/[\/\\]/gi, '.')
 
-      delete require.cache[path]
-      const result = require(path)
-      const page = result.default
-      const layout = page.layout || 'default'
-      pageOutput.list[name] = `["${
-        page.url
-      }", "${layout}", () => import('..${path
+      const source = await readFile(path, 'utf-8')
+      const parsed = parse(source, {
+        sourceType: 'module',
+        plugins: [pluginJsx, [pluginTs, { isTSX: true }]],
+      })
+
+      let layout = 'default'
+      let url = ''
+      traverse(parsed, {
+        CallExpression: (p) => {
+          if (url) return
+
+          const c = p.node
+          if (c.callee.type === 'Identifier' && c.callee.name === 'page') {
+            const arg = c.arguments[0]
+
+            if (arg && arg.type === 'ObjectExpression') {
+              for (let prop of arg.properties) {
+                if (
+                  prop.type === 'ObjectProperty' &&
+                  prop.key.type === 'Identifier' &&
+                  prop.value.type === 'StringLiteral'
+                ) {
+                  if (prop.key.name === 'url') {
+                    url = prop.value.value
+                  } else if (prop.key.name === 'layout') {
+                    layout = prop.value.value
+                  }
+                }
+              }
+              const prop = arg.properties[0]
+            }
+          }
+        },
+      })
+      pageOutput.list[name] = `["${url}", "${layout}", () => import('..${path
         .substring(dirs.app.web.length, path.length - 4)
         .replace(/\\/gi, '/')}')]`
     } catch (e) {}

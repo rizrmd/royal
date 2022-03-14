@@ -1,5 +1,5 @@
 import { Command, Option } from 'commander'
-import { pathExists, writeFile, readFile } from 'fs-extra'
+import { pathExists, writeFile, readFile, readdir, remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import { autoload } from './autoload'
 import { dbsAdd, reloadDbs } from './dbs/add'
@@ -22,6 +22,7 @@ program
   .version('1.0.0')
   .argument('[debug]', 'run with debugging')
   .addOption(new Option('-p, --port <number>', 'port number'))
+  .addOption(new Option('-f, --force', 'force vite refresh cache'))
   .action(async (arg, opt) => {
     const extPath = join(dirs.app.ext, 'src', 'index.ts')
     if (await pathExists(extPath)) {
@@ -47,7 +48,7 @@ program
       }
     }
 
-    await runDev(['dev'], opt.port || 3200)
+    await runDev(['dev'], opt.port || 3200, !!opt.force)
     autoload('dev')
 
     if (arg === 'debug') {
@@ -125,6 +126,32 @@ program
     }
 
     runPnpm(['i', ...opt.args.slice(1)], dir)
+  })
+
+program
+  .command('clean')
+  .description('clean node modules')
+
+  .argument('[db]', 'also clean db node modules')
+  .action(async () => {
+    console.log('Cleaning node_modules')
+    const rm = async (path: string[]) => {
+      if (await pathExists(join(dirs.root, ...path))) {
+        for (let i of await readdir(join(dirs.root, ...path))) {
+          if (i === 'dbs') continue
+          const nm = join(dirs.root, ...path, i, 'node_modules')
+          if (await pathExists(nm)) {
+            remove(nm)
+          }
+        }
+      }
+    }
+
+    await remove(join(dirs.root, 'node_modules'))
+    rm(['app'])
+    rm(['app', 'patch'])
+    rm(['pkgs'])
+    rm(['pkgs', 'web'])
   })
 
 program

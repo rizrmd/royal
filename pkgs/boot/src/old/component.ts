@@ -10,6 +10,7 @@ import { format } from 'prettier'
 import { writeFile } from 'fs-extra'
 import ts from 'typescript'
 import { ServiceHost } from './service-host'
+import { convertMobx } from './mobx'
 
 export const migrateComponent = async (
   path: string,
@@ -21,6 +22,7 @@ export const migrateComponent = async (
   const mpath = join(dirs.app.web, 'src', 'migrate')
   const rpath = path.substring(args.root.length)
   const tpath = join(mpath, rpath)
+  const npath = dirname(join('src', 'migrate', rpath))
 
   await ensureDir(dirname(tpath))
 
@@ -52,6 +54,17 @@ export const migrateComponent = async (
       traverse(parsed, {
         enter: (p) => {
           const c = p.node
+          if (c.type === 'ImportSpecifier') {
+            if (
+              c.imported.type === 'Identifier' &&
+              c.local.type === 'Identifier'
+            ) {
+              if (c.imported.name === 'db') {
+                p.remove()
+              }
+            }
+          }
+
           if (
             c.type === 'ImportDeclaration' ||
             c.type === 'ExportAllDeclaration' ||
@@ -59,6 +72,25 @@ export const migrateComponent = async (
           ) {
             if (c.source && c.source.type === 'StringLiteral') {
               const from = c.source.value
+
+              if (from.indexOf('mobx') >= 0) {
+                convertMobx(c)
+                return
+              }
+
+              if (from.indexOf('.css') >= 0) {
+                p.remove()
+                return
+              }
+
+              if (from === 'use-async-effect') {
+                const rpath = 'web-utils/src/use-async-effect'
+                c.source.extra = {
+                  rawValue: `'${rpath}'`,
+                  raw: "'" + rpath + "'",
+                }
+                c.source.value = rpath
+              }
               if (from.startsWith('web-')) {
                 const arr = from.split('/')
 
@@ -68,15 +100,17 @@ export const migrateComponent = async (
                   arr[0] = `pkgs/${arr[0].replace('-', '/')}`
                 }
 
-                if (from === 'types/window') {
-                  return
+                let rpath = 'src/migrate/' + arr.join('/')
+                if (from === 'web-init/src/window') {
+                  rpath = 'types/window'
+                } else {
+                  const absPath = resolve(join(args.root, arr.join('/')))
+                  referencing.push(absPath)
                 }
 
-                const absPath = resolve(join(args.root, arr.join('/')))
-                let rpath = 'src/migrate/' + arr.join('/')
-
-                referencing.push(absPath)
-
+                if (rpath.startsWith(npath)) {
+                  rpath = '.' + rpath.substring(npath.length)
+                }
                 c.source.extra = {
                   rawValue: `'${rpath}'`,
                   raw: "'" + rpath + "'",
@@ -110,6 +144,9 @@ export const migrateComponent = async (
                   rpath = 'types/window'
                 } else {
                   referencing.push(absPath)
+                }
+                if (rpath.startsWith(npath)) {
+                  rpath = '.' + rpath.substring(npath.length)
                 }
 
                 c.source.extra = {
