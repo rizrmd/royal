@@ -11,6 +11,7 @@ export const dirs = {
     mobile: join(root, 'app', 'mobile'),
   },
   pkgs: {
+    fastify: join(root, 'pkgs', 'fastify'),
     platform: join(root, 'pkgs', 'platform'),
     boot: join(root, 'pkgs', 'boot'),
     theme: join(root, 'pkgs', 'theme'),
