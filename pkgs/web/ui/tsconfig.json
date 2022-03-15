@@ -15,6 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "baseUrl": "./",
     "paths": {
       "react": ["../../../app/web/types/react"],
       "react/jsx-runtime": ["../../../app/web/types/react/jsx-runtime"],
