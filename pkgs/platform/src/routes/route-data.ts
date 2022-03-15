@@ -42,7 +42,12 @@ export const routeData = async (req: FastifyRequest, reply: FastifyReply) => {
       let sql = ''
       try {
         const enc = new TextEncoder()
-        const sess = enc.encode(req.headers['x-sid'] as any)
+        const sid = (
+          Array.isArray(req.headers['x-sid'])
+            ? req.headers['x-sid'].join('')
+            : req.headers['x-sid']
+        ) as string
+        const sess = enc.encode(sid.split('.')[0])
         const key = sess.slice(6, 6 + 16)
 
         const aesCtr2 = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5))

@@ -70,6 +70,7 @@ function onRequest(options: ISessionOptions) {
         let sessionId = request.headers['x-sid'] as string
         if (!sessionId) sessionId = request.cookies[options.cookieName]
         const secret = options.secret[0]
+
         if (!sessionId) {
           cookieOpts.expires = request.sessionStore.expires()
 

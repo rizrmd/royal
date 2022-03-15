@@ -98,7 +98,7 @@ declare global {
     `\
 import type * as dbs from 'dbs'
 
-export interface BaseWindow {
+export interface BaseWindow extends Window {
   ${wndw.join('\n  ')}
   navigate: (url:string) => void
   user: { role: string } & Record<string, any>

@@ -1,7 +1,7 @@
 import arg from 'arg'
 import { log, welcomeToBase } from 'boot'
 import crypto from 'crypto'
-import Fastify, { RouteOptions } from 'fastify'
+import Fastify from 'fastify'
 import fastCookie from 'fastify-cookie'
 import os from 'os'
 import PrettyError from 'pretty-error'

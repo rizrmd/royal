@@ -44,11 +44,11 @@ export const startDev = async ({ server }: IStartDev) => {
   server.register(fastProxy, {
     upstream: `http://localhost:${vitePort}`,
     preHandler: async (req, reply) => {
-      const accept = req.headers['accept']
-      if (accept && accept.indexOf('text/html') >= 0) {
-        reply.type('text/html')
-        reply.send(html)
-      }
+      // const accept = req.headers['accept']
+      // if (accept && accept.indexOf('text/html') >= 0) {
+      //   reply.type('text/html')
+      //   reply.send(html)
+      // }
 
       try {
         // TODO: this is still using modified fastify to expose 'router' internal.
@@ -59,6 +59,7 @@ export const startDev = async ({ server }: IStartDev) => {
           route.store.config.url !== '/*' &&
           route.store.config.url !== '/'
         ) {
+          console.log(route.store.config.url)
           route.handler(req, reply)
         }
       } catch (e) {

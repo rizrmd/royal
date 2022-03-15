@@ -47,7 +47,7 @@ export const initDbs = () => {
                 headers: {
                   Accept: 'application/json',
                   'Content-Type': 'text/plain',
-                  'x-sid': w.auth.sessionId,
+                  'x-sid': w.auth.user.encryptedSessionId,
                 },
                 body: encrypted,
               }

@@ -94,9 +94,13 @@ export const jsx = (...args: any[]) => {
       props.style = { visibility: 'hidden' }
     }
 
+    const onLoad = props.onLoad
     props.onLoad = (e: any) => {
       if (props.src.startsWith('http')) {
         e.target.style.visibility = 'visible'
+      }
+      if (onLoad) {
+        onLoad(e)
       }
     }
   }
