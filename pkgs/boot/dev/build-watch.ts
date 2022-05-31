@@ -7,6 +7,7 @@ export const buildWatch = async (arg: {
   input: string
   output: string
   buildOptions?: Parameters<typeof build>[0]
+  debug?: true
   onReady?: (path: string) => void
 }) => {
   const builder = {
@@ -30,6 +31,12 @@ export const buildWatch = async (arg: {
           onRebuild: (e, buildResult) => {
             if (buildResult) {
               builder.result = buildResult as any
+
+              if (arg.debug && builder.result && builder.result.metafile) {
+                console.log(
+                  getWatchFiles(Object.keys(builder.result.metafile.inputs))
+                )
+              }
             }
           },
         },
@@ -76,6 +83,9 @@ export const buildWatch = async (arg: {
     if (builder.result) {
       const meta = builder.result.metafile
       if (meta) {
+        if (arg.debug) {
+          console.log(getWatchFiles(Object.keys(meta.inputs)))
+        }
         builder.watch = watch(getWatchFiles(Object.keys(meta.inputs)), {
           ignoreInitial: true,
         }).on('all', async (event, path) => {

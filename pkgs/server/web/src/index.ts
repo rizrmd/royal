@@ -1,8 +1,18 @@
 import type { ParsedConfig } from 'boot/dev/config-parse'
-import { fork } from 'child_process'
-import type dbs from 'dbs'
+import dbs from 'dbs'
 
 export default {
-  start: (arg: { dbs: typeof dbs; config: ParsedConfig }) => {},
-  stop: () => {},
+  start: async (arg: {
+    dbs: typeof dbs
+    config: ParsedConfig
+    onStarted: () => void
+  }) => {
+    const { dbs } = arg
+
+    const e = await dbs.db.m_port.findFirst()
+    if (arg.onStarted) arg.onStarted()
+
+    console.log('emang mantap', e)
+  },
+  stop: async () => {},
 }

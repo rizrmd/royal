@@ -3,11 +3,7 @@ import { join } from 'path'
 import { buildWatch } from './build-watch'
 import { ParsedConfig } from './config-parse'
 
-export const buildDbs = async (
-  cwd: string,
-  config: ParsedConfig,
-  startServer: any
-) => {
+export const buildDbs = async (cwd: string, config: ParsedConfig) => {
   await writeAsync(
     join(cwd, 'app', 'dbs', 'dbs.ts'),
     `\
@@ -26,6 +22,5 @@ export const buildDbs = async (
     input: join(cwd, 'pkgs', 'server', 'db', 'src', 'index.ts'),
     output: join(cwd, '.output', 'pkgs', 'server.db.js'),
     buildOptions: { minify: true, sourcemap: 'linked' },
-    onReady: startServer,
   })
 }
