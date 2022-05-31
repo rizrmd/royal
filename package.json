@@ -5,10 +5,9 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "esbuild-runner": "^2.2.1",
-    "esbuild": "0.14.18"
+    "jiti": "^1.13.0"
   },
-  "devDependencies": {
-    "@types/node": "17.0.14"
+  "engines": {
+    "node": ">=18.2.0"
   }
 }

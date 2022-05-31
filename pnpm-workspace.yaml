@@ -3,6 +3,6 @@ packages:
   - 'app/**'
   - 'app/dbs/**'
   - 'pkgs/**'
-  - 'pkgs/web/**'
+  - 'pkgs/server/**'
   - 'pkgs/mobile/**'
   - 'build/pkgs'

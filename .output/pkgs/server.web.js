@@ -1,0 +1,2 @@
+var f=Object.defineProperty;var s=Object.getOwnPropertyDescriptor;var d=Object.getOwnPropertyNames;var a=Object.prototype.hasOwnProperty;var i=(t,r)=>{for(var e in r)f(t,e,{get:r[e],enumerable:!0})},k=(t,r,e,p)=>{if(r&&typeof r=="object"||typeof r=="function")for(let o of d(r))!a.call(t,o)&&o!==e&&f(t,o,{get:()=>r[o],enumerable:!(p=s(r,o))||p.enumerable});return t};var m=t=>k(f({},"__esModule",{value:!0}),t);var u={};i(u,{default:()=>n});module.exports=m(u);var n={start:t=>{},stop:()=>{}};0&&(module.exports={});
+//# sourceMappingURL=server.web.js.map

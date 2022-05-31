@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../pkgs/server/db/src/index.ts"],
+  "sourcesContent": ["import { fork } from 'child_process'\n\nexport default {\n  start: async () => {\n    return {} as Record<string, ReturnType<typeof fork>>\n  },\n  stop: () => {},\n}\n"],
+  "mappings": "4ZAAA,kDAEA,GAAO,GAAQ,CACb,MAAO,SACE,EAAC,GAEV,KAAM,IAAM,CAAC,CACf",
+  "names": []
+}

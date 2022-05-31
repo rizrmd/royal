@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+const fs = require('fs')
+const { spawn } = require('child_process')
+
+const start = () => {
+  spawn('pnpm', ['jiti', './pkgs/boot/dev/dev.ts', ...process.argv], {
+    stdio: 'inherit',
+  })
+}
+
+if (!fs.existsSync('node_modules')) {
+  const pnpm = spawn('pnpm', ['i'], { stdio: 'inherit' })
+
+  pnpm.on('exit', function (code) {
+    start()
+  })
+} else {
+  start()
+}
