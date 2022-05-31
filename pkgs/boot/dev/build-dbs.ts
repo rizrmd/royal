@@ -22,16 +22,6 @@ export const buildDbs = async (
   }`
   )
 
-  if (!exists(join(cwd, 'app', 'dbs', 'package.json'))) {
-    await writeAsync(join(cwd, 'app', 'dbs', 'package.json'), {
-      name: 'dbs',
-      version: '1.0.0',
-      private: true,
-      main: './dbs.ts',
-      dependencies: {},
-    })
-  }
-
   await buildWatch({
     input: join(cwd, 'pkgs', 'server', 'db', 'src', 'index.ts'),
     output: join(cwd, '.output', 'pkgs', 'server.db.js'),

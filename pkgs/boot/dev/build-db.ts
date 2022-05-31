@@ -29,8 +29,6 @@ export const buildDb = async (arg: {
     await pnpm(['install', 'prisma'], { cwd: dbpath, name, stdout: true })
     await pnpm(['prisma', 'init'], { cwd: dbpath, name })
     await writeAsync(join(dbpath, '.env'), `DATABASE_URL="${url}"`)
-    return
-
     await pnpm(['prisma', 'db', 'pull'], { cwd: dbpath, name })
     await pnpm(['prisma', 'generate'], { cwd: dbpath, name })
   }
