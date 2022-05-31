@@ -68,12 +68,12 @@ for (let [key, path] of Object.entries(server.paths)) {
 
   await waitUntil(() => server.web && server.db)
   if (server.web && server.db) {
-    const res = require(join(cwd, 'pkgs/dbs/db/db.js')).default
+    // const res = require(join(cwd, 'pkgs/dbs/db/db.js')).default
 
-    res.m_port.findFirst().then((e: any) => {
-      console.log(e)
-    })
+    // res.m_port.findFirst().then((e: any) => {
+    //   console.log(e)
+    // })
 
-    // server.web.start({ dbs: await server.db.start(config), config })
+    server.web.start({ dbs: await server.db.start(config), config })
   }
 })()

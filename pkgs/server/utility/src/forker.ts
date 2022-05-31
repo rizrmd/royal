@@ -42,6 +42,7 @@ export const Forker = {
     run.child.once('spawn', () => {
       if (run.child) run.child.send({ event: 'started' })
     })
+    return run.child
   },
   asChild: async (arg: { onKilled: () => void | Promise<void> }) => {
     prettyError()

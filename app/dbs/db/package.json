@@ -4,7 +4,6 @@
   "private": true,
   "main": "./index.ts",
   "dependencies": {
-    "@prisma/client": "^3.14.0",
     "prisma": "^3.14.0"
   }
 }

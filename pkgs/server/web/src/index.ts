@@ -1,10 +1,8 @@
 import type { ParsedConfig } from 'boot/dev/config-parse'
 import { fork } from 'child_process'
+import type dbs from 'dbs'
 
 export default {
-  start: (arg: {
-    dbs: Record<string, ReturnType<typeof fork>>
-    config: ParsedConfig
-  }) => {},
+  start: (arg: { dbs: typeof dbs; config: ParsedConfig }) => {},
   stop: () => {},
 }

@@ -1,10 +1,5 @@
 import { build } from 'esbuild'
-import {
-  copyAsync,
-  dir,
-  exists, write,
-  writeAsync
-} from 'fs-jetpack'
+import { copyAsync, dir, exists, write, writeAsync } from 'fs-jetpack'
 import { join } from 'path'
 import { pnpm } from './pnpm-runner'
 
@@ -27,25 +22,33 @@ export const buildDb = async (arg: {
       devDependencies: {},
     })
   }
+
   const indexts = join(dbpath, 'index.ts')
   if (!exists(join(dbpath, 'node_modules'))) {
     const name = dbpath.substring(process.cwd().length + 5)
-    await pnpm(['install', 'prisma'], { cwd: dbpath, name })
+    await pnpm(['install', 'prisma'], { cwd: dbpath, name, stdout: true })
     await pnpm(['prisma', 'init'], { cwd: dbpath, name })
     await writeAsync(join(dbpath, '.env'), `DATABASE_URL="${url}"`)
+    return
+
     await pnpm(['prisma', 'db', 'pull'], { cwd: dbpath, name })
     await pnpm(['prisma', 'generate'], { cwd: dbpath, name })
   }
 
-  if (!exists(indexts)) {
-    await writeAsync(
-      indexts,
-      `\
-  import * as pc from './node_modules/.prisma/client'
-  export default new pc.PrismaClient() as unknown as pc.PrismaClient
-  `
-    )
-  }
+  await writeAsync(
+    indexts,
+    `\
+import * as pc from './node_modules/.prisma/client'
+export const db = new pc.PrismaClient() as unknown as pc.PrismaClient
+
+if (process.send) {
+  process.on('message', async (data:any) => {
+    if (data.event === 'exec') {
+      (0, eval)(data.script)
+    }
+  })
+}`
+  )
 
   await copyAsync(
     join(cwd, 'app', 'dbs', name, 'prisma'),
@@ -70,6 +73,7 @@ export const buildDb = async (arg: {
     bundle: true,
     platform: 'node',
     minify: true,
+    sourcemap: 'linked',
   })
 
   if (!exists(join(cwd, '.output', 'pkgs', 'dbs', name, 'package.json'))) {

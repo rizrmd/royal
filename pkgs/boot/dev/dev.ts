@@ -1,8 +1,9 @@
-import { exists, removeAsync } from 'fs-jetpack'
+import { exists, removeAsync, writeAsync } from 'fs-jetpack'
 import throttle from 'lodash.throttle'
 import { join } from 'path'
 import { error, Forker, prettyError } from 'server-utility'
 import { buildDb } from './build-db'
+import { buildDbs } from './build-dbs'
 import { buildWatch } from './build-watch'
 import { parseConfig, ParsedConfig } from './config-parse'
 const cwd = process.cwd()
@@ -20,12 +21,7 @@ prettyError()
     for (let [k, v] of Object.entries(config.dbs)) {
       await buildDb({ name: k, url: v.url, cwd })
     }
-    await buildWatch({
-      input: join(cwd, 'pkgs', 'server', 'db', 'src', 'index.ts'),
-      output: join(cwd, '.output', 'pkgs', 'server.db.js'),
-      buildOptions: { minify: true, sourcemap: 'linked' },
-      onReady: startServer,
-    })
+    // await buildDbs(cwd, config, startServer)
   }
 
   const startServer = throttle(async (path: string) => {
@@ -33,7 +29,7 @@ prettyError()
       delete require.cache[path]
       const config = parseConfig(require(path).default, 'dev')
       rebuildDB(config)
-      return;
+      return
     }
 
     if (exists(join(cwd, '.output', 'server.js'))) {
