@@ -67,3 +67,5 @@ app/web/public/upload
 symlink.sh
 .vscode
 app/mobile/www
+.output/*
+.output
