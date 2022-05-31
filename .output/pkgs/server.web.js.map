@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../pkgs/server/web/src/index.ts"],
-  "sourcesContent": ["import { fork } from 'child_process'\n\nexport default {\n  start: (dbs: Record<string, ReturnType<typeof fork>>) => {},\n  stop: () => {},\n}\n"],
-  "mappings": "4ZAAA,kDAEA,GAAO,GAAQ,CACb,MAAO,AAAC,GAAiD,CAAC,EAC1D,KAAM,IAAM,CAAC,CACf",
+  "sourcesContent": ["import type { ParsedConfig } from 'boot/dev/config-parse'\nimport { fork } from 'child_process'\n\nexport default {\n  start: (arg: {\n    dbs: Record<string, ReturnType<typeof fork>>\n    config: ParsedConfig\n  }) => {},\n  stop: () => {},\n}\n"],
+  "mappings": "4ZAAA,kDAGA,GAAO,GAAQ,CACb,MAAO,AAAC,GAGF,CAAC,EACP,KAAM,IAAM,CAAC,CACf",
   "names": []
 }

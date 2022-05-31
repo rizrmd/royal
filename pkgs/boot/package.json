@@ -13,9 +13,9 @@
     "lodash.throttle": "^4.1.1",
     "node-cleanup": "^2.1.2",
     "ololog": "^1.1.175",
+    "server-db": "workspace:^",
     "server-utility": "workspace:^",
-    "server-web": "workspace:^",
-    "server-db": "workspace:^"
+    "server-web": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^17.0.36"

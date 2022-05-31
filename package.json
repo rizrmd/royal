@@ -5,9 +5,13 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.0.1",
     "jiti": "^1.13.0"
   },
   "engines": {
     "node": ">=18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.36"
   }
 }

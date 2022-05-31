@@ -8,7 +8,8 @@
     "consola": "^2.15.3",
     "fastify": "^3.29.0",
     "fs-jetpack": "^4.3.1",
-    "server-utility": "workspace:^"
+    "server-utility": "workspace:^",
+    "boot": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^17.0.36"

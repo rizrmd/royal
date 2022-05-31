@@ -16,25 +16,28 @@ export const buildWatch = async (arg: {
     building: false,
   }
 
-  try {
-    builder.result = await build({
-      entryPoints: [arg.input],
-      outfile: arg.output,
-      external: ['esbuild'],
-      bundle: true,
-      platform: 'node',
-      incremental: true,
-      metafile: true,
-      watch: {
-        onRebuild: (e, buildResult) => {
-          if (buildResult) {
-            builder.result = buildResult as any
-          }
+  const newBuild = async () => {
+    try {
+      builder.result = await build({
+        entryPoints: [arg.input],
+        outfile: arg.output,
+        external: ['esbuild'],
+        bundle: true,
+        platform: 'node',
+        incremental: true,
+        metafile: true,
+        watch: {
+          onRebuild: (e, buildResult) => {
+            if (buildResult) {
+              builder.result = buildResult as any
+            }
+          },
         },
-      },
-      ...arg.buildOptions,
-    })
-  } catch (e) {}
+        ...arg.buildOptions,
+      })
+    } catch (e) {}
+  }
+  await newBuild()
 
   const rebuild = throttle(async () => {
     if (builder.building) {
@@ -43,23 +46,31 @@ export const buildWatch = async (arg: {
     }
 
     builder.building = true
-    const res = builder.result
-    if (res && res.rebuild) {
-      if (res.stop) res.stop()
-      try {
-        await res.rebuild()
-      } catch (e) {}
+    let res = builder.result
 
-      if (builder.watch && builder.result && builder.result.metafile) {
-        builder.watch.add(
-          getWatchFiles(Object.keys(builder.result.metafile.inputs))
-        )
+    if (res) {
+      if (!res.rebuild) {
+        await newBuild()
+        res = builder.result
       }
 
-      if (arg.onReady) arg.onReady(arg.output)
+      if (res && res.rebuild) {
+        if (res.stop) res.stop()
+        try {
+          await res.rebuild()
+        } catch (e) {}
+
+        if (builder.watch && builder.result && builder.result.metafile) {
+          builder.watch.add(
+            getWatchFiles(Object.keys(builder.result.metafile.inputs))
+          )
+        }
+
+        if (arg.onReady) arg.onReady(arg.output)
+      }
     }
     builder.building = false
-  }, 1000)
+  }, 500)
 
   const rewatch = async () => {
     if (builder.result) {
@@ -68,7 +79,6 @@ export const buildWatch = async (arg: {
         builder.watch = watch(getWatchFiles(Object.keys(meta.inputs)), {
           ignoreInitial: true,
         }).on('all', async (event, path) => {
-          log(event, path)
           rebuild()
         })
       }
