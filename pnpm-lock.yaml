@@ -101,6 +101,7 @@ importers:
       dbs: workspace:^
       fastify: ^3.29.0
       fs-jetpack: ^4.3.1
+      h3: ^0.7.8
       server-utility: workspace:^
     dependencies:
       boot: link:../../boot
@@ -108,6 +109,7 @@ importers:
       dbs: link:../../../app/dbs
       fastify: 3.29.0
       fs-jetpack: 4.3.1
+      h3: 0.7.8
       server-utility: link:../utility
     devDependencies:
       '@types/node': 17.0.36
@@ -292,6 +294,10 @@ packages:
     resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
     dev: false
 
+  /cookie-es/0.5.0:
+    resolution: {integrity: sha512-RyZrFi6PNpBFbIaQjXDlFIhFVqV42QeKSZX1yQIl6ihImq6vcHNGMtqQ/QzY3RMPuYSkvsRwtnt5M9NeYxKt0g==}
+    dev: false
+
   /cookie/0.5.0:
     resolution: {integrity: sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==}
     engines: {node: '>= 0.6'}
@@ -340,6 +346,10 @@ packages:
   /deepmerge/4.2.2:
     resolution: {integrity: sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /destr/1.1.1:
+    resolution: {integrity: sha512-QqkneF8LrYmwATMdnuD2MLI3GHQIcBnG6qFC2q9bSH430VTCDAVjcspPmUaKhPGtAtPAftIUFqY1obQYQuwmbg==}
     dev: false
 
   /dom-converter/0.2.0:
@@ -749,6 +759,15 @@ packages:
       path-is-absolute: 1.0.1
     dev: false
 
+  /h3/0.7.8:
+    resolution: {integrity: sha512-E5hqrzQvQEYVE4h579pLb9gipHagQVZIMP2v83vSKxa40b7ctG1zNylXtW57BT3BGNVeQTccl6vIwyVK1L6lLw==}
+    dependencies:
+      cookie-es: 0.5.0
+      destr: 1.1.1
+      radix3: 0.1.2
+      ufo: 0.8.4
+    dev: false
+
   /htmlparser2/6.1.0:
     resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
     dependencies:
@@ -1032,6 +1051,10 @@ packages:
     resolution: {integrity: sha512-tYC1Q1hgyRuHgloV/YXs2w15unPVh8qfu/qCTfhTYamaw7fyhumKa2yGpdSo87vY32rIclj+4fWYQXUMs9EHvg==}
     dev: false
 
+  /radix3/0.1.2:
+    resolution: {integrity: sha512-Mpfd/OuX0zoJ6ojLD/RTOHvJPg6e6PjINtmYzV87kIXc5iUtDz34i7gg4SV4XjqRJTmSiYO/g9i/mKWGf4z8wg==}
+    dev: false
+
   /readdirp/3.6.0:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
@@ -1216,6 +1239,10 @@ packages:
   /type-fest/1.4.0:
     resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
     engines: {node: '>=10'}
+    dev: false
+
+  /ufo/0.8.4:
+    resolution: {integrity: sha512-/+BmBDe8GvlB2nIflWasLLAInjYG0bC9HRnfEpNi4sw77J2AJNnEVnTDReVrehoh825+Q/evF3THXTAweyam2g==}
     dev: false
 
   /uri-js/4.4.1:

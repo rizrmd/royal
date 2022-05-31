@@ -5,12 +5,13 @@
   "private": true,
   "main": "./src/index.ts",
   "dependencies": {
+    "boot": "workspace:^",
     "consola": "^2.15.3",
+    "dbs": "workspace:^",
     "fastify": "^3.29.0",
     "fs-jetpack": "^4.3.1",
-    "server-utility": "workspace:^",
-    "boot": "workspace:^",
-    "dbs": "workspace:^"
+    "h3": "^0.7.8",
+    "server-utility": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^17.0.36"

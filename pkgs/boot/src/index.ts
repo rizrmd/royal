@@ -71,7 +71,7 @@ const startWeb = async (config: ParsedConfig) => {
   server.web.timer.ts = new Date().getTime()
 
   if (mode === 'dev') {
-    console.log('Starting Server')
+    console.log('[0.00s] Starting Server')
     server.web.timer.ival = setInterval(() => {
       logUpdate(
         `[${formatTs(server.web.timer.ts)}] ${padEnd('Starting Server', 30)}`
@@ -85,7 +85,7 @@ const startWeb = async (config: ParsedConfig) => {
 
   delete require.cache[server.web.path]
   server.web.module = require(server.web.path).default
-  if (server.web.module)
+  if (server.web.module) {
     await server.web.module.start({
       dbs: server.db.fork,
       config,
@@ -102,6 +102,7 @@ const startWeb = async (config: ParsedConfig) => {
         }
       },
     })
+  }
 }
 
 // start
@@ -118,7 +119,9 @@ const startWeb = async (config: ParsedConfig) => {
 
     const { watch } = require('chokidar')
 
-    watch(server.web.path).on('change', startWeb)
+    watch(server.web.path).on('change', async () => {
+      await startWeb(config)
+    })
     watch(server.db.path).on('change', async () => {
       await startDbs(config)
       await startWeb(config)

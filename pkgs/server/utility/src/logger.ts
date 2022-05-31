@@ -17,4 +17,6 @@ export const prettyError = () => {
     printError(e)
     process.exit(1)
   })
+
+  return pe.render;
 }
