@@ -69,3 +69,4 @@ symlink.sh
 app/mobile/www
 .output/*
 .output
+.nova
