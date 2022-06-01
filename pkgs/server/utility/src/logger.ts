@@ -7,9 +7,11 @@ const logUpdateConf = {
 export const silentUpdate = (state: boolean) => {
   logUpdateConf.silent = state
 }
-export const logUpdate = (str: string) => {
+export const logUpdate = function (str: string) {
   if (!logUpdateConf.silent) return lu(str)
 }
+logUpdate.done = lu.done;
+
 export const log = consola.log
 export const error = consola.error
 import PrettyError from 'pretty-error'

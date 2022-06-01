@@ -58,6 +58,7 @@ const startDbs = async (config: ParsedConfig) => {
   app.db.module = require(app.db.path).default
   if (app.db.module) app.db.fork = await app.db.module.start(config)
 
+  logUpdate.done()
   clearInterval(app.db.timer.ival)
   app.db.timer.ival = null
   if (mode === 'prod') {
@@ -135,12 +136,13 @@ const startServer = async (config: ParsedConfig) => {
 
   clearInterval(app.server.timer.ival)
   app.server.timer.ival = null
-  console.log(
+  logUpdate(
     `[${formatTs(app.server.timer.ts)}] 🍊 ${padEnd(
       `Back End started at`,
       24
     )} ➜ ${url}`
   )
+  logUpdate.done()
 }
 
 // start

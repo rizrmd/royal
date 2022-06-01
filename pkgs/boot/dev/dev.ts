@@ -74,6 +74,7 @@ prettyError()
         },
         onReady: () => {
           clearInterval(ival)
+          logUpdate.done()
           Forker.run(join(cwd, '.output', 'server.js'), {
             arg: ['--mode', 'dev', ...process.argv.slice(4)],
           })
