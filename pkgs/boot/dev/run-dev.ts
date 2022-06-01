@@ -12,8 +12,7 @@ const cwd = process.cwd()
 const formatTs = (ts: number) => {
   return pad(`${((new Date().getTime() - ts) / 1000).toFixed(2)}s`, 7)
 }
-prettyError()
-;(async () => {
+export const runDev = async () => {
   const ts = new Date().getTime()
   const ival = setInterval(() => {
     logUpdate(`[${formatTs(ts)}] ${padEnd('Booting Dev', 30)} `)
@@ -82,4 +81,4 @@ prettyError()
       })
     },
   })
-})()
+}
