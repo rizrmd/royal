@@ -1,5 +1,6 @@
 import { ChildProcess, exec } from 'child_process'
 import { exists } from 'fs-jetpack'
+import padEnd from 'lodash.padend'
 import { join } from 'path'
 import { log } from 'server-utility'
 import { formatTs, IApp } from '.'
@@ -29,7 +30,12 @@ export const startDevClient = async (
         if (str.indexOf('Local: ') >= 0) {
           const devHost = str.split('Local: ').pop()?.trim()
           const host = client.url.replace(`[server.url]`, config.server.url)
-          log(`[${formatTs(ts)}] Vite Dev [app/${name}] at: ${devHost}`)
+          log(
+            `[${formatTs(ts)}] 🌱 ${padEnd(
+              `Front End [app/${name}] at`,
+              24
+            )} ➜ ${devHost}`
+          )
           if (host.startsWith(config.server.url)) {
             log(`          proxied to ${host}`)
           }

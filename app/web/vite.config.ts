@@ -9,7 +9,7 @@ export default defineConfig({
     target: 'es2015',
     manifest: true,
   },
-  base: '/coba/',
+  base: '/',
   resolve: {
     alias: {
       http: '../../pkgs/boot/src/polyfills/http.cjs.js',

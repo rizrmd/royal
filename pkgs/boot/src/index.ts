@@ -75,10 +75,7 @@ const startServer = async (config: ParsedConfig) => {
   if (mode === 'dev') {
     app.server.timer.ival = setInterval(() => {
       logUpdate(
-        `[${formatTs(app.server.timer.ts)}] ${padEnd(
-          'Starting API Server',
-          30
-        )}`
+        `[${formatTs(app.server.timer.ts)}] ${padEnd('Starting Back End', 30)}`
       )
     }, 100)
   }
@@ -110,7 +107,7 @@ const startServer = async (config: ParsedConfig) => {
     () => {
       if (app.server.fork) {
         app.server.fork = null
-        console.log('API Server Killed. Restarting...')
+        console.log('Back End Killed. Restarting...')
         startServer(config)
       }
     },
@@ -139,7 +136,10 @@ const startServer = async (config: ParsedConfig) => {
   clearInterval(app.server.timer.ival)
   app.server.timer.ival = null
   console.log(
-    `[${formatTs(app.server.timer.ts)}] API Server started at: ${url}`
+    `[${formatTs(app.server.timer.ts)}] 🍊 ${padEnd(
+      `Back End started at`,
+      24
+    )} ➜ ${url}`
   )
 }
 

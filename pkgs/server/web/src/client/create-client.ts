@@ -1,6 +1,8 @@
 import { BaseClient, ParsedConfig } from 'boot/dev/config-parse'
 import type { createApp } from 'h3'
 import { setupDevProxy } from './dev-proxy'
+import { setupProdStatic } from './prod-static'
+
 const clients = {} as Record<string, BaseClient>
 
 export const createClient = async (
@@ -16,6 +18,8 @@ export const createClient = async (
   if (url.startsWith(config.server.url)) {
     if (mode === 'dev') {
       setupDevProxy(app, config, url, port)
+    } else {
+      setupProdStatic(app, config, url)
     }
   }
 
