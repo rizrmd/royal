@@ -1,16 +1,23 @@
 import { dirname, join } from 'path'
 
+export type BaseClient = { url: string }
 export type BaseConfig = {
   app: {
     name: string
   }
   prod: {
-    url: string
+    server: {
+      url: string
+    }
+    client: Record<string, BaseClient>
     dbs: Record<string, { url: string }>
   }
   dev: {
-    url: string
+    server: {
+      url: string
+    }
     useProdDB?: boolean
+    client: Record<string, BaseClient>
     dbs: Record<string, { url: string }>
   }
 }

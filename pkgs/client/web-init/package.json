@@ -1,0 +1,18 @@
+{
+  "name": "web-init",
+  "version": "1.0.0",
+  "main": "./src/index.tsx",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@babel/core": "^7.18.2",
+    "@emotion/react": "^11.9.0",
+    "lodash.find": "^4.6.0",
+    "react": "18.1.0",
+    "react-dom": "18.1.0",
+    "web-utils": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/lodash.find": "^4.6.7"
+  }
+}

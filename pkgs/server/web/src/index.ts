@@ -3,6 +3,7 @@ import dbs from 'dbs'
 import { createApp } from 'h3'
 import { createServer } from 'http'
 import { log, prettyError } from 'server-utility'
+import { createClient } from './client/create-client'
 
 const web = {
   app: null as null | ReturnType<typeof createApp>,
@@ -18,11 +19,15 @@ export default {
     onStarted: () => void
   }) => {
     try {
-      const { dbs, config } = arg
-      const url = new URL(config.url)
+      const { config } = arg
+      const url = new URL(config.server.url)
 
       const app = createApp()
-      app.use('/', () => 'Hello world!')
+      for (let [k, v] of Object.entries(config.client)) {
+        if (v.url.startsWith(config.server.url)) {
+          await createClient(app, k, v, config)
+        }
+      }
 
       web.app = app
       web.server = createServer(web.app)
@@ -30,8 +35,8 @@ export default {
 
       if (arg.onStarted) arg.onStarted()
 
-      log(`Server started at: ${config.url}`)
-    } catch (e:any) {
+      log(`API Server started at: ${config.server.url}`)
+    } catch (e: any) {
       printError(e)
     }
   },

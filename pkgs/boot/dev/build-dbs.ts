@@ -1,4 +1,4 @@
-import { exists, writeAsync } from 'fs-jetpack'
+import { writeAsync } from 'fs-jetpack'
 import { join } from 'path'
 import { buildWatch } from './build-watch'
 import { ParsedConfig } from './config-parse'

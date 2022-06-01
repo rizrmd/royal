@@ -6,7 +6,14 @@ export default {
     name: 'app',
   },
   prod: {
-    url: 'https://localhost:3200',
+    server: {
+      url: 'https://localhost:3200',
+    },
+    client: {
+      web: {
+        url: '[server.url]',
+      },
+    },
     dbs: {
       db: {
         url: process.env.PROD_DB,
@@ -14,8 +21,14 @@ export default {
     },
   },
   dev: {
-    url: 'http://localhost:3200',
-    useProdDB: true,
+    server: {
+      url: 'http://localhost:3200',
+    },
+    client: {
+      web: {
+        url: '[server.url]',
+      },
+    },
     dbs: {
       db: {
         url: process.env.DEV_DB,

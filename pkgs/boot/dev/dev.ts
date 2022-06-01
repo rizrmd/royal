@@ -1,8 +1,8 @@
 import { exists, removeAsync } from 'fs-jetpack'
 import padEnd from 'lodash.padend'
-import logUpdate from 'log-update'
 import { join } from 'path'
-import { error, Forker, prettyError } from 'server-utility'
+import { error, Forker, logUpdate, prettyError } from 'server-utility'
+import { buildClient } from './build-client'
 import { buildDb } from './build-db'
 import { buildDbs } from './build-dbs'
 import { buildWatch } from './build-watch'
@@ -33,6 +33,12 @@ prettyError()
     await buildDbs(cwd, config)
   }
 
+  const rebuildClient = async (config: ParsedConfig) => {
+    for (let [k, v] of Object.entries(config.client)) {
+      await buildClient({ cwd, name: k, config: v })
+    }
+  }
+
   // build config
   await buildWatch({
     input: join(cwd, 'config.ts'),
@@ -42,6 +48,9 @@ prettyError()
       delete require.cache[path]
       const config = parseConfig(require(path).default, 'dev')
       await rebuildDB(config)
+
+      // build app/*
+      await rebuildClient(config)
 
       // build server/web
       await buildWatch({
