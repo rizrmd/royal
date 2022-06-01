@@ -65,7 +65,6 @@ app/web/src/base/base.history-lock
 uploads
 app/web/public/upload
 symlink.sh
-.vscode
 app/mobile/www
 .output/*
 .output
