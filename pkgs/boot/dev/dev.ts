@@ -1,4 +1,5 @@
 import { exists, removeAsync } from 'fs-jetpack'
+import pad from 'lodash.pad'
 import padEnd from 'lodash.padend'
 import { join } from 'path'
 import { error, Forker, logUpdate, prettyError } from 'server-utility'
@@ -9,7 +10,7 @@ import { buildWatch } from './build-watch'
 import { parseConfig, ParsedConfig } from './config-parse'
 const cwd = process.cwd()
 const formatTs = (ts: number) => {
-  return `${((new Date().getTime() - ts) / 1000).toFixed(2)}s`
+  return pad(`${((new Date().getTime() - ts) / 1000).toFixed(2)}s`, 7)
 }
 prettyError()
 ;(async () => {

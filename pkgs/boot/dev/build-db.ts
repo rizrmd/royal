@@ -37,6 +37,7 @@ export const buildDb = async (arg: {
     indexts,
     `\
 import * as pc from './node_modules/.prisma/client'
+export type db_type = pc.PrismaClient
 export const db = new pc.PrismaClient() as unknown as pc.PrismaClient
 
 if (process.send) {

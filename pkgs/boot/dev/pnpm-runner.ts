@@ -1,11 +1,12 @@
 import { spawn } from 'child_process'
-import { log } from 'server-utility'
+import { log, silentUpdate } from 'server-utility'
 
 export const pnpm = async (
   args: string[],
   opt: { cwd: string; name: string; stdout?: boolean }
 ) => {
   return new Promise<void>((resolve) => {
+    silentUpdate(true)
     const cwd = process.cwd()
     const res = spawn('pnpm', args, {
       cwd: opt.cwd,
@@ -19,6 +20,9 @@ export const pnpm = async (
     res.on('error', (e) => {
       log(`[ERROR] ${e}`)
     })
-    res.on('exit', resolve)
+    res.on('exit', () => {
+      silentUpdate(false)
+      resolve()
+    })
   })
 }

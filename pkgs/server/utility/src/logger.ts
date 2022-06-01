@@ -1,7 +1,15 @@
 import consola from 'consola'
 import lu from 'log-update'
-export const logUpdate = lu;
-// export const logUpdate = (str: string) => {}
+
+const logUpdateConf = {
+  silent: false,
+}
+export const silentUpdate = (state: boolean) => {
+  logUpdateConf.silent = state
+}
+export const logUpdate = (str: string) => {
+  if (!logUpdateConf.silent) return lu(str)
+}
 export const log = consola.log
 export const error = consola.error
 import PrettyError from 'pretty-error'

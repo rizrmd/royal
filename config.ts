@@ -26,7 +26,7 @@ export default {
     },
     client: {
       web: {
-        url: '[server.url]',
+        url: '[server.url]/coba',
       },
     },
     dbs: {

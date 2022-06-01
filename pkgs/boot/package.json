@@ -5,6 +5,7 @@
   "private": true,
   "main": "./src/index.ts",
   "dependencies": {
+    "@types/lodash.pad": "^4.5.7",
     "@types/lodash.padend": "^4.6.7",
     "@types/lodash.throttle": "^4.1.7",
     "arg": "^5.0.1",
@@ -12,6 +13,7 @@
     "esbuild": "^0.14.42",
     "fflate": "^0.7.3",
     "fs-jetpack": "^4.3.1",
+    "lodash.pad": "^4.5.1",
     "lodash.padend": "^4.6.1",
     "lodash.throttle": "^4.1.1",
     "node-cleanup": "^2.1.2",

@@ -48,9 +48,9 @@ export const Forker = {
     prettyError()
 
     if (process.send) {
-      process.on('message', (data: ForkerMsg) => {
+      process.on('message', async (data: ForkerMsg) => {
         if (data.event === 'killing') {
-          arg.onKilled()
+          await arg.onKilled()
           process.exit(1)
         }
       })

@@ -8,12 +8,16 @@ export const buildDbs = async (cwd: string, config: ParsedConfig) => {
     join(cwd, 'app', 'dbs', 'dbs.ts'),
     `\
   ${Object.keys(config.dbs)
-    .map((e) => `import { db as dbs_${e} } from './${e}/index'`)
+    .map(
+      (e) => `\
+import type { db_type as dbs_${e}_type } from './${e}/index'
+import { db as dbs_${e} }from './${e}/index'`
+    )
     .join('\n')}
   
   export default {
     ${Object.keys(config.dbs)
-      .map((e) => `db: dbs_${e}`)
+      .map((e) => `db: dbs_${e} as dbs_${e}_type`)
       .join(',\n  ')}
   }`
   )
