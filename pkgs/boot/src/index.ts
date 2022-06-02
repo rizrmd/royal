@@ -6,14 +6,13 @@ import pad from 'lodash.pad'
 import padEnd from 'lodash.padend'
 import throttle from 'lodash.throttle'
 import { dirname, join } from 'path'
-import pidtree from 'pidtree'
 import type db from 'server-db'
 import { Forker, log, logUpdate, waitUntil } from 'server-utility'
 import { clearInterval } from 'timers'
 import { ParsedConfig, readConfig } from '../dev/config-parse'
 import { startDevClient } from './dev-client'
 import { npm } from './npm-run'
-import { printProcessUsage } from './process-usage'
+import { printProcessUsage } from './utils/process-usage'
 
 const varg = arg({ '--mode': String })
 const mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod')
@@ -185,8 +184,10 @@ const startServer = async (config: ParsedConfig) => {
     })
 
     await startDbs(config)
-    await startDevClient(config, app, cwd)
     await startServer(config)
+
+    await startDevClient(config, app, cwd)
+
   } else {
     for (let key of Object.keys(config.dbs)) {
       if (!exists(join(cwd, 'pkgs', 'dbs', key, 'node_modules'))) {

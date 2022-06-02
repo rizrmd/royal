@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 import { exists } from 'fs-jetpack'
 import padEnd from 'lodash.padend'
 import { join } from 'path'
-import { log } from 'server-utility'
+import { log, logUpdate } from 'server-utility'
 import { formatTs, IApp } from '.'
 import { ParsedConfig } from '../dev/config-parse'
 
@@ -30,6 +30,7 @@ export const startDevClient = async (
         if (str.indexOf('Local: ') >= 0) {
           const devHost = str.split('Local: ').pop()?.trim()
           const host = client.url.replace(`[server.url]`, config.server.url)
+          logUpdate.done()
           log(
             `[${formatTs(ts)}] 🌱 ${padEnd(
               `Front End [app/${name}] at`,
