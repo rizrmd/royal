@@ -1,17 +1,19 @@
 import arg from 'arg'
 import { ChildProcess, fork } from 'child_process'
+import type chokidar from 'chokidar'
 import { exists } from 'fs-jetpack'
 import pad from 'lodash.pad'
 import padEnd from 'lodash.padend'
+import throttle from 'lodash.throttle'
 import { dirname, join } from 'path'
+import pidtree from 'pidtree'
 import type db from 'server-db'
 import { Forker, log, logUpdate, waitUntil } from 'server-utility'
 import { clearInterval } from 'timers'
 import { ParsedConfig, readConfig } from '../dev/config-parse'
 import { startDevClient } from './dev-client'
 import { npm } from './npm-run'
-import type chokidar from 'chokidar'
-import throttle from 'lodash.throttle'
+import { printProcessUsage } from './process-usage'
 
 const varg = arg({ '--mode': String })
 const mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod')
@@ -136,6 +138,7 @@ const startServer = async (config: ParsedConfig) => {
 
   clearInterval(app.server.timer.ival)
   app.server.timer.ival = null
+
   logUpdate(
     `[${formatTs(app.server.timer.ts)}] 🍊 ${padEnd(
       `Back End started at`,
@@ -143,6 +146,8 @@ const startServer = async (config: ParsedConfig) => {
     )} ➜ ${url}`
   )
   logUpdate.done()
+
+  await printProcessUsage()
 }
 
 // start

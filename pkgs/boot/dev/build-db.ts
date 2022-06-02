@@ -1,5 +1,12 @@
 import { build } from 'esbuild'
-import { copyAsync, dir, exists, write, writeAsync } from 'fs-jetpack'
+import {
+  copyAsync,
+  dir,
+  exists,
+  removeAsync,
+  write,
+  writeAsync,
+} from 'fs-jetpack'
 import { join } from 'path'
 import { pnpm } from './pnpm-runner'
 
@@ -24,13 +31,30 @@ export const buildDb = async (arg: {
   }
 
   const indexts = join(dbpath, 'index.ts')
-  if (!exists(join(dbpath, 'node_modules'))) {
-    const name = dbpath.substring(process.cwd().length + 5)
-    await pnpm(['install', 'prisma'], { cwd: dbpath, name, stdout: true })
-    await pnpm(['prisma', 'init'], { cwd: dbpath, name })
+  if (!exists(join(dbpath, 'node_modules', '.prisma', 'client'))) {
+    if (exists(join(dbpath, 'node_modules'))) {
+      await removeAsync(dbpath)
+      dir(dbpath)
+      write(join(dbpath, 'package.json'), {
+        name,
+        version: '1.0.0',
+        private: true,
+        main: './index.ts',
+        dependencies: {},
+        devDependencies: {},
+      })
+    }
+
+    const dbName = dbpath.substring(process.cwd().length + 5)
+    await pnpm(['install', 'prisma'], {
+      cwd: dbpath,
+      name: dbName,
+      stdout: true,
+    })
+    await pnpm(['prisma', 'init'], { cwd: dbpath, name: dbName })
     await writeAsync(join(dbpath, '.env'), `DATABASE_URL="${url}"`)
-    await pnpm(['prisma', 'db', 'pull'], { cwd: dbpath, name })
-    await pnpm(['prisma', 'generate'], { cwd: dbpath, name })
+    await pnpm(['prisma', 'db', 'pull'], { cwd: dbpath, name: dbName })
+    await pnpm(['prisma', 'generate'], { cwd: dbpath, name: dbName })
   }
 
   await writeAsync(
@@ -67,6 +91,12 @@ if (process.send) {
 `
   )
 
+  if (!exists(join(cwd, 'app', 'dbs', name, 'prisma'))) {
+    throw new Error(
+      'File schema.prisma not found at: ' +
+        join(cwd, 'app', 'dbs', name, 'prisma')
+    )
+  }
   await copyAsync(
     join(cwd, 'app', 'dbs', name, 'prisma'),
     join(cwd, '.output', 'pkgs', 'dbs', name, 'prisma'),
@@ -74,6 +104,10 @@ if (process.send) {
       overwrite: true,
     }
   )
+
+  if (!exists(join(cwd, 'app', 'dbs', name, '.env'))) {
+    await writeAsync(join(dbpath, '.env'), `DATABASE_URL="${url}"`)
+  }
 
   await copyAsync(
     join(cwd, 'app', 'dbs', name, '.env'),

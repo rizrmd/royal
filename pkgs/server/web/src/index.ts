@@ -1,6 +1,7 @@
 import type { ParsedConfig } from 'boot/dev/config-parse'
 import { prettyError } from 'server-utility'
 import { startServer, web } from './start-server'
+import serverDb from 'server-db'
 prettyError()
 
 if (process.send) {
@@ -13,6 +14,7 @@ if (process.send) {
         mode: 'dev' | 'prod'
       }) => {
         if (data.action === 'init') {
+          await serverDb.start(data.config)
           await startServer(data.config, data.mode)
 
           if (process.send)

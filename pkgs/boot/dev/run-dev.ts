@@ -6,8 +6,11 @@ import { error, Forker, logUpdate, prettyError } from 'server-utility'
 import { buildClient } from './build-client'
 import { buildDb } from './build-db'
 import { buildDbs } from './build-dbs'
+import { rebuildExt } from './build-ext'
 import { buildWatch } from './build-watch'
+import alias from 'esbuild-plugin-alias'
 import { parseConfig, ParsedConfig } from './config-parse'
+import { build } from 'esbuild'
 const cwd = process.cwd()
 const formatTs = (ts: number) => {
   return pad(`${((new Date().getTime() - ts) / 1000).toFixed(2)}s`, 7)
@@ -49,6 +52,9 @@ export const runDev = async () => {
       const config = parseConfig(require(path).default, 'dev')
       await rebuildDB(config)
 
+      // build app/ext
+      await rebuildExt({ cwd, config })
+
       // build app/*
       await rebuildClient(config)
 
@@ -70,6 +76,11 @@ export const runDev = async () => {
           minify: true,
           sourcemap: true,
           external: ['chokidar'],
+          plugins: [
+            alias({
+              pidtree: join(cwd, 'pkgs', 'boot', 'src', 'pidtree.js'),
+            }),
+          ],
         },
         onReady: () => {
           clearInterval(ival)

@@ -8,7 +8,7 @@
     "axios": "^0.27.2",
     "boot": "workspace:^",
     "consola": "^2.15.3",
-    "dbs": "workspace:^",
+    "server-db": "workspace:^",
     "fastify": "^3.29.0",
     "fs-jetpack": "^4.3.1",
     "h3": "^0.7.8",

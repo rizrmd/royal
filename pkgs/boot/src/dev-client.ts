@@ -1,4 +1,4 @@
-import { ChildProcess, exec } from 'child_process'
+import { exec } from 'child_process'
 import { exists } from 'fs-jetpack'
 import padEnd from 'lodash.padend'
 import { join } from 'path'
@@ -23,7 +23,7 @@ export const startDevClient = async (
     }
 
     const ts = new Date().getTime()
-    app.client[name] = exec(`${vitecli} --port=${port} --host`, { cwd: path })
+    app.client[name] = exec(`${vitecli} --port=${port}`, { cwd: path })
     app.client[name].stderr?.pipe(process.stderr)
     app.client[name].stdout?.on('data', (e) => {
       e.split('\n').forEach((str: string) => {

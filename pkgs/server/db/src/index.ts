@@ -2,14 +2,15 @@ import { ParsedConfig } from 'boot/dev/config-parse'
 import { fork } from 'child_process'
 import { dirname, join } from 'path'
 import { waitUntil } from 'server-utility'
+import type dbs_type from 'dbs'
 
 const dbProxyQueue = {} as Record<string, (result: any) => void>
 const forks = {} as Record<string, ReturnType<typeof fork>>
 const cwd = join(dirname(__filename), '..')
+export const dbs = {} as typeof dbs_type
 
 export default {
   start: async (config: ParsedConfig) => {
-    const dbs = {} as Record<string, any>
     const init = [] as Promise<void>[]
     for (let name of Object.keys(config.dbs)) {
       init.push(
@@ -37,7 +38,7 @@ export default {
           forks[name].once('disconnect', () => {
             fk.ready = false
           })
-          dbs[name] = dbProxy(forks[name] as any, name)
+          ;(dbs as any)[name] = dbProxy(forks[name] as any, name)
         })
       )
     }
