@@ -8,6 +8,7 @@ export default {
   prod: {
     server: {
       url: 'https://localhost:3200',
+      worker: Number.MAX_VALUE,
     },
     client: {
       web: {
@@ -23,6 +24,7 @@ export default {
   dev: {
     server: {
       url: 'http://localhost:3200',
+      worker: 1,
     },
     client: {
       web: {

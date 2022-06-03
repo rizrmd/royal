@@ -1,20 +1,21 @@
+import alias from 'esbuild-plugin-alias'
 import { exists, removeAsync } from 'fs-jetpack'
 import pad from 'lodash.pad'
 import padEnd from 'lodash.padend'
 import { join } from 'path'
-import { error, Forker, logUpdate, prettyError } from 'server-utility'
+import { error, Forker, logUpdate } from 'server-utility'
 import { buildClient } from './build-client'
 import { buildDb } from './build-db'
 import { buildDbs } from './build-dbs'
 import { rebuildExt } from './build-ext'
 import { buildWatch } from './build-watch'
-import alias from 'esbuild-plugin-alias'
+import { dev } from './client/util'
 import { parseConfig, ParsedConfig } from './config-parse'
-import { build } from 'esbuild'
 const cwd = process.cwd()
 const formatTs = (ts: number) => {
   return pad(`${((new Date().getTime() - ts) / 1000).toFixed(2)}s`, 7)
 }
+
 export const runDev = async () => {
   const ts = new Date().getTime()
   const ival = setInterval(() => {
@@ -82,10 +83,10 @@ export const runDev = async () => {
             }),
           ],
         },
-        onReady: () => {
+        onReady: async () => {
           clearInterval(ival)
           logUpdate.done()
-          Forker.run(join(cwd, '.output', 'server.js'), {
+          dev.boot = await Forker.run(join(cwd, '.output', 'server.js'), {
             arg: ['--mode', 'dev', ...process.argv.slice(4)],
           })
         },

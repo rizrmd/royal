@@ -8,6 +8,7 @@ export type BaseConfig = {
   prod: {
     server: {
       url: string
+      worker: number
     }
     client: Record<string, BaseClient>
     dbs: Record<string, { url: string }>
@@ -15,6 +16,7 @@ export type BaseConfig = {
   dev: {
     server: {
       url: string
+      worker: number
     }
     useProdDB?: boolean
     client: Record<string, BaseClient>

@@ -10,14 +10,15 @@ import { reloadPage } from './client/page'
 import { reloadLayout } from './client/layout'
 import { reloadAPI } from './client/api'
 import { reloadAuth } from './client/auth'
-import { clientDir } from './client/util'
+import { clientDir, dev } from './client/util'
+import { buildWatch } from './build-watch'
 
 export const buildClient = async (arg: {
   cwd: string
   name: string
   config: BaseClient
 }) => {
-  const { cwd, name, config } = arg
+  const { cwd, name } = arg
 
   const cdir = join(arg.cwd, 'app', name)
   clientDir.root = cdir
@@ -25,11 +26,10 @@ export const buildClient = async (arg: {
   clientDir.pageOut = join(cdir, 'types', 'page.ts')
   clientDir.layout = join(cdir, 'src', 'base', 'layout')
   clientDir.layoutOut = join(cdir, 'types', 'layout.ts')
-  clientDir.api = join(cdir, 'src',  'api')
+  clientDir.api = join(cdir, 'src', 'api')
   clientDir.apiOut = join(cdir, 'types', 'api.ts')
-  clientDir.auth = join(cdir, 'src',  'auth')
+  clientDir.auth = join(cdir, 'src', 'auth')
   clientDir.authOut = join(cdir, 'types', 'auth.ts')
-
 
   dir(cdir)
 
@@ -65,7 +65,19 @@ export const buildClient = async (arg: {
   }
 
   watch(clientDir.auth).on('all', reloadAuth)
-  watch(clientDir.api).on('all', reloadAPI)
+  watch(clientDir.api).on(
+    'all',
+    reloadAPI.bind({
+      name,
+      build: async () => {
+        await buildWatch({
+          input: clientDir.apiOut,
+          output: join(cwd, '.output', name, 'api.js'),
+          buildOptions: { minify: true, sourcemap: 'linked', watch: false },
+        })
+      },
+    })
+  )
   watch(clientDir.page).on('all', reloadPage)
-  watch(clientDir.auth).on('all', reloadLayout)
+  watch(clientDir.layout).on('all', reloadLayout)
 }

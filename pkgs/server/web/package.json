@@ -5,15 +5,20 @@
   "private": true,
   "main": "./src/index.ts",
   "dependencies": {
+    "@types/lodash.pad": "^4.5.7",
+    "@types/lodash.throttle": "^4.1.7",
     "axios": "^0.27.2",
     "boot": "workspace:^",
     "consola": "^2.15.3",
-    "server-db": "workspace:^",
     "fastify": "^3.29.0",
     "fs-jetpack": "^4.3.1",
     "h3": "^0.7.8",
     "http-proxy": "^1.18.1",
-    "server-utility": "workspace:^"
+    "lodash.pad": "^4.5.1",
+    "lodash.throttle": "^4.1.1",
+    "server-db": "workspace:^",
+    "server-utility": "workspace:^",
+    "web-init": "workspace:^"
   },
   "devDependencies": {
     "@types/http-proxy": "^1.17.9",

@@ -1,11 +1,12 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
-import { createApp } from 'h3'
+import { createApp, createRouter, EventHandler } from 'h3'
 import { createServer } from 'http'
 import { createClient } from './client/create-client'
 
 export const web = {
   app: undefined as undefined | ReturnType<typeof createApp>,
   server: undefined as undefined | ReturnType<typeof createServer>,
+  clients: {} as Record<string, { api?: ReturnType<typeof createRouter> }>,
 }
 
 export const startServer = async (
@@ -29,5 +30,4 @@ export const startServer = async (
   web.app = app
   web.server = createServer(web.app)
   web.server.listen(url.port || 3200)
-
 }

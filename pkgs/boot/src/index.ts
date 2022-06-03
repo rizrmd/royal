@@ -14,6 +14,7 @@ import { startDevClient } from './dev-client'
 import { npm } from './npm-run'
 import { printProcessUsage } from './utils/process-usage'
 
+
 const varg = arg({ '--mode': String })
 const mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod')
 export const formatTs = (ts: number) => {
@@ -53,7 +54,7 @@ const startDbs = async (config: ParsedConfig) => {
 
   if (app.db.module) {
     await app.db.module.stop()
-  }
+  } 
 
   delete require.cache[app.db.path]
   app.db.module = require(app.db.path).default
@@ -92,6 +93,7 @@ const startServer = async (config: ParsedConfig) => {
       const fork = app.server.fork
       if (fork) {
         fork.removeAllListeners()
+        fork.on('exit', resolve)
         fork.on('close', resolve)
         fork.send({ action: 'kill' })
       }
@@ -116,6 +118,7 @@ const startServer = async (config: ParsedConfig) => {
     1000,
     { trailing: false }
   )
+
   app.server.fork.once('exit', restartServer)
   app.server.fork.once('close', restartServer)
   app.server.fork.once('disconnect', restartServer)
@@ -139,7 +142,7 @@ const startServer = async (config: ParsedConfig) => {
   app.server.timer.ival = null
 
   logUpdate(
-    `[${formatTs(app.server.timer.ts)}] 🍊 ${padEnd(
+    `[${formatTs(app.server.timer.ts)}] 🌿 ${padEnd(
       `Back End started at`,
       24
     )} ➜ ${url}`
@@ -188,6 +191,13 @@ const startServer = async (config: ParsedConfig) => {
 
     await startDevClient(config, app, cwd)
 
+    process.on('message', (data: any) => {
+      if (typeof data === 'object') {
+        if (data.action === 'reload.api' && data.name) {
+          app.server.fork?.send(data)
+        }
+      }
+    })
   } else {
     for (let key of Object.keys(config.dbs)) {
       if (!exists(join(cwd, 'pkgs', 'dbs', key, 'node_modules'))) {

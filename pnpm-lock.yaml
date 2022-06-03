@@ -80,6 +80,7 @@ importers:
       '@types/babel__core': ^7.1.19
       '@types/babel__generator': ^7.6.4
       '@types/babel__traverse': ^7.17.1
+      '@types/cross-spawn': ^6.0.2
       '@types/lodash.get': ^4.4.7
       '@types/lodash.pad': ^4.5.7
       '@types/lodash.padend': ^4.6.7
@@ -89,6 +90,7 @@ importers:
       arg: ^5.0.1
       chokidar: ^3.5.3
       commander: ^9.3.0
+      cross-spawn: ^7.0.3
       esbuild: ^0.14.42
       esbuild-plugin-alias: ^0.2.1
       fflate: ^0.7.3
@@ -112,12 +114,11 @@ importers:
       '@babel/preset-react': 7.17.12_@babel+core@7.18.2
       '@babel/preset-typescript': 7.17.12_@babel+core@7.18.2
       '@babel/traverse': 7.18.2
-      '@types/lodash.pad': 4.5.7
-      '@types/lodash.padend': 4.6.7
-      '@types/lodash.throttle': 4.1.7
+      '@types/cross-spawn': 6.0.2
       arg: 5.0.1
       chokidar: 3.5.3
       commander: 9.3.0
+      cross-spawn: 7.0.3
       esbuild: 0.14.42
       esbuild-plugin-alias: 0.2.1
       fflate: 0.7.3
@@ -138,6 +139,9 @@ importers:
       '@types/babel__generator': 7.6.4
       '@types/babel__traverse': 7.17.1
       '@types/lodash.get': 4.4.7
+      '@types/lodash.pad': 4.5.7
+      '@types/lodash.padend': 4.6.7
+      '@types/lodash.throttle': 4.1.7
       '@types/node': 17.0.38
       '@types/prettier': 2.6.3
 
@@ -217,6 +221,8 @@ importers:
   pkgs/server/web:
     specifiers:
       '@types/http-proxy': ^1.17.9
+      '@types/lodash.pad': ^4.5.7
+      '@types/lodash.throttle': ^4.1.7
       '@types/node': ^17.0.36
       axios: ^0.27.2
       boot: workspace:^
@@ -225,9 +231,14 @@ importers:
       fs-jetpack: ^4.3.1
       h3: ^0.7.8
       http-proxy: ^1.18.1
+      lodash.pad: ^4.5.1
+      lodash.throttle: ^4.1.1
       server-db: workspace:^
       server-utility: workspace:^
+      web-init: workspace:^
     dependencies:
+      '@types/lodash.pad': 4.5.7
+      '@types/lodash.throttle': 4.1.7
       axios: 0.27.2
       boot: link:../../boot
       consola: 2.15.3
@@ -235,8 +246,11 @@ importers:
       fs-jetpack: 4.3.1
       h3: 0.7.8
       http-proxy: 1.18.1
+      lodash.pad: 4.5.1
+      lodash.throttle: 4.1.1
       server-db: link:../db
       server-utility: link:../utility
+      web-init: link:../../client/web-init
     devDependencies:
       '@types/http-proxy': 1.17.9
       '@types/node': 17.0.36
@@ -1701,6 +1715,12 @@ packages:
     resolution: {integrity: sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==}
     dev: true
 
+  /@types/cross-spawn/6.0.2:
+    resolution: {integrity: sha512-KuwNhp3eza+Rhu8IFI5HUXRP0LIhqH5cAjubUvGXXthh4YYBuP2ntwEX+Cz8GJoZUHlKo247wPWOfA9LYEq4cw==}
+    dependencies:
+      '@types/node': 17.0.38
+    dev: false
+
   /@types/http-proxy/1.17.9:
     resolution: {integrity: sha512-QsbSjA/fSk7xB+UXlCT3wHBy5ai9wOcNDWwZAtud+jXhwOM3l+EYZh8Lng4+/6n8uar0J7xILzqftJdJ/Wdfkw==}
     dependencies:
@@ -1723,19 +1743,17 @@ packages:
     resolution: {integrity: sha512-nhMENAn7s5Z9qzcSrrqjDdZgVPBM04nvrzt5jryWHvyAJqvZDh9FgDlVy4Mse3rqrO+CbuOvbdsCHnyra+5heQ==}
     dependencies:
       '@types/lodash': 4.14.182
-    dev: false
 
   /@types/lodash.padend/4.6.7:
     resolution: {integrity: sha512-LE7+ehyBpN/PwJ/zumlEyeU/pWqoNOmCsRmFRsRkQeLf1JLDRT+cv4sWeqwqs9Q0EFgUWdGJF0+jC4FZbFrsPQ==}
     dependencies:
       '@types/lodash': 4.14.182
-    dev: false
+    dev: true
 
   /@types/lodash.throttle/4.1.7:
     resolution: {integrity: sha512-znwGDpjCHQ4FpLLx19w4OXDqq8+OvREa05H89obtSyXyOFKL3dDjCslsmfBz0T2FU8dmf5Wx1QvogbINiGIu9g==}
     dependencies:
       '@types/lodash': 4.14.182
-    dev: false
 
   /@types/lodash/4.14.182:
     resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
@@ -1746,7 +1764,6 @@ packages:
 
   /@types/node/17.0.38:
     resolution: {integrity: sha512-5jY9RhV7c0Z4Jy09G+NIDTsCZ5G0L5n+Z+p+Y7t5VJHM30bgwzSjVtlcBxqAj+6L/swIlvtOSzr8rBk/aNyV2g==}
-    dev: true
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}

@@ -1,6 +1,8 @@
 import { exec } from 'child_process'
+import { watch } from 'chokidar'
 import { exists } from 'fs-jetpack'
 import padEnd from 'lodash.padend'
+import throttle from 'lodash.throttle'
 import { join } from 'path'
 import { log, logUpdate } from 'server-utility'
 import { formatTs, IApp } from '.'
@@ -12,6 +14,8 @@ export const startDevClient = async (
   cwd: string
 ) => {
   let idx = 1
+
+  const clientNames = [] as string[]
   for (let [name, client] of Object.entries(config.client)) {
     const port = parseInt(new URL(config.server.url).port) + idx
     const path = join(process.cwd(), 'app', name)
@@ -32,16 +36,17 @@ export const startDevClient = async (
           const host = client.url.replace(`[server.url]`, config.server.url)
           logUpdate.done()
           log(
-            `[${formatTs(ts)}] 🌱 ${padEnd(
+            `[${formatTs(ts)}] 🍋 ${padEnd(
               `Front End [app/${name}] at`,
               24
             )} ➜ ${devHost}`
           )
           if (host.startsWith(config.server.url)) {
-            log(`          proxied to ${host}`)
+            log(`           ➥  proxied to ${host}`)
           }
         }
       })
     })
+    clientNames.push(name)
   }
 }

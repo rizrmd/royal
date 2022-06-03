@@ -1,4 +1,4 @@
-import { ParsedConfig } from 'boot/dev/config-parse'
+import type { ParsedConfig } from 'boot/dev/config-parse'
 import { fork } from 'child_process'
 import { dirname, join } from 'path'
 import { waitUntil } from 'server-utility'

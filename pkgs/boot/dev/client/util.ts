@@ -1,3 +1,4 @@
+import { ChildProcess } from 'child_process'
 import fs from 'fs/promises'
 import { join } from 'path'
 
@@ -11,6 +12,10 @@ export const clientDir = {
   layoutOut: '',
   auth: '',
   authOut: '',
+}
+
+export const dev = {
+  boot: null as null | ChildProcess,
 }
 
 export const walkDir = async function (directory: string) {

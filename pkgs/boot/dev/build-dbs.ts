@@ -1,7 +1,7 @@
 import { writeAsync } from 'fs-jetpack'
 import { join } from 'path'
 import { buildWatch } from './build-watch'
-import { ParsedConfig } from './config-parse'
+import type { ParsedConfig } from './config-parse'
 
 export const buildDbs = async (cwd: string, config: ParsedConfig) => {
   await writeAsync(

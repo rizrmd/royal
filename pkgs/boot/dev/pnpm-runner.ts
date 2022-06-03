@@ -1,4 +1,4 @@
-import { spawn } from 'child_process'
+import { spawn } from 'cross-spawn'
 import { log, silentUpdate } from 'server-utility'
 
 export const pnpm = async (
