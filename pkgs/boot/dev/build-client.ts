@@ -1,6 +1,6 @@
 import { unzip } from 'fflate'
 import { readFileSync } from 'fs'
-import { dir, dirAsync, exists, list } from 'fs-jetpack'
+import { dir, dirAsync, exists, list, readAsync, writeAsync } from 'fs-jetpack'
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
 import { BaseClient } from './config-parse'
@@ -35,7 +35,9 @@ export const buildClient = async (arg: {
 
   const cdirList = list(cdir)
   if (!cdirList || (cdirList && cdirList.length === 0)) {
-    const zipFile = readFileSync(join(arg.cwd, 'pkgs', 'boot', 'client.zip'))
+    const zipFile = readFileSync(
+      join(arg.cwd, 'pkgs', 'boot', 'dev', 'client', 'client.zip')
+    )
     await new Promise<void>((res) => {
       unzip(zipFile, {}, async (_: any, content: any) => {
         const promises: any[] = []
@@ -55,6 +57,30 @@ export const buildClient = async (arg: {
         res()
       })
     })
+  }
+
+  const psource = await readAsync(join(cdir, 'package.json'), 'utf8')
+  if (psource) {
+    const pjson = JSON.parse(psource)
+    let appName = name
+    if (appName === 'server') {
+      appName = name + '_'
+    }
+    if (pjson && pjson['name'] !== `app-${appName}`) {
+      pjson['name'] = `app-${appName}`
+      await writeAsync(
+        join(cdir, 'package.json'),
+        JSON.stringify(pjson, null, 2)
+      )
+    }
+  }
+
+  if (!exists(join(cdir, 'types', 'page.ts'))) {
+    await writeAsync(join(cdir, 'types', 'page.ts'), `export default {}`)
+  }
+
+  if (!exists(join(cdir, 'types', 'layout.ts'))) {
+    await writeAsync(join(cdir, 'types', 'layout.ts'), `export default {}`)
   }
 
   if (!exists(join(cdir, 'node_modules'))) {

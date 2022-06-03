@@ -7,7 +7,7 @@ import { error, Forker, logUpdate } from 'server-utility'
 import { buildClient } from './build-client'
 import { buildDb } from './build-db'
 import { buildDbs } from './build-dbs'
-import { rebuildExt } from './build-ext'
+import { rebuildAppServer } from './build-server'
 import { buildWatch } from './build-watch'
 import { dev } from './client/util'
 import { parseConfig, ParsedConfig } from './config-parse'
@@ -54,7 +54,7 @@ export const runDev = async () => {
       await rebuildDB(config)
 
       // build app/ext
-      await rebuildExt({ cwd, config })
+      await rebuildAppServer({ cwd, config })
 
       // build app/*
       await rebuildClient(config)

@@ -4,7 +4,7 @@ import pad from 'lodash.pad'
 import serverDb from 'server-db'
 import { log, prettyError } from 'server-utility'
 import { serveApi } from './client/serve-api'
-import { startCluster } from './client/start-cluster'
+import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
 prettyError()
 
@@ -51,17 +51,6 @@ if (cluster.isWorker) {
         if (web.app && name) {
           const client = web.clients[name]
           if (client) {
-            // for (let i of Object.values(client.api) as any) {
-            //   const url = i[0]
-            //   let idx = web.app.stack.length
-            //   while (idx--) {
-            //     const stack = web.app.stack[idx]
-            //     if (stack.route === url) {
-            //       web.app.stack.splice(idx, 1)
-            //     }
-            //   }
-            // }
-
             log(`[${pad(`wrk-${id}`, 7)}]  🍃 Reloading API Worker #${id}`)
             serveApi({ name })
           }

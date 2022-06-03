@@ -3,19 +3,19 @@ import { join } from 'path'
 import { ParsedConfig } from './config-parse'
 import { pnpm } from './pnpm-runner'
 
-export const rebuildExt = async (arg: {
+export const rebuildAppServer = async (arg: {
   cwd: string
   config: ParsedConfig
 }) => {
   const { cwd, config } = arg
-  const extdir = join(cwd, 'app', 'ext')
-  if (!exists(join(extdir, 'package.json'))) {
-    await newSource(extdir)
+  const asdir = join(cwd, 'app', 'server')
+  if (!exists(join(asdir, 'package.json'))) {
+    await newSource(asdir)
   }
 
-  if (!exists(join(extdir, 'node_modules'))) {
+  if (!exists(join(asdir, 'node_modules'))) {
     await pnpm(['install'], {
-      cwd: extdir,
+      cwd: asdir,
       name: 'ext',
     })
   }
@@ -23,7 +23,7 @@ export const rebuildExt = async (arg: {
 
 const newSource = async (extdir: string) => {
   await writeAsync(join(extdir, 'package.json'), {
-    name: 'ext',
+    name: 'app-server',
     version: '1.0.0',
     private: true,
     scripts: {},

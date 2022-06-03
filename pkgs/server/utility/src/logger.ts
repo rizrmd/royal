@@ -11,6 +11,7 @@ export const logUpdate = function (str: string) {
   if (!logUpdateConf.silent) return lu(str)
 }
 logUpdate.done = lu.done;
+export const rawLogUpdate = lu;
 
 export const log = consola.log
 export const error = consola.error

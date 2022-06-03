@@ -26,7 +26,7 @@ importers:
       '@prisma/client': 3.14.0_prisma@3.14.0
       prisma: 3.14.0
 
-  app/ext:
+  app/server:
     specifiers:
       '@types/bcryptjs': ^2.4.2
       bcryptjs: ^2.4.3
@@ -3452,8 +3452,8 @@ packages:
       glob: 7.2.3
     dev: false
 
-  /rollup/2.75.4:
-    resolution: {integrity: sha512-JgZiJMJkKImMZJ8ZY1zU80Z2bA/TvrL/7D9qcBCrfl2bP+HUaIw0QHUroB4E3gBpFl6CRFM1YxGbuYGtdAswbQ==}
+  /rollup/2.75.5:
+    resolution: {integrity: sha512-JzNlJZDison3o2mOxVmb44Oz7t74EfSd1SQrplQk0wSaXV7uLQXtVdHbxlcT3w+8tZ1TL4r/eLfc7nAbz38BBA==}
     engines: {node: '>=10.0.0'}
     hasBin: true
     optionalDependencies:
@@ -3742,7 +3742,7 @@ packages:
       esbuild: 0.14.42
       postcss: 8.4.14
       resolve: 1.22.0
-      rollup: 2.75.4
+      rollup: 2.75.5
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
