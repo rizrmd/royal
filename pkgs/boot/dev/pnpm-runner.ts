@@ -38,9 +38,7 @@ export const pnpm = async (
     }
     process.chdir(cwd)
     log(
-      `[${opt.name}] pnpm ${args.join(' ')} ${opt.cwd.substring(
-        process.cwd().length
-      )}`
+      `[${opt.name}] pnpm ${args.join(' ')}`
     )
     res.on('error', (e) => {
       log(`[ERROR] ${e}`)
