@@ -31,6 +31,7 @@ program
     const gitIgnorePath = join(process.cwd(), '.gitignore')
     const ignored = ((await readAsync(gitIgnorePath, 'utf8')) || '').split('\n')
 
+
     if (url === 'https://github.com/rizrmd/royal') {
       if (ignored.indexOf('app') < 0) {
         ignored.push('app')
