@@ -1,66 +1,8 @@
-import { exists, writeAsync } from 'fs-jetpack'
-import { join } from 'path'
-import { ParsedConfig } from './config-parse'
-import { pnpm } from './pnpm-runner'
-
-export const rebuildAppServer = async (arg: {
-  cwd: string
-  config: ParsedConfig
-}) => {
-  const { cwd, config } = arg
-  const asdir = join(cwd, 'app', 'server')
-  if (!exists(join(asdir, 'package.json'))) {
-    await newSource(asdir)
-  }
-
-  if (!exists(join(asdir, 'node_modules'))) {
-    await pnpm(['install'], {
-      cwd: asdir,
-      name: 'ext',
-    })
-  }
-}
-
-const newSource = async (extdir: string) => {
-  await writeAsync(
-    join(extdir, 'package.json'),
-    JSON.stringify(
-      {
-        name: 'app-server',
-        version: '1.0.0',
-        private: true,
-        scripts: {},
-        dependencies: {
-          bcryptjs: '^2.4.3',
-        },
-        devDependencies: {
-          '@types/bcryptjs': '^2.4.2',
-        },
-        main: './src/index.ts',
-      },
-      null,
-      2
-    )
-  )
-
-  await writeAsync(
-    join(extdir, 'src', 'index.ts'),
-    `\
-export default {
-  ext: {
-    Password: require('./bcrypt')
-  }
-}`
-  )
-
-  await writeAsync(
-    join(extdir, 'src', 'bcrypt.ts'),
-    `\
 import BCrypt from 'bcryptjs'
 
 export const name = 'PASSWORD_BCRYPT'
 
-export var expression = /\$(2[a|x|y])\$(\d+)\$(.{53})/g
+export var expression = /$(2[a|x|y])$(d+)$(.{53})/g
 var defaultOptions = {
 cost: 10,
 }
@@ -118,6 +60,4 @@ if (match && typeof match[2] !== 'undefined') {
 }
 return 0
 }
-    `
-  )
-}
+    

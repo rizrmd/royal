@@ -17,7 +17,7 @@ export const setupDevProxy = async (
     hostRewrite: route,
     ws: true,
   })
-
+  
   proxy.on('proxyRes', (pres, req, res) => {
     if (pres.statusCode) res.statusCode = pres.statusCode
   })

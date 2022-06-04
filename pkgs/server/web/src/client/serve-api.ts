@@ -50,9 +50,10 @@ export const serveApi = (arg?: Partial<IServeApiArgs>) => {
       for (let arg of Object.values(apiModule) as any) {
         const url = arg[0] as string
         const handler = arg[1] as Parameters<typeof declareAPI>[1]
-        cn.api.use(url, (req, reply, _) => {
+        cn.api.use(url, (req, reply, next) => {
           const _req = req as IncomingMessage & { body: any }
           const _reply = reply as ServerResponse & { send: (s: any) => void }
+          
           _reply.send = (s) => {
             if (typeof s === 'object') {
               reply.setHeader('content-type', 'application/json')
@@ -62,6 +63,7 @@ export const serveApi = (arg?: Partial<IServeApiArgs>) => {
             }
             reply.end()
           }
+
           handler({
             baseurl: client.url,
             db: dbs['db'],
@@ -74,7 +76,12 @@ export const serveApi = (arg?: Partial<IServeApiArgs>) => {
         })
       }
 
+      cn.api.use('**', (req, res, next) => {
+        next()
+      })
+
       app.use(cn.api)
+
       if (app.stack.length > 1) {
         const apihandler = app.stack.pop()
         if (apihandler) {
