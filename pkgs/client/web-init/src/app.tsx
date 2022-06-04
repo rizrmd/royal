@@ -1,9 +1,6 @@
 /** @jsx jsx */
-import { FC, lazy, ReactElement, Suspense, useEffect } from 'react'
-import { GlobalContext, useLocal } from 'web-utils'
-import { Base, loadPage } from './core/router'
-import { ErrorBoundary } from './error'
-import layouts from '../../../../app/web/types/layout'
+import { FC, ReactElement } from 'react'
+import { useLocal } from 'web-utils'
 
 export type IAppRoot = {
   url: string
@@ -28,5 +25,5 @@ export const App = () => {
     mounted: true,
   } as IAppRoot)
 
-  return <div>Haloha</div>
+  return <div>mteaiomt ini gila</div>
 }
