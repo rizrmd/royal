@@ -69,5 +69,6 @@ app/mobile/www
 .output/*
 .output
 .nova
+.pnpm-lock.yaml
 app/dbs/package.json
 app
