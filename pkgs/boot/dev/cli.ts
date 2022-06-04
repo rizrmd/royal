@@ -16,6 +16,7 @@ program
   .addOption(new Option('-p, --port <number>', 'port number'))
   .addOption(new Option('-f, --force', 'force vite refresh cache'))
   .action(async (arg, opt) => {
+    console.log('wowow')
     await runDev()
   })
 
@@ -30,7 +31,6 @@ program
     })
     const gitIgnorePath = join(process.cwd(), '.gitignore')
     const ignored = ((await readAsync(gitIgnorePath, 'utf8')) || '').split('\n')
-
 
     if (url === 'https://github.com/rizrmd/royal') {
       if (ignored.indexOf('app') < 0) {
