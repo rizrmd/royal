@@ -16,7 +16,6 @@ program
   .addOption(new Option('-p, --port <number>', 'port number'))
   .addOption(new Option('-f, --force', 'force vite refresh cache'))
   .action(async (arg, opt) => {
-    console.log('wowow')
     await runDev()
   })
 
