@@ -1,6 +1,10 @@
+import git from 'isomorphic-git'
+import fs from 'fs'
 import { Command, Option } from 'commander'
 import { prettyError } from 'server-utility'
 import { runDev } from './run-dev'
+import { readAsync, writeAsync } from 'fs-jetpack'
+import { join } from 'path'
 const program = new Command()
 prettyError()
 
@@ -12,7 +16,33 @@ program
   .addOption(new Option('-p, --port <number>', 'port number'))
   .addOption(new Option('-f, --force', 'force vite refresh cache'))
   .action(async (arg, opt) => {
-      await runDev()
+    await runDev()
+  })
+
+program
+  .command('precommit')
+  .description('pre commit hook')
+  .action(async () => {
+    const url = await git.getConfig({
+      fs,
+      dir: process.cwd(),
+      path: 'remote.origin.url',
+    })
+    const gitIgnorePath = join(process.cwd(), '.gitignore')
+    const ignored = ((await readAsync(gitIgnorePath, 'utf8')) || '').split('\n')
+
+    if (url === 'https://github.com/rizrmd/royal') {
+      if (ignored.indexOf('app') < 0) {
+        ignored.push('app')
+        await writeAsync(gitIgnorePath, ignored.join('\n'))
+      }
+    } else {
+      const idx = ignored.indexOf('app')
+      if (idx >= 0) {
+        ignored.splice(idx, 1)
+        await writeAsync(gitIgnorePath, ignored.join('\n'))
+      }
+    }
   })
 
 const dbs = program.command('dbs').description('database configuration')
