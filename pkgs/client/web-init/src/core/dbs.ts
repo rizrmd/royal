@@ -10,10 +10,7 @@ export const initDbs = () => {
         get(_, name) {
           const w: any = window
 
-          let baseUrl = w.baseurl
-          if (!w.is_dev && w.hostname) {
-            baseUrl = `${w.hostname}`
-          }
+          let baseUrl = ''
 
           const post = async (params: any) => {
             let url = `${baseUrl}/__data/${toSnake(params.action)}`

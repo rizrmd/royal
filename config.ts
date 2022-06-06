@@ -17,7 +17,7 @@ export default {
     },
     dbs: {
       db: {
-        url: process.env.PROD_DB,
+        url: "postgresql://postgres:goperasidatabase123@db.goperasi.id:5432/godirect?schema=public&pool_timeout=0",
       },
     },
   },
@@ -33,7 +33,7 @@ export default {
     },
     dbs: {
       db: {
-        url: process.env.DEV_DB,
+        url: "postgresql://postgres:goperasidatabase123@db.goperasi.id:5432/godirect?schema=public&pool_timeout=0",
       },
     },
   },

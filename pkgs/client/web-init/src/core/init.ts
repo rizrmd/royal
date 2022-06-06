@@ -2,7 +2,6 @@ import { css } from '@emotion/react'
 import React, { Fragment } from 'react'
 import { initDbs } from './dbs'
 import { jsx } from './jsx'
-import { initRouter } from './router'
 
 export const initEnv = () => {
   const w = window
@@ -45,7 +44,6 @@ export const initEnv = () => {
       w.appRoot.render()
     })
 
-    initRouter()
     initDbs()
   }
 }

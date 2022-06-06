@@ -1,4 +1,6 @@
-import React, { lazy } from 'react'
+import { IAppRoot } from 'index'
+import { createRouter } from 'radix3'
+import { FC, lazy } from 'react'
 import layouts from '../../../../../app/web/types/layout'
 import pages from '../../../../../app/web/types/page'
 
@@ -7,74 +9,78 @@ export type Base = {
   pages: typeof pages
 }
 
-export const initRouter = async () => {
-  const w = window as any
-  w.base = {
-    layouts,
-    pages,
-  } as Base
-}
+export type IFoundPage = { layout: string; page: string; Page: FC; Layout: FC }
 
-export const loadPage = (currentUrl: string, onLoad: (comp: any) => void) => {
-  const w = window as any
+export const loadPageAndLayout = (local: IAppRoot) => {
+  local.page.list = pages as any
+  local.layout.list = layouts as any
 
-  const base = w.base as Base
+  if (!local.router) {
+    local.router = createRouter()
+  }
 
-  // if (!w.router) {
-  //   const router = newRouter({})
+  if (local.router) {
+    let found = local.router.lookup(local.url)
+    if (!found) {
+      for (let [pageName, page] of Object.entries(local.page.list)) {
+        const [url, layout, pageDef] = page as unknown as [
+          string,
+          string,
+          () => Promise<{
+            default: {
+              url: string
+              layout: string
+              component: () => Promise<{
+                default: React.ComponentType<any>
+              }>
+            }
+          }>
+        ]
 
-  //   for (let [_, arg] of Object.entries(base.pages)) {
-  //     const [url] = arg
-  //     if (typeof url === 'string') {
-  //       router.on('GET', url, () => arg)
-  //     }
-  //   }
-  //   w.router = router
+        local.router.insert(url, {
+          layout,
+          page: pageName,
+          Page: lazy(
+            () =>
+              new Promise<any>(async (resolve) => {
+                const result = (await pageDef()).default.component
 
-  //   w.router.pages = new WeakMap()
-  // }
-  // const route = w.router.find('GET', currentUrl)
+                resolve({
+                  default: result,
+                })
+              })
+          ),
+          Layout: lazy(
+            () =>
+              new Promise<any>(async (resolve) => {
+                const layoutFound = local.layout.list[layout]
+                if (layoutFound) {
+                  const result = (await layoutFound()).default
 
-  let params: any = null
-  let importer: any = null
-  let routeFound: any = null
-  let page = null
-  let layout = 'default'
-  let component = null
+                  resolve({
+                    default: result,
+                  })
+                } else {
+                  resolve({
+                    default: (children: any) => children,
+                  })
+                }
+              })
+          ),
+        })
+      }
 
-  // if (route) {
-  //   routeFound = route.handler()
+      let found = local.router.lookup(local.url) as
+        | IFoundPage
+        | null
+        | undefined
 
-  //   if (Array.isArray(routeFound)) {
-  //     w.router.current = routeFound
-  //     layout = routeFound[1]
-  //     importer = routeFound[2]
-  //     page = routeFound[3]
-  //   }
-  //   params = route.params
-  // }
-  // w.params = params
+      if (found) {
+        local.page.current = found.Page
+        local.layout.current = found.Layout
+      }
 
-
-  // if (page) {
-  //   component = page
-  // } else if (importer) {
-  //   component = lazy(() => {
-  //     return new Promise<{ default: React.FC<{ layout?: any }> }>(
-  //       async (resolve) => {
-  //         if (importer) {
-  //           const page = await importer()
-  //           routeFound[3] = page.default.component
-  //           onLoad(page.default.component)
-  //           resolve({ default: page.default.component })
-  //         }
-  //       }
-  //     )
-  //   })
-  // }
-
-  return {
-    layout,
-    component,
+      return found
+    }
   }
 }

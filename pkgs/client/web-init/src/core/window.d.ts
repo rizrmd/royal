@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { IAppRoot } from 'index'
-import React, { Fragment } from 'react'
-import { initDbs } from './dbs'
+import { Fragment } from 'react'
+import type { dbs } from 'server-db'
 import { jsx } from './jsx'
 
 declare global {
@@ -19,5 +19,7 @@ declare global {
     navigate: (href: string) => void
     preventPopRender: boolean
     appRoot: IAppRoot & { render: () => void }
+    db: typeof dbs['db']
+    dbs: typeof dbs
   }
 }
