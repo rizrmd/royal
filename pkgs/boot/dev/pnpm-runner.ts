@@ -1,4 +1,5 @@
 import { spawn } from 'cross-spawn'
+import pad from 'lodash.pad'
 import { log, silentUpdate } from 'server-utility'
 import { rawLogUpdate } from 'server-utility'
 import { Transform } from 'stream'
@@ -8,8 +9,7 @@ export const pnpm = async (
   opt: { cwd: string; name: string; stdout?: boolean }
 ) => {
   return new Promise<void>((resolve) => {
-    if (opt.stdout !== false)
-    silentUpdate(true)
+    if (opt.stdout !== false) silentUpdate(true)
     const cwd = process.cwd()
     const res = spawn('pnpm', args, {
       cwd: opt.cwd,
@@ -38,9 +38,7 @@ export const pnpm = async (
       )
     }
     process.chdir(cwd)
-    log(
-      `[${opt.name}] pnpm ${args.join(' ')}`
-    )
+    log(`[${pad(opt.name, 7)}] pnpm ${args.join(' ')}`)
     res.on('error', (e) => {
       log(`[ERROR] ${e}`)
     })
