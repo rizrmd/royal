@@ -21,5 +21,8 @@ declare global {
     appRoot: IAppRoot & { render: () => void }
     db: typeof dbs['db']
     dbs: typeof dbs
+    dbDefinitions: Record<string, any>
+    auth: any
+    serverUrl: string
   }
 }

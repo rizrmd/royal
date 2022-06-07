@@ -22,6 +22,15 @@ import { db as dbs_${e} }from './${e}/index'`
   }`
   )
 
+  for (let app of Object.keys(config.client)) {
+    await writeAsync(
+      join(cwd, 'app', app, 'types', 'dbs-list.ts'),
+      `export const dbsList = [${Object.keys(config.dbs).map(
+        (e) => `"${e}"`
+      )}] as const`
+    )
+  }
+
   await buildWatch({
     input: join(cwd, 'pkgs', 'server', 'db', 'src', 'index.ts'),
     output: join(cwd, '.output', 'pkgs', 'server.db.js'),

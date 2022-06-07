@@ -8,12 +8,10 @@ export const initDbs = () => {
       {},
       {
         get(_, name) {
-          const w: any = window
-
-          let baseUrl = ''
+          const w = window
 
           const post = async (params: any) => {
-            let url = `${baseUrl}/__data/${toSnake(params.action)}`
+            let url = `${w.serverUrl}/__data/${toSnake(params.action)}`
 
             if (params.table) {
               url += `...${params.table}`
@@ -38,7 +36,7 @@ export const initDbs = () => {
               if (Array.isArray(q)) return []
               const encrypted = await encrypt(q)
 
-              let url = `${baseUrl}/__data/query`
+              let url = `${w.serverUrl}/__data/query`
               const options = {
                 method: 'POST',
                 headers: {
@@ -58,12 +56,11 @@ export const initDbs = () => {
             {},
             {
               get(_, sname) {
-                if (!w.db_definitions) {
-                  w.db_definitions = {}
+                if (!w.dbDefinitions) {
+                  w.dbDefinitions = {}
                 }
-                const ls = w.db_definitions
-                const lskey =
-                  ((w.session || {}).sid || '').substring(0, 5) + '--'
+                const ls = w.dbDefinitions
+                const lskey = ((w.auth || {}).sid || '').substring(0, 5) + '--'
                 if (sname === isProxy) return true
                 return async function (this: any, ...params: any[]) {
                   const w = window as any
