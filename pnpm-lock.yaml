@@ -17,6 +17,25 @@ importers:
       '@types/node': 17.0.36
       tslib: 2.4.0
 
+  app/coba:
+    specifiers:
+      autoprefixer: ^10.4.7
+      postcss: ^8.4.14
+      react: ^18.1.0
+      react-dom: ^18.1.0
+      react-router-dom: ^6.3.0
+      tailwindcss: ^3.0.24
+      vite: ^2.9.10
+    dependencies:
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      react-router-dom: 6.3.0_ef5jwxihqo6n7gxfmzogljlgcm
+    devDependencies:
+      autoprefixer: 10.4.7_postcss@8.4.14
+      postcss: 8.4.14
+      tailwindcss: 3.0.24
+      vite: 2.9.10
+
   app/dbs:
     specifiers: {}
 
@@ -44,20 +63,20 @@ importers:
       '@emotion/react': ^11.9.0
       '@vitejs/plugin-react': ^1.3.2
       autoprefixer: ^10.4.7
-      chart.js: ^3.7.1
+      chart.js: ^3.8.0
       date-fns: ^2.28.0
-      framer-motion: ^6.2.9
+      framer-motion: ^6.3.10
       lodash.get: ^4.4.2
       popmotion: ^11.0.3
       postcss: ^8.4.14
       react: 18.1.0
-      react-chartjs-2: ^4.1.0
+      react-chartjs-2: ^4.2.0
       react-content-loader: ^6.2.0
       react-dom: 18.1.0
       react-responsive: 9.0.0-beta.10
       react-tooltip: ^4.2.21
       tailwindcss: ^3.0.24
-      vite: 2.9.9
+      vite: 2.9.10
       web-init: workspace:^
       web-ui: workspace:^
       web-utils: workspace:^
@@ -84,7 +103,7 @@ importers:
       autoprefixer: 10.4.7_postcss@8.4.14
       postcss: 8.4.14
       tailwindcss: 3.0.24
-      vite: 2.9.9
+      vite: 2.9.10
 
   app/web/types/react-dom:
     specifiers:
@@ -3009,6 +3028,12 @@ packages:
     resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
     dev: false
 
+  /history/5.3.0:
+    resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
+    dependencies:
+      '@babel/runtime': 7.18.3
+    dev: false
+
   /hoist-non-react-statics/3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
     dependencies:
@@ -3467,7 +3492,7 @@ packages:
     dev: false
 
   /path-is-absolute/1.0.1:
-    resolution: {integrity: sha1-F0uSaHNVNP+8es5r9TpanhtcX18=}
+    resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
     engines: {node: '>=0.10.0'}
     dev: false
 
@@ -3730,6 +3755,27 @@ packages:
       prop-types: 15.8.1
       react: 18.1.0
       shallow-equal: 1.2.1
+    dev: false
+
+  /react-router-dom/6.3.0_ef5jwxihqo6n7gxfmzogljlgcm:
+    resolution: {integrity: sha512-uaJj7LKytRxZNQV8+RbzJWnJ8K2nPsOOEuX7aQstlMZKQT0164C+X2w6bnkqU3sjtLvpd5ojrezAyfZ1+0sStw==}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      history: 5.3.0
+      react: 18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      react-router: 6.3.0_react@18.1.0
+    dev: false
+
+  /react-router/6.3.0_react@18.1.0:
+    resolution: {integrity: sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      history: 5.3.0
+      react: 18.1.0
     dev: false
 
   /react-tooltip/4.2.21_ef5jwxihqo6n7gxfmzogljlgcm:
@@ -4228,8 +4274,8 @@ packages:
     hasBin: true
     dev: false
 
-  /vite/2.9.9:
-    resolution: {integrity: sha512-ffaam+NgHfbEmfw/Vuh6BHKKlI/XIAhxE5QSS7gFLIngxg171mg1P3a4LSRME0z2ZU1ScxoKzphkipcYwSD5Ew==}
+  /vite/2.9.10:
+    resolution: {integrity: sha512-TwZRuSMYjpTurLqXspct+HZE7ONiW9d+wSWgvADGxhDPPyoIcNywY+RX4ng+QpK30DCa1l/oZgi2PLZDibhzbQ==}
     engines: {node: '>=12.2.0'}
     hasBin: true
     peerDependencies:
