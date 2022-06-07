@@ -23,6 +23,7 @@ declare global {
     dbs: typeof dbs
     dbDefinitions: Record<string, any>
     auth: any
-    serverUrl: string
+    baseurl: string
+    serverurl: string
   }
 }

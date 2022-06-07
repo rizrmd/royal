@@ -1,22 +1,33 @@
+import { watch } from 'chokidar'
 import { unzip } from 'fflate'
 import { readFileSync } from 'fs'
 import { dir, dirAsync, exists, list, readAsync, writeAsync } from 'fs-jetpack'
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
+import { buildWatch } from './build-watch'
+import { reloadAPI } from './client/api'
+import { reloadLayout } from './client/layout'
+import { reloadPage } from './client/page'
+import { clientDir } from './client/util'
 import { BaseClient } from './config-parse'
 import { pnpm } from './pnpm-runner'
-import { watch } from 'chokidar'
-import { reloadPage } from './client/page'
-import { reloadLayout } from './client/layout'
-import { reloadAPI } from './client/api'
-import { reloadAuth } from './client/auth'
-import { clientDir, dev } from './client/util'
-import { buildWatch } from './build-watch'
+
+export type IClientWatchers = {
+  api: null | ReturnType<typeof watch>
+  page: null | ReturnType<typeof watch>
+  layout: null | ReturnType<typeof watch>
+  singleRun: {
+    api: any
+    page: any
+    layout: any
+  }
+}
 
 export const buildClient = async (arg: {
   cwd: string
   name: string
   config: BaseClient
+  watch: boolean
 }) => {
   const { cwd, name } = arg
 
@@ -87,14 +98,23 @@ export const buildClient = async (arg: {
     await pnpm(['install'], {
       cwd: cdir,
       name,
+      stdout: arg.watch
     })
   }
 
-  watch(clientDir.auth).on('all', reloadAuth)
+  const watchers = {
+    api: null as null | ReturnType<typeof watch>,
+    page: null as null | ReturnType<typeof watch>,
+    layout: null as null | ReturnType<typeof watch>,
+    singleRun: { api: null, page: null, layout: null },
+  }
+
   watch(clientDir.api).on(
     'all',
     reloadAPI.bind({
       name,
+      singleRun: arg.watch === false,
+      watchers,
       build: async () => {
         await buildWatch({
           input: clientDir.apiOut,
@@ -104,6 +124,14 @@ export const buildClient = async (arg: {
       },
     })
   )
-  watch(clientDir.page).on('all', reloadPage)
-  watch(clientDir.layout).on('all', reloadLayout)
+
+  watch(clientDir.page).on(
+    'all',
+    reloadPage.bind({ singleRun: arg.watch === false, watchers })
+  )
+
+  watch(clientDir.layout).on(
+    'all',
+    reloadLayout.bind({ singleRun: arg.watch === false, watchers })
+  )
 }

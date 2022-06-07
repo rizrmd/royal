@@ -11,7 +11,7 @@ export const initDbs = () => {
           const w = window
 
           const post = async (params: any) => {
-            let url = `${w.serverUrl}/__data/${toSnake(params.action)}`
+            let url = `${w.serverurl}/__data/${toSnake(params.action)}`
 
             if (params.table) {
               url += `...${params.table}`
@@ -36,7 +36,7 @@ export const initDbs = () => {
               if (Array.isArray(q)) return []
               const encrypted = await encrypt(q)
 
-              let url = `${w.serverUrl}/__data/query`
+              let url = `${w.serverurl}/__data/query`
               const options = {
                 method: 'POST',
                 headers: {

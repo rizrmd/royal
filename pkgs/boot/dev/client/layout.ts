@@ -2,12 +2,12 @@ import { basename } from 'path'
 import { clientDir, walkDir } from './util'
 import { format } from 'prettier'
 import { writeFile } from 'fs/promises'
+import { IClientWatchers } from '../build-client'
 
-export const reloadLayout = (event: string, page: string) => {
-  generateLayout()
-}
-
-export const generateLayout = async () => {
+export async function reloadLayout(this: {
+  watchers: IClientWatchers
+  singleRun: boolean
+}) {
   const newLayouts: any = {}
   const list = await walkDir(clientDir.layout)
 
@@ -27,4 +27,13 @@ export const generateLayout = async () => {
       }`
   const formatted = format(output, { parser: 'babel' })
   await writeFile(clientDir.layoutOut, formatted)
+
+  if (this.singleRun) {
+    clearTimeout(this.watchers.singleRun.layout)
+    this.watchers.singleRun.layout = setTimeout(() => {
+      if (this.watchers.layout) {
+        this.watchers.layout.close()
+      }
+    }, 2000)
+  }
 }

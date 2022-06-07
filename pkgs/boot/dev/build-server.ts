@@ -6,6 +6,7 @@ import { pnpm } from './pnpm-runner'
 export const rebuildAppServer = async (arg: {
   cwd: string
   config: ParsedConfig
+  watch: boolean
 }) => {
   const { cwd, config } = arg
   const asdir = join(cwd, 'app', 'server')
@@ -17,6 +18,7 @@ export const rebuildAppServer = async (arg: {
     await pnpm(['install'], {
       cwd: asdir,
       name: 'ext',
+      stdout: arg.watch
     })
   }
 }

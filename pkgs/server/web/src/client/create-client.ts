@@ -19,7 +19,7 @@ export const createClient = async (
 
   if (url.startsWith(config.server.url)) {
     if (mode === 'dev') {
-      setupDevProxy(app, config, url, port)
+      setupDevProxy(app, config, url, port, name)
     } else {
       setupProdStatic(app, config, url, name)
     }

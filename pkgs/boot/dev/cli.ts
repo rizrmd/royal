@@ -5,6 +5,8 @@ import { prettyError } from 'server-utility'
 import { runDev } from './run-dev'
 import { readAsync, writeAsync } from 'fs-jetpack'
 import { join } from 'path'
+import { prodBuild as viteBuild } from '../prod/vite-build'
+import { runProd } from '../prod/run-prod'
 const program = new Command()
 prettyError()
 
@@ -16,7 +18,7 @@ program
   .addOption(new Option('-p, --port <number>', 'port number'))
   .addOption(new Option('-f, --force', 'force vite refresh cache'))
   .action(async (arg, opt) => {
-    await runDev()
+    await runDev(true)
   })
 
 program
@@ -74,13 +76,29 @@ dbs
   .action((name) => {})
 
 program
+  .command('build')
+  .description('build as production')
+  .action(async () => {
+    await runDev(false)
+    await viteBuild()
+    process.exit(1)
+  })
+
+program
   .command('prod')
   .description('run as production')
 
   .argument('[serve]', 'skip build process, just run the server')
   .argument('[debug]', 'debug')
   .addOption(new Option('--port <number>', 'port number'))
-  .action(async (serve, debug, _, a) => {})
+  .action(async (serve, debug, _, a) => {
+    if (!serve) {
+      await runDev(false)
+      await viteBuild()
+    }
+
+    await runProd()
+  })
 
 program
   .command('i')

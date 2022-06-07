@@ -5,13 +5,21 @@ import traverse from '@babel/traverse'
 import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
 import { prettyError } from 'server-utility'
+import { IClientWatchers } from '../build-client'
 import { clientDir, walkDir } from './util'
 
 export const pageOutput = {
   list: {} as any,
 }
 let reloadPageTimer = 0 as any
-export const reloadPage = async (event: string, path: string) => {
+export async function reloadPage(
+  this: {
+    watchers: IClientWatchers
+    singleRun: boolean
+  },
+  event: string,
+  path: string
+) {
   if (event === 'addDir') return
   if (event === 'unlink') await writeFile(path, '')
 
@@ -24,6 +32,15 @@ export const reloadPage = async (event: string, path: string) => {
   reloadPageTimer = setTimeout(async () => {
     await generatePageAll()
   }, 500)
+
+  if (this.singleRun) {
+    clearTimeout(this.watchers.singleRun.page)
+    this.watchers.singleRun.page = setTimeout(() => {
+      if (this.watchers.page) {
+        this.watchers.page.close()
+      }
+    }, 2000)
+  }
 }
 const generatePageAll = async () => {
   const list = await walkDir(clientDir.page)

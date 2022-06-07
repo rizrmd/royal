@@ -2,11 +2,17 @@ import { basename } from 'path'
 import { clientDir, dev, walkDir } from './util'
 import { format } from 'prettier'
 import { writeFile } from 'fs/promises'
+import { IClientWatchers } from '../build-client'
 
 let timeout = null as any
 let firstgen = false
 export const reloadAPI = function (
-  this: { name: string; build: () => Promise<void> },
+  this: {
+    name: string
+    build: () => Promise<void>
+    watchers: IClientWatchers
+    singleRun: boolean
+  },
   event: string,
   path: string
 ) {
@@ -18,6 +24,15 @@ export const reloadAPI = function (
       dev.boot.send({ action: 'reload.api', name: this.name })
     }
   }, 200)
+
+  if (this.singleRun) {
+    clearTimeout(this.watchers.singleRun.api)
+    this.watchers.singleRun.api = setTimeout(() => {
+      if (this.watchers.api) {
+        this.watchers.api.close()
+      }
+    }, 2000)
+  }
 }
 
 const generateApiIndex = async (name: string) => {

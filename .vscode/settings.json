@@ -8,7 +8,6 @@
         "**/Thumbs.db": true,
         "**/node_modules": true,
         "pnpm-lock.yaml": true,
-        ".env": true,
         ".prettierrc": true,
         "pnpm-workspace.yaml": true,
         ".vscode": true,
@@ -16,7 +15,6 @@
     },
     "hide-files.files": [
         "pnpm-lock.yaml",
-        ".env",
         ".prettierrc",
         "pnpm-workspace.yaml",
         ".vscode",

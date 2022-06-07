@@ -7,6 +7,8 @@
   "dependencies": {
     "@types/lodash.pad": "^4.5.7",
     "@types/lodash.throttle": "^4.1.7",
+    "@types/lodash.trim": "^4.5.7",
+    "@types/send": "^0.17.1",
     "axios": "^0.27.2",
     "boot": "workspace:^",
     "consola": "^2.15.3",
@@ -16,6 +18,8 @@
     "http-proxy": "^1.18.1",
     "lodash.pad": "^4.5.1",
     "lodash.throttle": "^4.1.1",
+    "lodash.trim": "^4.5.1",
+    "send": "^0.18.0",
     "server-db": "workspace:^",
     "server-utility": "workspace:^",
     "web-init": "workspace:^"

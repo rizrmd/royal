@@ -14,6 +14,7 @@ export const buildDb = async (arg: {
   cwd: string
   name: string
   url: string
+  watch: boolean
 }) => {
   const { cwd, name, url } = arg
   const dbpath = join(cwd, 'app', 'dbs', name)
@@ -49,12 +50,24 @@ export const buildDb = async (arg: {
     await pnpm(['install', 'prisma'], {
       cwd: dbpath,
       name: dbName,
-      stdout: true,
+      stdout: arg.watch,
     })
-    await pnpm(['prisma', 'init'], { cwd: dbpath, name: dbName })
+    await pnpm(['prisma', 'init'], {
+      cwd: dbpath,
+      name: dbName,
+      stdout: arg.watch,
+    })
     await writeAsync(join(dbpath, '.env'), `DATABASE_URL="${url}"`)
-    await pnpm(['prisma', 'db', 'pull'], { cwd: dbpath, name: dbName })
-    await pnpm(['prisma', 'generate'], { cwd: dbpath, name: dbName })
+    await pnpm(['prisma', 'db', 'pull'], {
+      cwd: dbpath,
+      name: dbName,
+      stdout: arg.watch,
+    })
+    await pnpm(['prisma', 'generate'], {
+      cwd: dbpath,
+      name: dbName,
+      stdout: arg.watch,
+    })
   }
 
   await writeAsync(

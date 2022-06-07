@@ -8,6 +8,7 @@ export const pnpm = async (
   opt: { cwd: string; name: string; stdout?: boolean }
 ) => {
   return new Promise<void>((resolve) => {
+    if (opt.stdout !== false)
     silentUpdate(true)
     const cwd = process.cwd()
     const res = spawn('pnpm', args, {
