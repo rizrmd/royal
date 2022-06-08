@@ -15,9 +15,12 @@ export default {
     for (let name of Object.keys(config.dbs)) {
       init.push(
         new Promise(async (finish) => {
-          forks[name] = fork(join(cwd, 'pkgs', 'dbs', name, 'db.js'))
-          const fk = forks[name] as any
-          forks[name].once('spawn', () => {
+          const setupFork = () => {
+            forks[name] = fork(join(cwd, 'pkgs', 'dbs', name, 'db.js'))
+            const fk = forks[name] as any
+            forks[name].once('spawn', () => {
+              fk.ready = true
+            })
             forks[name].on(
               'message',
               (data: { id: string; value: any; event?: 'ready' }) => {
@@ -25,7 +28,8 @@ export default {
                   finish()
                 }
                 if (data.id) {
-                  const result = dbProxyQueue[data.id]
+                  const result = dbProxyQueue[data.id] as any
+
                   if (result) {
                     result(data.value)
                     delete dbProxyQueue[data.id]
@@ -33,12 +37,15 @@ export default {
                 }
               }
             )
-            fk.ready = true
-          })
-          forks[name].once('disconnect', () => {
-            fk.ready = false
-          })
-          ;(dbs as any)[name] = dbProxy(forks[name] as any, name)
+            forks[name].stdout?.pipe(process.stdout)
+            forks[name].stderr?.pipe(process.stderr)
+            forks[name].once('disconnect', () => {
+              fk.ready = false
+              setupFork()
+            })
+            ;(dbs as any)[name] = dbProxy(forks[name] as any, name)
+          }
+          setupFork()
         })
       )
     }
@@ -68,13 +75,12 @@ const dbProxy = (
             get(_, action) {
               return (...params: any[]) => {
                 return new Promise<any>(async (resolve) => {
-                  const id =
-                    new Date().getTime() +
-                    '|' +
-                    Math.round(Math.random() * 9999999)
+                  let id = new Date().getTime() + '|' + randomDigits(5)
 
+                  while (dbProxyQueue[id]) {
+                    id = new Date().getTime() + '|' + randomDigits(5)
+                  }
                   dbProxyQueue[id] = resolve
-
                   if (!fk.ready) {
                     await waitUntil(() => fk.ready)
                   }
@@ -87,4 +93,8 @@ const dbProxy = (
       },
     }
   )
+}
+
+const randomDigits = (n: number) => {
+  return Math.floor(Math.random() * (9 * Math.pow(10, n))) + Math.pow(10, n)
 }

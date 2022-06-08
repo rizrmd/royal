@@ -4,6 +4,7 @@ import { setupDevProxy } from './dev-proxy'
 import { setupProdStatic } from './prod-static'
 import { dbs } from 'server-db'
 import { serveApi } from './serve-api'
+import { serveDb } from './serve-db'
 
 export const createClient = async (
   app: ReturnType<typeof createApp>,
@@ -15,6 +16,7 @@ export const createClient = async (
 ) => {
   const url = client.url.replace(`[server.url]`, config.server.url)
 
+  serveDb({ app, config, mode })
   serveApi({ app, name, mode, client })
 
   if (url.startsWith(config.server.url)) {

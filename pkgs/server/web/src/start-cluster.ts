@@ -1,6 +1,8 @@
 import cluster from 'cluster'
 import os from 'os'
 import { IPrimaryWorker } from '..'
+import { IDBMsg } from './client/serve-db'
+import { dbs } from 'server-db'
 const MAX_CLUSTER_PROCESS = os.cpus().length
 
 export const startCluster = (worker: IPrimaryWorker) => {
@@ -21,6 +23,23 @@ export const startCluster = (worker: IPrimaryWorker) => {
 
       if (Object.keys(worker.child).length >= clusterSize) {
         started()
+      }
+    })
+
+    cluster.on('message', async (wk, msg, socket) => {
+      if (msg && msg.action === 'db.query') {
+        const { id, arg } = msg as { id: string; arg: IDBMsg }
+        const db = (dbs as any)[arg.db]
+        const table = db[arg.table]
+
+        if (table) {
+          const action = table[arg.action]
+          if (action) {
+            const result = await action(...arg.params)
+            const pkt = { dbResult: { id, result }, action: 'db.result' }
+            wk.send(pkt)
+          }
+        }
       }
     })
 

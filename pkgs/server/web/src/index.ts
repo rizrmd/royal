@@ -4,15 +4,20 @@ import pad from 'lodash.pad'
 import serverDb from 'server-db'
 import { log, prettyError } from 'server-utility'
 import { serveApi } from './client/serve-api'
+import { dbResultQueue } from './client/serve-db'
 import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
 prettyError()
 
 export type IServerInit = {
-  action: 'init' | 'kill' | 'reload' | 'reload.api'
+  action: 'init' | 'kill' | 'reload' | 'reload.api' | 'db.result'
   name?: string
   config: ParsedConfig
   mode: 'dev' | 'prod'
+  dbResult?: {
+    id: string
+    result: any
+  }
 }
 
 export type IPrimaryWorker = {
@@ -55,6 +60,13 @@ if (cluster.isWorker) {
             serveApi({ name })
           }
         }
+      } else if (data.action === 'db.result') {
+        if (data.dbResult) {
+          const queue = dbResultQueue[data.dbResult.id]
+          if (queue) {
+            dbResultQueue[data.dbResult.id].result(data.dbResult.result)
+          }
+        }
       }
     })
   }
@@ -67,9 +79,10 @@ if (cluster.isWorker) {
         clusterSize: 0,
       } as IPrimaryWorker
 
+
       process.on('message', async (data: IServerInit) => {
         if (data.action === 'init') {
-          await serverDb.start(data.config)
+           await serverDb.start(data.config)
 
           worker.config = data.config
           worker.mode = data.mode
@@ -94,6 +107,8 @@ if (cluster.isWorker) {
         }
 
         if (data.action === 'kill') {
+          await serverDb.stop()
+
           worker.status = 'stopping'
           const killings = [] as Promise<void>[]
           for (let wk of Object.values(worker.child)) {

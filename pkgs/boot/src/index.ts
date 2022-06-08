@@ -30,43 +30,9 @@ const app = {
     timer: { ts: 0, ival: null as any },
   },
   client: {} as Record<string, ChildProcess>,
-  db: {
-    path: join(cwd, 'pkgs', 'server.db.js'),
-    module: null as null | typeof db,
-    fork: null as any,
-    timer: { ts: 0, ival: null as any },
-  },
 }
 export type IApp = typeof app
 
-const startDbs = async (config: ParsedConfig) => {
-  if (app.db.timer.ival !== null) {
-    await waitUntil(() => app.db.timer.ival === null)
-    return
-  }
-
-  app.db.timer.ts = new Date().getTime()
-  if (mode === 'dev') {
-    app.db.timer.ival = setInterval(() => {
-      logUpdate(`[${formatTs(app.db.timer.ts)}] ${padEnd('Connecting DB', 30)}`)
-    }, 100)
-  }
-
-  if (app.db.module) {
-    await app.db.module.stop()
-  } 
-
-  delete require.cache[app.db.path]
-  app.db.module = require(app.db.path).default
-  if (app.db.module) app.db.fork = await app.db.module.start(config)
-
-  logUpdate.done()
-  clearInterval(app.db.timer.ival)
-  app.db.timer.ival = null
-  if (mode === 'prod') {
-    console.log(`[${formatTs(app.db.timer.ts)}] ${padEnd('Connecting DB', 30)}`)
-  }
-}
 
 const startServer = async (config: ParsedConfig) => {
   if (app.server.timer.ival !== null) {
@@ -161,7 +127,6 @@ const startServer = async (config: ParsedConfig) => {
       onKilled: async () => {
         log('\n\nRestarting Dev Process')
         if (app.server.fork) await app.server.kill()
-        if (app.db.module) await app.db.module.stop()
         await Promise.all(
           Object.values(app.client).map((cp) => {
             return new Promise((killed) => {
@@ -181,12 +146,7 @@ const startServer = async (config: ParsedConfig) => {
     watch(app.server.path).on('change', async () => {
       await startServer(config)
     })
-    watch(app.db.path).on('change', async () => {
-      await startDbs(config)
-      await startServer(config)
-    })
 
-    await startDbs(config)
     await startServer(config)
 
     await startDevClient(config, app, cwd)
@@ -207,7 +167,6 @@ const startServer = async (config: ParsedConfig) => {
         })
       }
     }
-    await startDbs(config)
     await startServer(config)
   }
 })()

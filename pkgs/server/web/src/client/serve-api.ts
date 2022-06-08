@@ -6,7 +6,7 @@ import { dbs } from 'server-db'
 import { declareAPI } from 'web-init/src/api'
 import { web } from '../start-server'
 
-type IServeApiArgs = {
+export type IServeApiArgs = {
   app: ReturnType<typeof createApp>
   name: string
   client: BaseClient
