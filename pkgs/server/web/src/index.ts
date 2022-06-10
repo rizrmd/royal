@@ -7,6 +7,8 @@ import { serveApi } from './client/serve-api'
 import { dbResultQueue } from './client/serve-db'
 import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
+export * from './types'
+
 prettyError()
 
 export type IServerInit = {

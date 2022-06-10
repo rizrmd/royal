@@ -17,25 +17,6 @@ importers:
       '@types/node': 17.0.36
       tslib: 2.4.0
 
-  app/coba:
-    specifiers:
-      autoprefixer: ^10.4.7
-      postcss: ^8.4.14
-      react: ^18.1.0
-      react-dom: ^18.1.0
-      react-router-dom: ^6.3.0
-      tailwindcss: ^3.0.24
-      vite: ^2.9.10
-    dependencies:
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
-      react-router-dom: 6.3.0_ef5jwxihqo6n7gxfmzogljlgcm
-    devDependencies:
-      autoprefixer: 10.4.7_postcss@8.4.14
-      postcss: 8.4.14
-      tailwindcss: 3.0.24
-      vite: 2.9.10
-
   app/dbs:
     specifiers: {}
 
@@ -51,10 +32,12 @@ importers:
     specifiers:
       '@types/bcryptjs': ^2.4.2
       bcryptjs: ^2.4.3
+      server-web: workspace:^
     dependencies:
       bcryptjs: 2.4.3
     devDependencies:
       '@types/bcryptjs': 2.4.2
+      server-web: link:../../pkgs/server/web
 
   app/web:
     specifiers:
@@ -3048,12 +3031,6 @@ packages:
     resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
     dev: false
 
-  /history/5.3.0:
-    resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
-    dependencies:
-      '@babel/runtime': 7.18.3
-    dev: false
-
   /hoist-non-react-statics/3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
     dependencies:
@@ -3783,27 +3760,6 @@ packages:
       prop-types: 15.8.1
       react: 18.1.0
       shallow-equal: 1.2.1
-    dev: false
-
-  /react-router-dom/6.3.0_ef5jwxihqo6n7gxfmzogljlgcm:
-    resolution: {integrity: sha512-uaJj7LKytRxZNQV8+RbzJWnJ8K2nPsOOEuX7aQstlMZKQT0164C+X2w6bnkqU3sjtLvpd5ojrezAyfZ1+0sStw==}
-    peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
-    dependencies:
-      history: 5.3.0
-      react: 18.1.0
-      react-dom: 18.1.0_react@18.1.0
-      react-router: 6.3.0_react@18.1.0
-    dev: false
-
-  /react-router/6.3.0_react@18.1.0:
-    resolution: {integrity: sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==}
-    peerDependencies:
-      react: '>=16.8'
-    dependencies:
-      history: 5.3.0
-      react: 18.1.0
     dev: false
 
   /react-tooltip/4.2.21_ef5jwxihqo6n7gxfmzogljlgcm:
