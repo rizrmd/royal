@@ -5,7 +5,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "cd .output && pkg -c ../package.json -t node18-macos-arm64 server.js --compress Brotli --o server"
   },
   "dependencies": {
     "dotenv": "^16.0.1",
@@ -18,5 +19,8 @@
   "devDependencies": {
     "@types/node": "^17.0.36",
     "tslib": "^2.4.0"
+  },
+  "pkg": {
+    "assets": "./client/web/**/*"
   }
 }

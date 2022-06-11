@@ -1,4 +1,5 @@
 import { dirname, join } from 'path'
+import config from '../../../config'
 
 export type BaseClient = { url: string }
 export type BaseConfig = {
@@ -26,26 +27,24 @@ export type BaseConfig = {
 
 export type ParsedConfig = BaseConfig['prod'] & { app: BaseConfig['app'] }
 export const readConfig = async (
-  mode: 'dev' | 'prod'
+  mode: 'dev' | 'prod' | 'pkg'
 ): Promise<ParsedConfig> => {
-  const cwd = dirname(__filename)
-
-  if (mode === 'dev') {
-    delete require.cache[join(cwd, 'config.js')]
-  }
-  const config = require(join(cwd, 'config.js')).default
   return parseConfig(config, mode)
 }
 
 export const parseConfig = (
   config: any,
-  mode: 'dev' | 'prod'
+  mode: 'dev' | 'prod' | 'pkg'
 ): ParsedConfig => {
   const result = {
     app: config.app,
   } as any
 
-  for (let [k, v] of Object.entries(config[mode])) {
+  let configMode = mode
+  if (mode === 'pkg') {
+    configMode = 'prod'
+  }
+  for (let [k, v] of Object.entries(config[configMode])) {
     ;(result as any)[k] = v
   }
 

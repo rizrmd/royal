@@ -15,7 +15,7 @@ export type IServerInit = {
   action: 'init' | 'kill' | 'reload' | 'reload.api' | 'db.result'
   name?: string
   config: ParsedConfig
-  mode: 'dev' | 'prod'
+  mode: 'dev' | 'prod' | 'pkg'
   dbResult?: {
     id: string
     result: any
@@ -27,7 +27,7 @@ export type IPrimaryWorker = {
   child: Record<number, Worker>
   clusterSize: number
   config: ParsedConfig
-  mode: 'dev' | 'prod'
+  mode: 'dev' | 'prod'  | 'pkg'
 }
 
 if (cluster.isWorker) {

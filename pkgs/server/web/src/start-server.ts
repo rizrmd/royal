@@ -12,7 +12,7 @@ export const web = {
 
 export const startServer = async (
   config: ParsedConfig,
-  mode: 'dev' | 'prod'
+  mode: 'dev' | 'prod' | 'pkg'
 ) => {
   const url = new URL(config.server.url)
   const app = createApp()

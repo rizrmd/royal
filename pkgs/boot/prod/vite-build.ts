@@ -1,13 +1,13 @@
-import { dir, readAsync, remove, removeAsync, writeAsync } from 'fs-jetpack'
+import { readAsync, removeAsync, writeAsync } from 'fs-jetpack'
 import trim from 'lodash.trim'
 import { join } from 'path'
 import { BaseClient, parseConfig, ParsedConfig } from '../dev/config-parse'
 import { pnpm } from '../dev/pnpm-runner'
+import cfg from '../../../config'
 const cwd = process.cwd()
 
 export const prodBuild = async () => {
-  const path = join(cwd, '.output', 'config.js')
-  const config = parseConfig(require(path).default, 'dev')
+  const config = parseConfig(cfg, 'dev')
 
   await removeAsync(join(cwd, '.output', 'client'))
   for (let [name, client] of Object.entries(config.client)) {

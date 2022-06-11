@@ -10,7 +10,7 @@ export type IServeApiArgs = {
   app: ReturnType<typeof createApp>
   name: string
   client: BaseClient
-  mode: 'dev' | 'prod'
+  mode: 'dev' | 'prod' | 'pkg'
 }
 
 let cachedApiArgs = {} as IServeApiArgs

@@ -11,19 +11,21 @@ export const createClient = async (
   name: string,
   client: BaseClient,
   config: ParsedConfig,
-  mode: 'dev' | 'prod',
+  mode: 'dev' | 'prod' | 'pkg',
   port: number
 ) => {
   const url = client.url.replace(`[server.url]`, config.server.url)
 
-  serveDb({ app, config, mode })
+  if (mode !== 'pkg') {
+    serveDb({ app, config, mode })
+  }
   serveApi({ app, name, mode, client })
 
   if (url.startsWith(config.server.url)) {
     if (mode === 'dev') {
       setupDevProxy(app, config, url, port, name)
     } else {
-      setupProdStatic(app, config, url, name)
+      setupProdStatic(app, config, url, name, mode)
     }
   }
   // clients[name] = client

@@ -6,7 +6,7 @@ import { jsx } from './jsx'
 
 declare global {
   interface Window {
-    mode: 'dev' | 'prod'
+    mode: 'dev' | 'prod' | 'pkg'
     css: typeof css
     jsx: typeof jsx
     Fragment: typeof Fragment

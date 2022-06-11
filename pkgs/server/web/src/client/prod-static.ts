@@ -1,4 +1,5 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
+import { dir, exists, existsAsync, listAsync } from 'fs-jetpack'
 import type { createApp } from 'h3'
 import { join } from 'path'
 import send from 'send'
@@ -7,13 +8,16 @@ export const setupProdStatic = async (
   app: ReturnType<typeof createApp>,
   config: ParsedConfig,
   url: string,
-  name: string
+  name: string,
+  mode: 'prod' | 'pkg'
 ) => {
-  const root = join(process.cwd(), 'client', name)
+  const root = join(mode === 'prod' ? process.cwd() : __dirname, 'client', name)
   if (url.startsWith(config.server.url)) {
     const route = url.substring(config.server.url.length)
 
+    if (mode === 'pkg') console.log(await listAsync(__dirname))
     app.use(route, (req, res, next) => {
+      console.log(exists(join(root, req.url || '')), join(root, req.url || ''))
       send(req, join(root, req.url || ''), {
         index: false,
       })

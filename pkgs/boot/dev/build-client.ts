@@ -45,7 +45,7 @@ export const buildClient = async (arg: {
   dir(cdir)
 
   const cdirList = list(cdir)
-  if (!cdirList || (cdirList && cdirList.length === 0)) {
+  if (!cdirList || (cdirList && cdirList.length < 5)) {
     const zipFile = readFileSync(
       join(arg.cwd, 'pkgs', 'boot', 'dev', 'client', 'client.zip')
     )

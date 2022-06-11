@@ -6,7 +6,6 @@ import pad from 'lodash.pad'
 import padEnd from 'lodash.padend'
 import throttle from 'lodash.throttle'
 import { dirname, join } from 'path'
-import type db from 'server-db'
 import { Forker, log, logUpdate, waitUntil } from 'server-utility'
 import { clearInterval } from 'timers'
 import { ParsedConfig, readConfig } from '../dev/config-parse'
@@ -14,9 +13,16 @@ import { startDevClient } from './dev-client'
 import { npm } from './npm-run'
 import { printProcessUsage } from './utils/process-usage'
 
-
 const varg = arg({ '--mode': String })
-const mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod')
+let mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod') as
+  | 'dev'
+  | 'prod'
+  | 'pkg'
+
+if (!process.execPath.endsWith('node')) {
+  mode = 'pkg'
+}
+
 export const formatTs = (ts: number) => {
   return pad(`${((new Date().getTime() - ts) / 1000).toFixed(2)}s`, 7)
 }
@@ -33,8 +39,17 @@ const app = {
 }
 export type IApp = typeof app
 
+const startServer = async (
+  config: ParsedConfig,
+  mode: 'dev' | 'prod' | 'pkg'
+) => {
+  if (mode === 'pkg') {
+    const { startServer } = await import('../../server/web/src/start-server')
 
-const startServer = async (config: ParsedConfig) => {
+    await startServer(config, mode)
+    return
+  }
+
   if (app.server.timer.ival !== null) {
     await waitUntil(() => app.server.timer.ival === null)
     return
@@ -65,6 +80,7 @@ const startServer = async (config: ParsedConfig) => {
       }
     })
   }
+
   app.server.fork.once('spawn', () => {
     app.server.fork?.send({
       action: 'init',
@@ -78,7 +94,7 @@ const startServer = async (config: ParsedConfig) => {
       if (app.server.fork) {
         app.server.fork = null
         console.log('Back End Killed. Restarting...')
-        startServer(config)
+        startServer(config, mode)
       }
     },
     1000,
@@ -144,10 +160,10 @@ const startServer = async (config: ParsedConfig) => {
 
     const { watch } = require('chokidar') as typeof chokidar
     watch(app.server.path).on('change', async () => {
-      await startServer(config)
+      await startServer(config, mode)
     })
 
-    await startServer(config)
+    await startServer(config, mode)
 
     await startDevClient(config, app, cwd)
 
@@ -158,7 +174,7 @@ const startServer = async (config: ParsedConfig) => {
         }
       }
     })
-  } else {
+  } else if (mode === 'prod') {
     for (let key of Object.keys(config.dbs)) {
       if (!exists(join(cwd, 'pkgs', 'dbs', key, 'node_modules'))) {
         await npm(['install'], {
@@ -167,6 +183,8 @@ const startServer = async (config: ParsedConfig) => {
         })
       }
     }
-    await startServer(config)
+    await startServer(config, mode)
+  } else {
+    await startServer(config, mode)
   }
 })()

@@ -4,6 +4,7 @@ import pad from 'lodash.pad'
 import padEnd from 'lodash.padend'
 import { join } from 'path'
 import { error, Forker, logUpdate, silentUpdate } from 'server-utility'
+import config from '../../../config'
 import { buildClient } from './build-client'
 import { buildDb } from './build-db'
 import { buildDbs } from './build-dbs'
@@ -35,7 +36,9 @@ export const runDev = (watch: boolean) => {
       for (let [k, v] of Object.entries(config.dbs)) {
         await buildDb({ name: k, url: v.url, cwd, watch })
       }
-      await buildDbs(cwd, config, watch)
+      if (Object.keys(config.dbs).length > 0) {
+        await buildDbs(cwd, config, watch)
+      }
     }
 
     const rebuildClient = async (config: ParsedConfig) => {
@@ -44,60 +47,50 @@ export const runDev = (watch: boolean) => {
       }
     }
 
-    // build config
+    const cfg = parseConfig(config, 'dev')
+    await rebuildDB(cfg)
+
+    // build app/ext
+    await rebuildAppServer({ cwd, config: cfg, watch })
+
+    // build app/*
+    await rebuildClient(cfg)
+
+    // build server/web
     await buildWatch({
-      input: join(cwd, 'config.ts'),
-      output: join(cwd, '.output', 'config.js'),
-      buildOptions: { minify: true },
+      input: join(cwd, 'pkgs', 'server', 'web', 'src', 'index.ts'),
+      output: join(cwd, '.output', 'pkgs', 'server.web.js'),
       watch,
-      onReady: async (path) => {
-        delete require.cache[path]
-        const config = parseConfig(require(path).default, 'dev')
-        await rebuildDB(config)
+      buildOptions: {
+        minify: true,
+        sourcemap: 'linked',
+      },
+    })
 
-        // build app/ext
-        await rebuildAppServer({ cwd, config, watch })
-
-        // build app/*
-        await rebuildClient(config)
-
-        // build server/web
-        await buildWatch({
-          input: join(cwd, 'pkgs', 'server', 'web', 'src', 'index.ts'),
-          output: join(cwd, '.output', 'pkgs', 'server.web.js'),
-          watch,
-          buildOptions: {
-            minify: true,
-            sourcemap: 'linked',
-          },
-        })
-
-        // build boot
-        await buildWatch({
-          input: join(cwd, 'pkgs', 'boot', 'src', 'index.ts'),
-          output: join(cwd, '.output', 'server.js'),
-          watch,
-          buildOptions: {
-            minify: true,
-            sourcemap: true,
-            external: ['chokidar'],
-            plugins: [
-              alias({
-                pidtree: join(cwd, 'pkgs', 'boot', 'src', 'pidtree.js'),
-              }),
-            ],
-          },
-          onReady: async () => {
-            clearInterval(ival)
-            logUpdate.done()
-            if (watch) {
-              dev.boot = await Forker.run(join(cwd, '.output', 'server.js'), {
-                arg: ['--mode', 'dev', ...process.argv.slice(4)],
-              })
-            }
-            resolve()
-          },
-        })
+    // build boot
+    await buildWatch({
+      input: join(cwd, 'pkgs', 'boot', 'src', 'index.ts'),
+      output: join(cwd, '.output', 'server.js'),
+      watch,
+      buildOptions: {
+        minify: true,
+        sourcemap: true,
+        external: ['chokidar'],
+        plugins: [
+          alias({
+            pidtree: join(cwd, 'pkgs', 'boot', 'src', 'pidtree.js'),
+          }),
+        ],
+      },
+      onReady: async () => {
+        clearInterval(ival)
+        logUpdate.done()
+        if (watch) {
+          dev.boot = await Forker.run(join(cwd, '.output', 'server.js'), {
+            arg: ['--mode', 'dev', ...process.argv.slice(4)],
+          })
+        }
+        resolve()
       },
     })
   })

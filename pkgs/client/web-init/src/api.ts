@@ -7,7 +7,7 @@ export const declareAPI = (
     req: IncomingMessage & { body: any }
     reply: ServerResponse & { send: (body: any) => void }
     ext: any
-    mode: 'dev' | 'prod'
+    mode: 'dev' | 'prod' | 'pkg'
     baseurl: string
     db: typeof dbs['db']
     session: any
