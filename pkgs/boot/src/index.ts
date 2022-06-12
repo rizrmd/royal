@@ -19,7 +19,7 @@ let mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod') as
   | 'prod'
   | 'pkg'
 
-if (!process.execPath.endsWith('node')) {
+if (!process.execPath.endsWith('node') && !process.execPath.endsWith('node.exe')) {
   mode = 'pkg'
 }
 

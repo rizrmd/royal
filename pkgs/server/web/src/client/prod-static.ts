@@ -15,7 +15,6 @@ export const setupProdStatic = async (
   if (url.startsWith(config.server.url)) {
     const route = url.substring(config.server.url.length)
 
-    if (mode === 'pkg') console.log(await listAsync(__dirname))
     app.use(route, (req, res, next) => {
       console.log(exists(join(root, req.url || '')), join(root, req.url || ''))
       send(req, join(root, req.url || ''), {
