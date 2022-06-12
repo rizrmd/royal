@@ -7,7 +7,7 @@ export const npm = async (
 ) => {
   return new Promise<void>((resolve) => {
     const cwd = process.cwd()
-    const res = spawn('npm', args, {
+    const res = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', args, {
       cwd: opt.cwd,
       shell: true,
     })

@@ -5,7 +5,7 @@ const { join } = require('path')
 const { spawn } = require('child_process')
 
 const start = () => {
-  spawn('pnpm', ['jiti', './pkgs/boot/dev/cli.ts', ...(process.argv.slice(2))], {
+  spawn(/^win/.test(process.platform) ? 'pnpm.cmd' : 'pnpm', ['jiti', './pkgs/boot/dev/cli.ts', ...(process.argv.slice(2))], {
     stdio: 'inherit',
   })
 }

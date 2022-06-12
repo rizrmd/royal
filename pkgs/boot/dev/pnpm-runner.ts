@@ -11,7 +11,7 @@ export const pnpm = async (
   return new Promise<void>((resolve) => {
     if (opt.stdout !== false) silentUpdate(true)
     const cwd = process.cwd()
-    const res = spawn('pnpm', args, {
+    const res = spawn(/^win/.test(process.platform) ? 'pnpm.cmd' : 'pnpm', args, {
       cwd: opt.cwd,
       shell: true,
     })
