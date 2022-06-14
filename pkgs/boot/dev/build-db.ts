@@ -78,7 +78,7 @@ export type db_type = pc.PrismaClient
 export const db = new pc.PrismaClient() as unknown as pc.PrismaClient
 
 if (process.send) {
-  BigInt.prototype.toJSON = function() {
+  (BigInt as any).prototype.toJSON = function() {
     return this.toString()
   } 
 

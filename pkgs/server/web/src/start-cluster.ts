@@ -3,6 +3,7 @@ import os from 'os'
 import { IPrimaryWorker } from '..'
 import { IDBMsg } from './client/serve-db'
 import { dbs } from 'server-db'
+import { log } from 'server-utility'
 const MAX_CLUSTER_PROCESS = os.cpus().length
 
 export const startCluster = (worker: IPrimaryWorker) => {
@@ -30,6 +31,14 @@ export const startCluster = (worker: IPrimaryWorker) => {
       if (msg && msg.action === 'db.query') {
         const { id, arg } = msg as { id: string; arg: IDBMsg }
         const db = (dbs as any)[arg.db]
+
+        if (!db) {
+          log(
+            `WARNING: app/dbs/${arg.db} not found, are you sure has defined "${arg.db} entry on config.ts?`
+          )
+          return
+        }
+
         const table = db[arg.table]
 
         if (table) {

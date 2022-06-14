@@ -16,9 +16,9 @@ export default {
       },
     },
     dbs: {
-      // db: {
-      //   url: process.env.PROD_DB,
-      // },
+      db: {
+        url: process.env.PROD_DB,
+      },
     },
   },
   dev: {
@@ -32,9 +32,9 @@ export default {
       },
     },
     dbs: {
-      // db: {
-      //   url: process.env.DEV_DB,
-      // },
+      db: {
+        url: process.env.DEV_DB,
+      },
     },
   },
 } as BaseConfig

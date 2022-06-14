@@ -12,6 +12,7 @@ export const dbs = {} as typeof dbs_type
 export default {
   start: async (config: ParsedConfig) => {
     const init = [] as Promise<void>[]
+
     for (let name of Object.keys(config.dbs)) {
       init.push(
         new Promise(async (finish) => {
@@ -29,7 +30,7 @@ export default {
                 }
                 if (data.id) {
                   const result = dbProxyQueue[data.id] as any
-
+                  
                   if (result) {
                     result(data.value)
                     delete dbProxyQueue[data.id]
