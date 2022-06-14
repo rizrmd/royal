@@ -5,14 +5,17 @@ import { GlobalContext, useLocal } from 'web-utils'
 import { IFoundPage, loadPageAndLayout } from './core/router'
 import { ErrorBoundary } from './error'
 
+const w = window
 export type IAppRoot = {
   url: string
   layout: {
+    name?: string
     current?: FC
     last?: FC
-    list: Record<string, () => Promise<{default: React.ComponentType<any>}>>
+    list: Record<string, () => Promise<{ default: React.ComponentType<any> }>>
   }
   page: {
+    name?: string
     current?: FC
     list: Record<
       string,
@@ -41,10 +44,16 @@ export const App = () => {
     global: new WeakMap(),
   } as IAppRoot)
 
-  initPage(local)
+  w.appRoot = local
+
+  if (local.url !== location.pathname) {
+    local.url = location.pathname
+    loadPageAndLayout(local)
+  }
 
   const Layout = local.layout.current
   const Page = local.page.current
+
   if (!Layout || !Page) {
     return null
   }
@@ -60,19 +69,13 @@ export const App = () => {
     >
       <OptionalSuspense>
         <Layout>
-          <OptionalSuspense>{Page && <Page />}</OptionalSuspense>
+          <OptionalSuspense>
+            <Page />
+          </OptionalSuspense>
         </Layout>
       </OptionalSuspense>
     </GlobalContext.Provider>
   )
-}
-
-const initPage = async (local: IAppRoot) => {
-  if (local.url !== location.pathname) {
-    local.url = location.pathname
-
-    loadPageAndLayout(local)
-  }
 }
 
 const OptionalSuspense: FC<{ children: any }> = ({ children }) => {

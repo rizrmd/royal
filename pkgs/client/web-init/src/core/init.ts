@@ -11,6 +11,11 @@ export const initEnv = () => {
     w.jsx = jsx
     w.Fragment = Fragment
     w.React = React
+    w.cache = {
+      layouts: {},
+      pages: {},
+    }
+    w.params = {}
 
     if (w.Capacitor) {
       w.isMobile = true

@@ -25,5 +25,10 @@ declare global {
     auth: any
     baseurl: string
     serverurl: string
+    params: any
+    cache: {
+      layouts: Record<string, any>
+      pages: Record<string, any>
+    }
   }
 }

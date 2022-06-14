@@ -11,13 +11,15 @@
         ".prettierrc": true,
         "pnpm-workspace.yaml": true,
         ".vscode": true,
-        ".husky": true
+        ".husky": true,
+        "app/web/types": true
     },
     "hide-files.files": [
         "pnpm-lock.yaml",
         ".prettierrc",
         "pnpm-workspace.yaml",
         ".vscode",
-        ".husky"
+        ".husky",
+        "app/web/types"
     ]
 }

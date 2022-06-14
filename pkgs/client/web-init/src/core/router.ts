@@ -9,78 +9,115 @@ export type Base = {
   pages: typeof pages
 }
 
-export type IFoundPage = { layout: string; page: string; Page: FC; Layout: FC }
+export type IFoundPage = {
+  layout: string
+  page: string
+  Page: FC
+  Layout: FC
+  params: any
+}
 
+const w = window
+// this will be run on each app render, so it cannot be an aysnc func
 export const loadPageAndLayout = (local: IAppRoot) => {
   local.page.list = pages as any
   local.layout.list = layouts as any
 
   if (!local.router) {
     local.router = createRouter()
+    initializeRoute(local)
   }
 
   if (local.router) {
-    let found = local.router.lookup(local.url)
+    let found = local.router.lookup(local.url) as IFoundPage | null | undefined
+
     if (!found) {
-      for (let [pageName, page] of Object.entries(local.page.list)) {
-        const [url, layout, pageDef] = page as unknown as [
-          string,
-          string,
-          () => Promise<{
-            default: {
-              url: string
-              layout: string
-              component: () => Promise<{
-                default: React.ComponentType<any>
-              }>
-            }
-          }>
-        ]
-
-        local.router.insert(url, {
-          layout,
-          page: pageName,
-          Page: lazy(
-            () =>
-              new Promise<any>(async (resolve) => {
-                const result = (await pageDef()).default.component
-
-                resolve({
-                  default: result,
-                })
-              })
-          ),
-          Layout: lazy(
-            () =>
-              new Promise<any>(async (resolve) => {
-                const layoutFound = local.layout.list[layout]
-                if (layoutFound) {
-                  const result = (await layoutFound()).default
-
-                  resolve({
-                    default: result,
-                  })
-                } else {
-                  resolve({
-                    default: (children: any) => children,
-                  })
-                }
-              })
-          ),
-        })
-      }
-
-      let found = local.router.lookup(local.url) as
+      found = local.router.lookup(local.url + '/') as
         | IFoundPage
         | null
         | undefined
+    }
 
-      if (found) {
+
+    if (found) {
+      w.params = found.params || {}
+
+      local.page.name = found.page
+      if (w.cache.pages[found.page]) {
+        local.page.current = w.cache.pages[found.page]
+      } else {
         local.page.current = found.Page
-        local.layout.current = found.Layout
       }
 
-      return found
+      if (local.layout.name !== found.layout) {
+        local.layout.name = found.layout
+
+        if (w.cache.layouts[found.layout]) {
+          local.layout.current = w.cache.layouts[found.layout]
+        } else {
+          local.layout.current = found.Layout
+        }
+      } else if (w.cache.layouts[found.layout]) {
+        local.layout.current = w.cache.layouts[found.layout]
+      }
+    }
+    return found
+  }
+}
+
+const initializeRoute = (local: IAppRoot) => {
+  if (local.router) {
+    for (let [pageName, page] of Object.entries(local.page.list)) {
+      const [url, layoutName, pageDef] = page as unknown as [
+        string,
+        string,
+        () => Promise<{
+          default: {
+            url: string
+            layout: string
+            component: () => Promise<{
+              default: React.ComponentType<any>
+            }>
+          }
+        }>
+      ]
+
+      local.router.insert(convertUrl(url), {
+        layout: layoutName,
+        page: pageName,
+        Page: lazy(
+          () =>
+            new Promise<any>(async (resolve) => {
+              const result = (await pageDef()).default.component
+              w.cache.pages[pageName] = result
+              resolve({
+                default: result,
+              })
+            })
+        ),
+        Layout: lazy(
+          () =>
+            new Promise<any>(async (resolve) => {
+              const layoutFound = local.layout.list[layoutName]
+              if (layoutFound) {
+                const result = (await layoutFound()).default
+                w.cache.layouts[layoutName] = result
+                resolve({
+                  default: result,
+                })
+              } else {
+                resolve({
+                  default: (children: any) => children,
+                })
+              }
+            })
+        ),
+      })
     }
   }
+}
+
+const convertUrl = (url: string) => {
+  let newUrl = url.replace(/\:(.+)\?/gi, ':$1')
+  return newUrl
 }
