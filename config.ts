@@ -4,6 +4,7 @@ import 'dotenv/config'
 export default {
   app: {
     name: 'app',
+    version: '0.0.1',
   },
   prod: {
     server: {
@@ -16,9 +17,9 @@ export default {
       },
     },
     dbs: {
-      db: {
-        url: process.env.PROD_DB,
-      },
+      // db: {
+      //   url: process.env.PROD_DB,
+      // },
     },
   },
   dev: {
@@ -32,9 +33,9 @@ export default {
       },
     },
     dbs: {
-      db: {
-        url: process.env.DEV_DB,
-      },
+      // db: {
+      //   url: process.env.DEV_DB,
+      // },
     },
   },
 } as BaseConfig

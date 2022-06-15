@@ -1,8 +1,6 @@
 import { exec } from 'child_process'
-import { watch } from 'chokidar'
 import { exists } from 'fs-jetpack'
 import padEnd from 'lodash.padend'
-import throttle from 'lodash.throttle'
 import { join } from 'path'
 import { log, logUpdate } from 'server-utility'
 import { formatTs, IApp } from '.'

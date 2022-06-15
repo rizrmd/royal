@@ -9,6 +9,8 @@ import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
 export * from './types'
 
+import importedApp from 'app-server'
+
 prettyError()
 
 export type IServerInit = {
@@ -27,7 +29,7 @@ export type IPrimaryWorker = {
   child: Record<number, Worker>
   clusterSize: number
   config: ParsedConfig
-  mode: 'dev' | 'prod'  | 'pkg'
+  mode: 'dev' | 'prod' | 'pkg'
 }
 
 if (cluster.isWorker) {
@@ -81,14 +83,17 @@ if (cluster.isWorker) {
         clusterSize: 0,
       } as IPrimaryWorker
 
-
       process.on('message', async (data: IServerInit) => {
         if (data.action === 'init') {
-           await serverDb.start(data.config)
+          await serverDb.start(data.config)
 
           worker.config = data.config
           worker.mode = data.mode
           await startCluster(worker)
+
+          if (importedApp && importedApp['init']) {
+            importedApp.init(worker)
+          }
 
           if (process.send)
             process.send({ event: 'started', url: data.config.server.url })
@@ -122,6 +127,7 @@ if (cluster.isWorker) {
               })
             )
           }
+
           await Promise.all(killings)
           process.exit(1)
         }

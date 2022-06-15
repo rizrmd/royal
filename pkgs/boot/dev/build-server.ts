@@ -34,6 +34,7 @@ const newSource = async (extdir: string) => {
         scripts: {},
         dependencies: {
           bcryptjs: '^2.4.3',
+          "server-web": "workspace:^"
         },
         devDependencies: {
           '@types/bcryptjs': '^2.4.2',
@@ -48,11 +49,16 @@ const newSource = async (extdir: string) => {
   await writeAsync(
     join(extdir, 'src', 'index.ts'),
     `\
+import { AppServer } from 'server-web/src/types'
+
 export default {
   ext: {
-    Password: require('./bcrypt')
-  }
-}`
+    Password: require('./bcrypt'),
+  },
+  init: async (root) => {},
+  workerStarted: async (app) => {},
+} as AppServer
+`
   )
 
   await writeAsync(

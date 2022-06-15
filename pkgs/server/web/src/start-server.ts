@@ -2,6 +2,7 @@ import { ParsedConfig } from 'boot/dev/config-parse'
 import { createApp, createRouter } from 'h3'
 import { createServer } from 'http'
 import { createClient } from './client/create-client'
+import importedApp from 'app-server'
 
 export const web = {
   app: undefined as undefined | ReturnType<typeof createApp>,
@@ -26,6 +27,11 @@ export const startServer = async (
       mode,
       parseInt(url.port || '3200') + idx
     )
+  }
+
+  if (importedApp && importedApp['workerStarted']) {
+    const start = importedApp['workerStarted']
+    await start(app)
   }
 
   web.app = app

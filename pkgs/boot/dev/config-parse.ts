@@ -5,6 +5,7 @@ export type BaseClient = { url: string }
 export type BaseConfig = {
   app: {
     name: string
+    version?: string
   }
   prod: {
     server: {

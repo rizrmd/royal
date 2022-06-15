@@ -3,7 +3,7 @@ import fs from 'fs'
 import { Command, Option } from 'commander'
 import { prettyError } from 'server-utility'
 import { runDev } from './run-dev'
-import { readAsync, writeAsync } from 'fs-jetpack'
+import { readAsync, removeAsync, writeAsync } from 'fs-jetpack'
 import { join } from 'path'
 import { prodBuild as viteBuild } from '../prod/vite-build'
 import { runProd } from '../prod/run-prod'
@@ -79,6 +79,7 @@ program
   .command('build')
   .description('build as production')
   .action(async () => {
+    await removeAsync(join(process.cwd(), '.output'))
     await runDev(false)
     await viteBuild()
     process.exit(1)

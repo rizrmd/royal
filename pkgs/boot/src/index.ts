@@ -19,7 +19,10 @@ let mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod') as
   | 'prod'
   | 'pkg'
 
-if (!process.execPath.endsWith('node') && !process.execPath.endsWith('node.exe')) {
+if (
+  !process.execPath.endsWith('node') &&
+  !process.execPath.endsWith('node.exe')
+) {
   mode = 'pkg'
 }
 
@@ -183,6 +186,14 @@ const startServer = async (
         })
       }
     }
+
+    if (exists(join(cwd, 'package.json'))) {
+      await npm(['install'], {
+        cwd: join(cwd),
+        name: 'server ',
+      })
+    }
+
     await startServer(config, mode)
   } else {
     await startServer(config, mode)

@@ -16,7 +16,6 @@ export const setupProdStatic = async (
     const route = url.substring(config.server.url.length)
 
     app.use(route, (req, res, next) => {
-      console.log(exists(join(root, req.url || '')), join(root, req.url || ''))
       send(req, join(root, req.url || ''), {
         index: false,
       })

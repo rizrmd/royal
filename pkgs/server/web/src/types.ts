@@ -1,6 +1,9 @@
 import { createApp } from 'h3'
+import { IPrimaryWorker } from '.'
 
 export type AppServer = {
   ext: Record<string, any>
-  init: (app: ReturnType<typeof createApp>) => Promise<void>
+  init?: (root: IPrimaryWorker) => Promise<void>
+  workerStarted?: (app: ReturnType<typeof createApp>) => Promise<void>
+  requireNpm?: string[]
 }
