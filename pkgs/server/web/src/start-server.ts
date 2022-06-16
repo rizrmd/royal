@@ -2,7 +2,8 @@ import { ParsedConfig } from 'boot/dev/config-parse'
 import { createApp, createRouter } from 'h3'
 import { createServer } from 'http'
 import { createClient } from './client/create-client'
-import importedApp from 'app-server'
+
+import importedApp from '../../../../app/server/src/index'
 
 export const web = {
   app: undefined as undefined | ReturnType<typeof createApp>,
