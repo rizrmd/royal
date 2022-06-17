@@ -18,12 +18,22 @@ export type IFoundPage = {
 }
 
 const w = window
+
+if (w.appRoot && w.mode === 'dev') {
+  w.appRoot.router = undefined
+  w.cache.layouts = {};
+  w.cache.pages = {};
+  if (w.appRoot.render) w.appRoot.render()
+}
+
 // this will be run on each app render, so it cannot be an aysnc func
 export const loadPageAndLayout = (local: IAppRoot) => {
   local.page.list = pages as any
   local.layout.list = layouts as any
 
   if (!local.router) {
+    w.cache.layouts = {}
+    w.cache.pages = {}
     local.router = createRouter()
     initializeRoute(local)
   }
@@ -38,11 +48,11 @@ export const loadPageAndLayout = (local: IAppRoot) => {
         | undefined
     }
 
-
     if (found) {
       w.params = found.params || {}
 
       local.page.name = found.page
+
       if (w.cache.pages[found.page]) {
         local.page.current = w.cache.pages[found.page]
       } else {
@@ -75,9 +85,9 @@ const initializeRoute = (local: IAppRoot) => {
           default: {
             url: string
             layout: string
-            component: () => Promise<{
+            component: () => {
               default: React.ComponentType<any>
-            }>
+            }
           }
         }>
       ]
@@ -88,10 +98,10 @@ const initializeRoute = (local: IAppRoot) => {
         Page: lazy(
           () =>
             new Promise<any>(async (resolve) => {
-              const result = (await pageDef()).default.component
-              w.cache.pages[pageName] = result
+              const component = (await pageDef()).default.component
+              w.cache.pages[pageName] = component
               resolve({
-                default: result,
+                default: component,
               })
             })
         ),

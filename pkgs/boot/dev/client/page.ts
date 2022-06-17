@@ -86,14 +86,14 @@ const generatePageAll = async () => {
                   }
                 }
               }
-              const prop = arg.properties[0]
+              // const prop = arg.properties[0]
             }
           }
         },
       })
       pageOutput.list[name] = `["${url}", "${layout}", () => import('..${path
         .substring(clientDir.root.length, path.length - 4)
-        .replace(/\\/gi, '/')}')]`
+        .replace(/\\/gi, '/')}.tsx?t=${new Date().getTime()}')]`
     } catch (e) {}
   }
 

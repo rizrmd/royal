@@ -5,6 +5,7 @@ import { setupProdStatic } from './prod-static'
 import { dbs } from 'server-db'
 import { serveApi } from './serve-api'
 import { serveDb } from './serve-db'
+import { serveDbPkg } from './serve-db-pkg'
 
 export const createClient = async (
   app: ReturnType<typeof createApp>,
@@ -18,6 +19,8 @@ export const createClient = async (
 
   if (mode !== 'pkg') {
     serveDb({ app, config, mode })
+  } else {
+    await serveDbPkg({ app, config, mode })
   }
   serveApi({ app, name, mode, client })
 

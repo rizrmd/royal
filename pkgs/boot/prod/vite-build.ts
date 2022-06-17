@@ -6,7 +6,7 @@ import { pnpm } from '../dev/pnpm-runner'
 import cfg from '../../../config'
 const cwd = process.cwd()
 
-export const prodBuild = async () => {
+export const viteBuild = async () => {
   const config = parseConfig(cfg, 'dev')
 
   await removeAsync(join(cwd, '.output', 'client'))

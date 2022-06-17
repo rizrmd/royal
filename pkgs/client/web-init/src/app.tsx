@@ -2,7 +2,7 @@
 import { createRouter } from 'radix3'
 import { FC, Suspense } from 'react'
 import { GlobalContext, useLocal } from 'web-utils'
-import { IFoundPage, loadPageAndLayout } from './core/router'
+import { loadPageAndLayout } from './core/router'
 import { ErrorBoundary } from './error'
 
 const w = window
@@ -46,7 +46,7 @@ export const App = () => {
 
   w.appRoot = local
 
-  if (local.url !== location.pathname) {
+  if (!local.router || local.url !== location.pathname) {
     local.url = location.pathname
     loadPageAndLayout(local)
   }

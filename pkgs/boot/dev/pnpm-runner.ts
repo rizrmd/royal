@@ -11,10 +11,14 @@ export const pnpm = async (
   return new Promise<void>((resolve) => {
     if (opt.stdout !== false) silentUpdate(true)
     const cwd = process.cwd()
-    const res = spawn(/^win/.test(process.platform) ? 'pnpm.cmd' : 'pnpm', args, {
-      cwd: opt.cwd,
-      shell: true,
-    })
+    const res = spawn(
+      /^win/.test(process.platform) ? 'pnpm.cmd' : 'pnpm',
+      args,
+      {
+        cwd: opt.cwd,
+        shell: true,
+      }
+    )
     const timeouts = [] as any[]
 
     if (opt.stdout !== false) {
@@ -36,6 +40,7 @@ export const pnpm = async (
           },
         })
       )
+      res.stderr.pipe(process.stdout)
     }
     process.chdir(cwd)
     log(`[${pad(opt.name, 7)}] pnpm ${args.join(' ')}`)

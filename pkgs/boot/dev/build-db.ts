@@ -8,6 +8,7 @@ import {
   writeAsync,
 } from 'fs-jetpack'
 import { join } from 'path'
+import { exit } from 'process'
 import { pnpm } from './pnpm-runner'
 
 export const buildDb = async (arg: {
@@ -129,15 +130,19 @@ if (process.send) {
     }
   )
 
-  await build({
-    entryPoints: [indexts],
-    outfile: join(cwd, '.output', 'pkgs', 'dbs', name, `db.js`),
-    external: ['esbuild'],
-    bundle: true,
-    platform: 'node',
-    minify: true,
-    sourcemap: 'linked',
-  })
+  try {
+    await build({
+      entryPoints: [indexts],
+      outfile: join(cwd, '.output', 'pkgs', 'dbs', name, `db.js`),
+      external: ['esbuild'],
+      bundle: true,
+      platform: 'node',
+      minify: true,
+      sourcemap: 'linked',
+    })
+  } catch (e) {
+    throw new Error('Failed to build database')
+  }
 
   if (!exists(join(cwd, '.output', 'pkgs', 'dbs', name, 'package.json'))) {
     await copyAsync(

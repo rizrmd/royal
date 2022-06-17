@@ -6,15 +6,13 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        "**/node_modules": false,
+        "**/node_modules": true,
         "pnpm-lock.yaml": true,
         ".prettierrc": true,
         "pnpm-workspace.yaml": true,
         ".vscode": true,
         ".husky": true,
-        "app/web/types": true,
         "app/web/postcss.config.js": true,
-        "app/web/vite.config.ts": true,
         "app/web/tsconfig.json": true
     },
     "hide-files.files": [
@@ -23,9 +21,7 @@
         "pnpm-workspace.yaml",
         ".vscode",
         ".husky",
-        "app/web/types",
         "app/web/postcss.config.js",
-        "app/web/vite.config.ts",
         "app/web/tsconfig.json"
     ]
 }

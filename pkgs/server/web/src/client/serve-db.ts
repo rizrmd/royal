@@ -7,7 +7,7 @@ import trim from 'lodash.trim'
 export type IServeDbArgs = {
   app: ReturnType<typeof createApp>
   config: ParsedConfig
-  mode: 'dev' | 'prod'
+  mode: 'dev' | 'prod' | 'pkg'
 }
 
 export type IDBMsg = {
@@ -69,6 +69,6 @@ export const serveDb = (arg: Partial<IServeDbArgs>) => {
   }
 }
 
-const randomDigits = (n: number) => {
+export const randomDigits = (n: number) => {
   return Math.floor(Math.random() * (9 * Math.pow(10, n))) + Math.pow(10, n)
 }

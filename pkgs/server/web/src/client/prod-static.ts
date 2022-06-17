@@ -1,5 +1,4 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
-import { dir, exists, existsAsync, listAsync } from 'fs-jetpack'
 import type { createApp } from 'h3'
 import { join } from 'path'
 import send from 'send'
@@ -11,7 +10,12 @@ export const setupProdStatic = async (
   name: string,
   mode: 'prod' | 'pkg'
 ) => {
-  const root = join(mode === 'prod' ? process.cwd() : __dirname, 'client', name)
+  let root = join(process.cwd(), 'client', name)
+
+  if (mode === 'pkg') {
+    root = join(__dirname, 'client', name)
+  }
+
   if (url.startsWith(config.server.url)) {
     const route = url.substring(config.server.url.length)
 

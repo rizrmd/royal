@@ -37,5 +37,9 @@ export const startServer = async (
 
   web.app = app
   web.server = createServer(web.app)
+  if (mode === 'pkg') {
+    console.log(`Server started at http://localhost:${url.port}`)
+  }
+
   web.server.listen(url.port || 3200)
 }

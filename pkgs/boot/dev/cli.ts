@@ -5,8 +5,9 @@ import { prettyError } from 'server-utility'
 import { runDev } from './run-dev'
 import { readAsync, removeAsync, writeAsync } from 'fs-jetpack'
 import { join } from 'path'
-import { prodBuild as viteBuild } from '../prod/vite-build'
+import { viteBuild } from '../prod/vite-build'
 import { runProd } from '../prod/run-prod'
+import { pnpm } from './pnpm-runner'
 const program = new Command()
 prettyError()
 
@@ -82,6 +83,34 @@ program
     await removeAsync(join(process.cwd(), '.output'))
     await runDev(false)
     await viteBuild()
+    process.exit(1)
+  })
+
+program
+  .command('pkg')
+  .description('bundle build as executable')
+  .action(async () => {
+    await removeAsync(join(process.cwd(), '.output'))
+    await runDev(false, { isPkg: true })
+    await viteBuild()
+    await pnpm(
+      [
+        'pkg',
+        '-c',
+        '.output/package.json',
+        '-t',
+        'node18-macos-arm64',
+        '.output/server.js',
+        '--o',
+        '.output/server',
+      ],
+      {
+        cwd: join(process.cwd()),
+        name: 'pkg',
+        stdout: true,
+      }
+    )
+
     process.exit(1)
   })
 

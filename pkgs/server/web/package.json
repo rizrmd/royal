@@ -6,6 +6,7 @@
   "main": "./src/index.ts",
   "dependencies": {
     "@types/lodash.camelcase": "^4.3.7",
+    "@types/lodash.get": "^4.4.7",
     "@types/lodash.pad": "^4.5.7",
     "@types/lodash.snakecase": "^4.1.7",
     "@types/lodash.throttle": "^4.1.7",
@@ -19,6 +20,7 @@
     "h3": "^0.7.8",
     "http-proxy": "^1.18.1",
     "lodash.camelcase": "^4.3.0",
+    "lodash.get": "^4.4.2",
     "lodash.pad": "^4.5.1",
     "lodash.snakecase": "^4.1.1",
     "lodash.throttle": "^4.1.1",

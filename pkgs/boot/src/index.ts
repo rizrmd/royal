@@ -48,7 +48,6 @@ const startServer = async (
 ) => {
   if (mode === 'pkg') {
     const { startServer } = await import('../../server/web/src/start-server')
-
     await startServer(config, mode)
     return
   }
