@@ -2,8 +2,6 @@ import { BaseClient, ParsedConfig } from 'boot/dev/config-parse'
 import type { createApp } from 'h3'
 import { setupDevProxy } from './dev-proxy'
 import { setupProdStatic } from './prod-static'
-import { dbs } from 'server-db'
-import { serveApi } from './serve-api'
 import { serveDb } from './serve-db'
 import { serveDbPkg } from './serve-db-pkg'
 
@@ -22,7 +20,6 @@ export const createClient = async (
   } else {
     await serveDbPkg({ app, config, mode })
   }
-  serveApi({ app, name, mode, client })
 
   if (url.startsWith(config.server.url)) {
     if (mode === 'dev') {

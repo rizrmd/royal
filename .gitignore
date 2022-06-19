@@ -72,3 +72,5 @@ app/mobile/www
 .pnpm-lock.yaml
 app/dbs/package.json
 app
+
+app

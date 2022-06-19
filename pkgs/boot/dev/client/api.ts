@@ -30,20 +30,21 @@ const generateApiIndex = async (cwd: string) => {
       .substring(0, i.length - 3)
       .substring(apiPath.length + 1)
       .replace(/[\W_]/g, '_')
+
     newApi[name] = {
       import: `./api/${i
         .substring(apiPath.length, i.length - 3)
-        .replace(/\\/gi, '/')}`,
+        .replace(/\\\\/gi, '/')}`,
       name,
     }
   }
   const output = `
   ${Object.entries(newApi)
-    .map((arg: any) => {
-      const [_, value] = arg
-      return `import ${value.name} from '${value.import}'`
-    })
-    .join('\n')}
+      .map((arg: any) => {
+        const [_, value] = arg
+        return `import ${value.name} from '${value.import}'`
+      })
+      .join('\n')}
   
   export default {
     ${Object.entries(newApi)

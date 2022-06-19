@@ -62,6 +62,7 @@ export const runDev = (
     const cfg = parseConfig(config, opt && opt.isPkg ? 'prod' : 'dev')
     await rebuildDB(cfg)
 
+
     ts = new Date().getTime()
     if (isDebug) logUpdate.done()
     clearInterval(debug)

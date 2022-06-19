@@ -8,7 +8,7 @@ import importedApp from '../../../../app/server/src/index'
 export const web = {
   app: undefined as undefined | ReturnType<typeof createApp>,
   server: undefined as undefined | ReturnType<typeof createServer>,
-  clients: {} as Record<string, { api?: ReturnType<typeof createRouter> }>,
+  clients: {} as Record<string, {}>,
   ext: undefined as undefined | (Record<string, any> & { init?: () => void }),
 }
 
@@ -30,9 +30,18 @@ export const startServer = async (
     )
   }
 
-  if (importedApp && importedApp['workerStarted']) {
-    const start = importedApp['workerStarted']
-    await start(app)
+  if (importedApp) {
+    if (importedApp['workerStarted']) {
+      const start = importedApp['workerStarted']
+      await start(app)
+    }
+
+    if (importedApp['api']) {
+      const api = (await importedApp['api']).default
+      if (api) {
+        
+      }
+    }
   }
 
   web.app = app
