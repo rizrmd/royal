@@ -1,53 +1,38 @@
-import { basename } from 'path'
-import { clientDir, dev, walkDir } from './util'
-import { format } from 'prettier'
 import { writeFile } from 'fs/promises'
-import { IClientWatchers } from '../build-client'
+import { join } from 'path'
+import { format } from 'prettier'
+import { dev, walkDir } from './util'
 
 let timeout = null as any
 let firstgen = false
 export const reloadAPI = function (
-  this: {
-    name: string
-    build: () => Promise<void>
-    watchers: IClientWatchers
-    singleRun: boolean
-  },
+  this: { cwd: string },
   event: string,
   path: string
 ) {
   clearTimeout(timeout)
   timeout = setTimeout(async () => {
-    await generateApiIndex(this.name)
-    await this.build()
+    await generateApiIndex(this.cwd)
     if (dev.boot) {
-      dev.boot.send({ action: 'reload.api', name: this.name })
+      dev.boot.send({ action: 'reload.api' })
     }
   }, 200)
-
-  if (this.singleRun) {
-    clearTimeout(this.watchers.singleRun.api)
-    this.watchers.singleRun.api = setTimeout(() => {
-      if (this.watchers.api) {
-        this.watchers.api.close()
-      }
-    }, 2000)
-  }
 }
 
-const generateApiIndex = async (name: string) => {
+const generateApiIndex = async (cwd: string) => {
+  const apiPath = join(cwd, 'app', 'server', 'src', 'api')
+  const apiOut = join(cwd, 'app', 'server', 'src', 'api.ts')
   const newApi: Record<string, { import: string; name: string }> = {}
-  const list = await walkDir(clientDir.api)
+  const list = await walkDir(join(cwd, 'app', 'server', 'src', 'api'))
 
   for (let i of list) {
     const name = i
       .substring(0, i.length - 3)
-      .substring(clientDir.api.length + 1)
+      .substring(apiPath.length + 1)
       .replace(/[\W_]/g, '_')
-
     newApi[name] = {
-      import: `..${i
-        .substring(clientDir.root.length, i.length - 3)
+      import: `./api/${i
+        .substring(apiPath.length, i.length - 3)
         .replace(/\\/gi, '/')}`,
       name,
     }
@@ -69,5 +54,5 @@ const generateApiIndex = async (name: string) => {
       .join('\n')}
       }`
   const formatted = format(output, { parser: 'babel' })
-  await writeFile(clientDir.apiOut, formatted)
+  await writeFile(apiOut, formatted)
 }

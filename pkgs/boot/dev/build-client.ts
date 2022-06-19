@@ -13,11 +13,9 @@ import { BaseClient } from './config-parse'
 import { pnpm } from './pnpm-runner'
 
 export type IClientWatchers = {
-  api: null | ReturnType<typeof watch>
   page: null | ReturnType<typeof watch>
   layout: null | ReturnType<typeof watch>
   singleRun: {
-    api: any
     page: any
     layout: any
   }
@@ -98,32 +96,15 @@ export const buildClient = async (arg: {
     await pnpm(['install'], {
       cwd: cdir,
       name,
-      stdout: arg.watch
+      stdout: arg.watch,
     })
   }
 
   const watchers = {
-    api: null as null | ReturnType<typeof watch>,
     page: null as null | ReturnType<typeof watch>,
     layout: null as null | ReturnType<typeof watch>,
     singleRun: { api: null, page: null, layout: null },
   }
-
-  watch(clientDir.api).on(
-    'all',
-    reloadAPI.bind({
-      name,
-      singleRun: arg.watch === false,
-      watchers,
-      build: async () => {
-        await buildWatch({
-          input: clientDir.apiOut,
-          output: join(cwd, '.output', name, 'api.js'),
-          buildOptions: { minify: true, sourcemap: 'linked', watch: false },
-        })
-      },
-    })
-  )
 
   watch(clientDir.page).on(
     'all',

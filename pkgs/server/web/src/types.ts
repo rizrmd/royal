@@ -7,3 +7,5 @@ export type AppServer = {
   workerStarted?: (app: ReturnType<typeof createApp>) => Promise<void>
   requireNpm?: string[]
 }
+
+export const createApi = () => {}

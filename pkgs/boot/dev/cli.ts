@@ -19,7 +19,7 @@ program
   .addOption(new Option('-p, --port <number>', 'port number'))
   .addOption(new Option('-f, --force', 'force vite refresh cache'))
   .action(async (arg, opt) => {
-    await runDev(true)
+    await runDev(true, arg === "debug" ? { isDebug: true } : undefined)
   })
 
 program

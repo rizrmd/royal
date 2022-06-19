@@ -1,5 +1,8 @@
-import { exists, writeAsync } from 'fs-jetpack'
+import { watch } from 'chokidar'
+import { dirAsync, exists, writeAsync } from 'fs-jetpack'
+import throttle from 'lodash.throttle'
 import { join } from 'path'
+import { reloadAPI } from './client/api'
 import { ParsedConfig } from './config-parse'
 import { pnpm } from './pnpm-runner'
 
@@ -14,11 +17,16 @@ export const rebuildAppServer = async (arg: {
     await newSource(asdir)
   }
 
+  watch(join(cwd, 'app', 'server', 'src', 'api')).on(
+    'all',
+    reloadAPI.bind({ cwd })
+  )
+
   if (!exists(join(asdir, 'node_modules'))) {
     await pnpm(['install'], {
       cwd: asdir,
       name: 'ext',
-      stdout: arg.watch
+      stdout: arg.watch,
     })
   }
 }
@@ -34,7 +42,8 @@ const newSource = async (extdir: string) => {
         scripts: {},
         dependencies: {
           bcryptjs: '^2.4.3',
-          "server-web": "workspace:^"
+          'server-web': 'workspace:^',
+          'web-init': 'workspace:^',
         },
         devDependencies: {
           '@types/bcryptjs': '^2.4.2',
@@ -46,6 +55,8 @@ const newSource = async (extdir: string) => {
     )
   )
 
+  await dirAsync(join(extdir, 'api'))
+
   await writeAsync(
     join(extdir, 'src', 'index.ts'),
     `\
@@ -55,6 +66,7 @@ export default {
   ext: {
     Password: require('./bcrypt'),
   },
+  api: import('./api'),
   init: async (root) => {},
   workerStarted: async (app) => {},
 } as AppServer

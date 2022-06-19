@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http'
 import type { dbs } from 'server-db'
 
-export const declareAPI = (
+export const createAPI = (
   url: string,
   func: (args: {
     req: IncomingMessage & { body: any }

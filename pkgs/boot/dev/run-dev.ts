@@ -13,18 +13,25 @@ import { dev } from './client/util'
 import { parseConfig, ParsedConfig } from './config-parse'
 
 import config from '../../../config'
+import get from 'lodash.get'
 
 const cwd = process.cwd()
 const formatTs = (ts: number) => {
   return pad(`${((new Date().getTime() - ts) / 1000).toFixed(2)}s`, 7)
 }
 
-export const runDev = (watch: boolean, opt?: { isPkg?: true }) => {
+export const runDev = (
+  watch: boolean,
+  opt?: { isPkg?: true; isDebug?: true }
+) => {
   return new Promise<void>(async (resolve) => {
-    const ts = new Date().getTime()
+    let ts = new Date().getTime()
+    const isDebug = get(opt, 'isDebug', false)
     const ival = setInterval(() => {
-      logUpdate(`[${formatTs(ts)}] ${padEnd(`Booting Royal`, 30)} `)
+      if (!isDebug)
+        logUpdate(`[${formatTs(ts)}] ${padEnd(`Booting Royal`, 30)} `)
     }, 100)
+
     if (!exists(join(cwd, 'pkgs'))) {
       error(
         'Directory pkgs not found. Please run `node base` from root directory.'
@@ -49,16 +56,37 @@ export const runDev = (watch: boolean, opt?: { isPkg?: true }) => {
       }
     }
 
+    let debug = setInterval(() => {
+      if (isDebug) logUpdate(`[${formatTs(ts)}] ${padEnd(`Building DB`, 30)} `)
+    }, 100)
     const cfg = parseConfig(config, opt && opt.isPkg ? 'prod' : 'dev')
     await rebuildDB(cfg)
 
+    ts = new Date().getTime()
+    if (isDebug) logUpdate.done()
+    clearInterval(debug)
+
     // build app/ext
+    debug = setInterval(() => {
+      if (isDebug)
+        logUpdate(`[${formatTs(ts)}] ${padEnd(`Building App Server`, 30)} `)
+    }, 100)
     await rebuildAppServer({ cwd, config: cfg, watch })
 
+    ts = new Date().getTime()
+    if (isDebug) logUpdate.done()
+    clearInterval(debug)
+
     // build app/*
+
+    debug = setInterval(() => {
+      if (isDebug)
+        logUpdate(`[${formatTs(ts)}] ${padEnd(`Building App Client`, 30)} `)
+    }, 100)
     await rebuildClient(cfg)
 
     let appServReqNpm = []
+
     const importAppServer = await import(join('../../../app/server/src/index'))
     if (importAppServer && importAppServer['default']) {
       const appServ = importAppServer['default']
@@ -95,6 +123,14 @@ export const runDev = (watch: boolean, opt?: { isPkg?: true }) => {
       }
     }
 
+    ts = new Date().getTime()
+    if (isDebug) logUpdate.done()
+    clearInterval(debug)
+
+    debug = setInterval(() => {
+      if (isDebug)
+        logUpdate(`[${formatTs(ts)}] ${padEnd(`Building Web Server`, 30)} `)
+    }, 100)
     // build server/web
     await buildWatch({
       input: join(cwd, 'pkgs', 'server', 'web', 'src', 'index.ts'),
@@ -107,6 +143,15 @@ export const runDev = (watch: boolean, opt?: { isPkg?: true }) => {
       },
     })
 
+    ts = new Date().getTime()
+    if (isDebug) logUpdate.done()
+    clearInterval(debug)
+
+
+    debug = setInterval(() => {
+      if (isDebug)
+        logUpdate(`[${formatTs(ts)}] ${padEnd(`Starting Server`, 30)} `)
+    }, 100)
     // build boot
     await buildWatch({
       input: join(cwd, 'pkgs', 'boot', 'src', 'index.ts'),
@@ -125,6 +170,10 @@ export const runDev = (watch: boolean, opt?: { isPkg?: true }) => {
       onReady: async () => {
         clearInterval(ival)
         logUpdate.done()
+
+        ts = new Date().getTime()
+        if (isDebug) logUpdate.done()
+        clearInterval(debug)
         if (watch) {
           dev.boot = await Forker.run(join(cwd, '.output', 'server.js'), {
             arg: ['--mode', 'dev', ...process.argv.slice(4)],
