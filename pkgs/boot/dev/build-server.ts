@@ -56,6 +56,7 @@ const newSource = async (extdir: string) => {
   )
 
   await dirAsync(join(extdir, 'api'))
+  await writeAsync(join(extdir, 'src', 'api.ts'), `export default {};`)
 
   await writeAsync(
     join(extdir, 'src', 'index.ts'),
