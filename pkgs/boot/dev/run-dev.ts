@@ -20,6 +20,19 @@ const formatTs = (ts: number) => {
   return pad(`${((new Date().getTime() - ts) / 1000).toFixed(2)}s`, 7)
 }
 
+let debugLogTimer = null as any
+const startLog = (text: string) => {
+  let ts = new Date().getTime()
+  debugLogTimer = setInterval(() => {
+    logUpdate(`[${formatTs(ts)}] ${padEnd(text, 30)} `)
+  }, 100)
+}
+
+const endLog = () => {
+  clearTimeout(debugLogTimer)
+  logUpdate.done()
+}
+
 export const runDev = (
   watch: boolean,
   opt?: { isPkg?: true; isDebug?: true }
@@ -56,38 +69,21 @@ export const runDev = (
       }
     }
 
-    let debug = setInterval(() => {
-      if (isDebug) logUpdate(`[${formatTs(ts)}] ${padEnd(`Building DB`, 30)} `)
-    }, 100)
+    if (isDebug) startLog(`Building DB`)
     const cfg = parseConfig(config, opt && opt.isPkg ? 'prod' : 'dev')
     await rebuildDB(cfg)
-
-
-    ts = new Date().getTime()
-    if (isDebug) logUpdate.done()
-    clearInterval(debug)
+    if (isDebug) endLog()
 
     // build app/ext
-    debug = setInterval(() => {
-      if (isDebug)
-        logUpdate(`[${formatTs(ts)}] ${padEnd(`Building App Server`, 30)} `)
-    }, 100)
+    if (isDebug) startLog(`Building App Server`)
     await rebuildAppServer({ cwd, config: cfg, watch })
-
-    ts = new Date().getTime()
-    if (isDebug) logUpdate.done()
-    clearInterval(debug)
+    if (isDebug) endLog()
 
     // build app/*
-
-    debug = setInterval(() => {
-      if (isDebug)
-        logUpdate(`[${formatTs(ts)}] ${padEnd(`Building App Client`, 30)} `)
-    }, 100)
+    if (isDebug) startLog(`Building App Client`)
     await rebuildClient(cfg)
 
     let appServReqNpm = []
-
     const importAppServer = await import(join('../../../app/server/src/index'))
     if (importAppServer && importAppServer['default']) {
       const appServ = importAppServer['default']
@@ -124,14 +120,11 @@ export const runDev = (
       }
     }
 
-    ts = new Date().getTime()
-    if (isDebug) logUpdate.done()
-    clearInterval(debug)
+    if (isDebug) endLog()
 
-    debug = setInterval(() => {
-      if (isDebug)
-        logUpdate(`[${formatTs(ts)}] ${padEnd(`Building Web Server`, 30)} `)
-    }, 100)
+
+
+    if (isDebug) startLog(`Building Web`)
     // build server/web
     await buildWatch({
       input: join(cwd, 'pkgs', 'server', 'web', 'src', 'index.ts'),
@@ -143,16 +136,9 @@ export const runDev = (
         external: appServReqNpm,
       },
     })
+    if (isDebug) endLog()
 
-    ts = new Date().getTime()
-    if (isDebug) logUpdate.done()
-    clearInterval(debug)
-
-
-    debug = setInterval(() => {
-      if (isDebug)
-        logUpdate(`[${formatTs(ts)}] ${padEnd(`Starting Server`, 30)} `)
-    }, 100)
+    if (isDebug) startLog(`Building Server`)
     // build boot
     await buildWatch({
       input: join(cwd, 'pkgs', 'boot', 'src', 'index.ts'),
@@ -172,9 +158,8 @@ export const runDev = (
         clearInterval(ival)
         logUpdate.done()
 
-        ts = new Date().getTime()
-        if (isDebug) logUpdate.done()
-        clearInterval(debug)
+        if (isDebug) endLog()
+
         if (watch) {
           dev.boot = await Forker.run(join(cwd, '.output', 'server.js'), {
             arg: ['--mode', 'dev', ...process.argv.slice(4)],
