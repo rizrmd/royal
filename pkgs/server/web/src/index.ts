@@ -2,13 +2,13 @@ import type { ParsedConfig } from 'boot/dev/config-parse'
 import cluster, { Worker } from 'cluster'
 import pad from 'lodash.pad'
 import serverDb from 'server-db'
-import { log, logUpdate, prettyError } from 'server-utility'
+import { log, prettyError } from 'server-utility'
 import { getAppServer } from './app-server'
-import { serveApi } from './client/serve-api'
 import { dbResultQueue } from './client/serve-db'
 import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
 export * from './types'
+import get from 'lodash.get'
 
 prettyError()
 
@@ -80,12 +80,14 @@ if (cluster.isWorker) {
 
           worker.config = data.config
           worker.mode = data.mode
+
           await startCluster(worker)
 
           const gapp = await getAppServer()
 
-          if (gapp && gapp['init']) {
-            gapp.init(worker)
+          const onInitRoot = get(gapp, 'events.root.init')
+          if (onInitRoot) {
+            onInitRoot(worker)
           }
 
           worker.status = 'ready'
