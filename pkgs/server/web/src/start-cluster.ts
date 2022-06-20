@@ -20,7 +20,12 @@ export const startCluster = (worker: IPrimaryWorker) => {
 
     cluster.on('online', (wk) => {
       worker.child[wk.id] = wk
-      wk.send({ config: worker.config, mode: worker.mode, action: 'init' })
+      wk.send({
+        config: worker.config,
+        mode: worker.mode,
+        action: 'init',
+        parentStatus: worker.status,
+      })
 
       if (Object.keys(worker.child).length >= clusterSize) {
         started()

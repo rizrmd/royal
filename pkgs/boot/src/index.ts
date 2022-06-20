@@ -164,18 +164,12 @@ const startServer = async (
     watch(app.server.path).on('change', async () => {
       await startServer(config, mode)
     })
+    watch(join(cwd, 'pkgs', 'server.app.js')).on('change', async () => {
+      app.server.fork?.send({ action: 'reload' })
+    })
 
     await startServer(config, mode)
-
     await startDevClient(config, app, cwd)
-
-    process.on('message', (data: any) => {
-      if (typeof data === 'object') {
-        if (data.action === 'reload.api' && data.name) {
-          app.server.fork?.send(data)
-        }
-      }
-    })
   } else if (mode === 'prod') {
     for (let key of Object.keys(config.dbs)) {
       if (!exists(join(cwd, 'pkgs', 'dbs', key, 'node_modules'))) {

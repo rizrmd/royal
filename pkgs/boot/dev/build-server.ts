@@ -1,6 +1,5 @@
 import { watch } from 'chokidar'
 import { dirAsync, exists, writeAsync } from 'fs-jetpack'
-import throttle from 'lodash.throttle'
 import { join } from 'path'
 import { reloadAPI } from './client/api'
 import { ParsedConfig } from './config-parse'

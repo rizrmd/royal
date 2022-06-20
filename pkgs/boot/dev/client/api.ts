@@ -4,7 +4,6 @@ import { format } from 'prettier'
 import { dev, walkDir } from './util'
 
 let timeout = null as any
-let firstgen = false
 export const reloadAPI = function (
   this: { cwd: string },
   event: string,

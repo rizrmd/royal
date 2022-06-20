@@ -80,7 +80,7 @@ program
   .command('build')
   .description('build as production')
   .action(async () => {
-    await removeAsync(join(process.cwd(), '.output'))
+    // await removeAsync(join(process.cwd(), '.output'))
     await runDev(false)
     await viteBuild()
     process.exit(1)
@@ -90,6 +90,7 @@ program
   .command('pkg')
   .description('bundle build as executable')
   .action(async () => {
+    console.log(join(process.cwd(), '.output'))
     await removeAsync(join(process.cwd(), '.output'))
     await runDev(false, { isPkg: true })
     await viteBuild()

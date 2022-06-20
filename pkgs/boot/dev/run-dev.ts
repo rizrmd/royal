@@ -74,15 +74,13 @@ export const runDev = (
     await rebuildDB(cfg)
     if (isDebug) endLog()
 
-    // build app/ext
-    if (isDebug) startLog(`Building App Server`)
-    await rebuildAppServer({ cwd, config: cfg, watch })
-    if (isDebug) endLog()
 
     // build app/*
     if (isDebug) startLog(`Building App Client`)
     await rebuildClient(cfg)
+    if (isDebug) endLog()
 
+    if (isDebug) startLog(`Building App Server`)
     let appServReqNpm = []
     const importAppServer = await import(join('../../../app/server/src/index'))
     if (importAppServer && importAppServer['default']) {
@@ -114,21 +112,15 @@ export const runDev = (
           version: config.app.version || '1.0.0',
           dependencies: versions,
           pkg: {
-            assets: 'client/web/**/*',
+            assets: ['client/**/*', 'pkgs/**/*'],
           },
         })
       }
     }
-
-    if (isDebug) endLog()
-
-
-
-    if (isDebug) startLog(`Building Web`)
-    // build server/web
+    await rebuildAppServer({ cwd, config: cfg, watch })
     await buildWatch({
-      input: join(cwd, 'pkgs', 'server', 'web', 'src', 'index.ts'),
-      output: join(cwd, '.output', 'pkgs', 'server.web.js'),
+      input: join(cwd, 'app', 'server', 'src', 'index.ts'),
+      output: join(cwd, '.output', 'pkgs', 'server.app.js'),
       watch,
       buildOptions: {
         minify: true,
@@ -138,7 +130,20 @@ export const runDev = (
     })
     if (isDebug) endLog()
 
-    if (isDebug) startLog(`Building Server`)
+    if (isDebug) startLog(`Building Pkgs Server`)
+    // build server/web
+    await buildWatch({
+      input: join(cwd, 'pkgs', 'server', 'web', 'src', 'index.ts'),
+      output: join(cwd, '.output', 'pkgs', 'server.web.js'),
+      watch,
+      buildOptions: {
+        minify: true,
+        sourcemap: 'linked',
+      },
+    })
+    if (isDebug) endLog()
+
+    if (isDebug) startLog(`Building Boot`)
     // build boot
     await buildWatch({
       input: join(cwd, 'pkgs', 'boot', 'src', 'index.ts'),

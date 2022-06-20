@@ -2,22 +2,22 @@ import type { ParsedConfig } from 'boot/dev/config-parse'
 import cluster, { Worker } from 'cluster'
 import pad from 'lodash.pad'
 import serverDb from 'server-db'
-import { log, prettyError } from 'server-utility'
+import { log, logUpdate, prettyError } from 'server-utility'
+import { getAppServer } from './app-server'
 import { serveApi } from './client/serve-api'
 import { dbResultQueue } from './client/serve-db'
 import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
 export * from './types'
 
-import importedApp from '../../../../app/server/src/index'
-
 prettyError()
 
 export type IServerInit = {
-  action: 'init' | 'kill' | 'reload' | 'reload.api' | 'db.result'
+  action: 'init' | 'kill' | 'reload' | 'db.result'
   name?: string
   config: ParsedConfig
   mode: 'dev' | 'prod' | 'pkg'
+  parentStatus?: IPrimaryWorker['status']
   dbResult?: {
     id: string
     result: any
@@ -25,7 +25,7 @@ export type IServerInit = {
 }
 
 export type IPrimaryWorker = {
-  status: 'ready' | 'stopping'
+  status: 'init' | 'ready' | 'stopping'
   child: Record<number, Worker>
   clusterSize: number
   config: ParsedConfig
@@ -42,9 +42,9 @@ if (cluster.isWorker) {
         await startServer(data.config, data.mode)
 
         log(
-          `[${pad(`wrk-${id}`, 7)}]  🍃 Back End Worker #${id} started (pid:${
-            process.pid
-          })`
+          `[${pad(`wrk-${id}`, 7)}]  🍃 Back End Worker #${id} ${
+            data.parentStatus === 'init' ? 'started' : 'reloaded'
+          } (pid:${process.pid})`
         )
       } else if (data.action === 'kill') {
         if (web.server) {
@@ -54,15 +54,6 @@ if (cluster.isWorker) {
           web.server.close()
         } else {
           process.exit(1)
-        }
-      } else if (data.action === 'reload.api') {
-        const name = data['name']
-        if (web.app && name) {
-          const client = web.clients[name]
-          if (client) {
-            log(`[${pad(`wrk-${id}`, 7)}]  🍃 Reloading API Worker #${id}`)
-            serveApi({ name })
-          }
         }
       } else if (data.action === 'db.result') {
         if (data.dbResult) {
@@ -78,7 +69,7 @@ if (cluster.isWorker) {
   if (process.send) {
     ;(async () => {
       const worker = {
-        status: 'ready',
+        status: 'init',
         child: {},
         clusterSize: 0,
       } as IPrimaryWorker
@@ -91,10 +82,13 @@ if (cluster.isWorker) {
           worker.mode = data.mode
           await startCluster(worker)
 
-          if (importedApp && importedApp['init']) {
-            importedApp.init(worker)
+          const gapp = await getAppServer()
+
+          if (gapp && gapp['init']) {
+            gapp.init(worker)
           }
 
+          worker.status = 'ready'
           if (process.send)
             process.send({ event: 'started', url: data.config.server.url })
         }

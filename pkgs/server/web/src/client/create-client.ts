@@ -15,12 +15,6 @@ export const createClient = async (
 ) => {
   const url = client.url.replace(`[server.url]`, config.server.url)
 
-  if (mode !== 'pkg') {
-    serveDb({ app, config, mode })
-  } else {
-    await serveDbPkg({ app, config, mode })
-  }
-
   if (url.startsWith(config.server.url)) {
     if (mode === 'dev') {
       setupDevProxy(app, config, url, port, name)

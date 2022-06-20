@@ -1,9 +1,10 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
 import { createApp, createRouter } from 'h3'
 import { createServer } from 'http'
+import { getAppServer } from './app-server'
 import { createClient } from './client/create-client'
-
-import importedApp from '../../../../app/server/src/index'
+import { serveDb } from './client/serve-db'
+import { serveDbPkg } from './client/serve-db-pkg'
 
 export const web = {
   app: undefined as undefined | ReturnType<typeof createApp>,
@@ -18,6 +19,15 @@ export const startServer = async (
 ) => {
   const url = new URL(config.server.url)
   const app = createApp()
+
+  // serve db
+  if (mode !== 'pkg') {
+    serveDb({ app, config, mode })
+  } else {
+    await serveDbPkg({ app, config, mode })
+  }
+
+  // serve static file
   let idx = 1
   for (let [name, client] of Object.entries(config.client)) {
     await createClient(
@@ -30,17 +40,14 @@ export const startServer = async (
     )
   }
 
-  if (importedApp) {
-    if (importedApp['workerStarted']) {
-      const start = importedApp['workerStarted']
-      await start(app)
-    }
+  const gapp = await getAppServer()
+  if (gapp.workerStarted) {
+    await gapp.workerStarted(app)
+  }
 
-    if (importedApp['api']) {
-      const api = (await importedApp['api']).default
-      if (api) {
-        
-      }
+  if (gapp['api']) {
+    const api = (await gapp['api']).default
+    if (api) {
     }
   }
 

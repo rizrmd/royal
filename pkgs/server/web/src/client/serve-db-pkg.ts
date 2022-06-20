@@ -3,12 +3,17 @@ import camelCase from 'lodash.camelcase'
 import trim from 'lodash.trim'
 import { IDBMsg, IServeDbArgs, randomDigits } from './serve-db'
 import get from 'lodash.get'
+import { join } from 'path'
 
 export const serveDbPkg = async (arg: Partial<IServeDbArgs>) => {
-  const dbs = (await import('../../../../../app/dbs/dbs')).default
+  const im = join(__dirname, 'pkgs', 'dbs', 'db', 'db.js')
+  const db = require(im).db
   const { app, config, mode } = arg
 
   if (app) {
+    if (db['$connect']) {
+      await db['$connect']()
+    }
     app.use('/__data', async (req, res, next) => {
       const [action, table] = (
         trim(req.url, '/').split('/').shift() || ''
@@ -18,7 +23,7 @@ export const serveDbPkg = async (arg: Partial<IServeDbArgs>) => {
 
       if (body.table === table && camelCase(action) === body.action) {
         res.setHeader('content-type', 'application/json')
-        const func = get(dbs, `${body.db}.${body.table}.${body.action}`)
+        const func = get(db, `${body.table}.${body.action}`)
         if (typeof func === 'function') {
           res.write(JSON.stringify(await func(...body.params)))
         }
