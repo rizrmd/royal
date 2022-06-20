@@ -20,6 +20,17 @@ export const startServer = async (
   const url = new URL(config.server.url)
   const app = createApp()
 
+  const gapp = await getAppServer()
+  if (gapp.workerStarted) {
+    await gapp.workerStarted(app)
+  }
+
+  if (gapp['api']) {
+    const api = (await gapp['api']).default
+    if (api) {
+    }
+  }
+
   // serve db
   if (mode !== 'pkg') {
     serveDb({ app, config, mode })
@@ -40,16 +51,7 @@ export const startServer = async (
     )
   }
 
-  const gapp = await getAppServer()
-  if (gapp.workerStarted) {
-    await gapp.workerStarted(app)
-  }
 
-  if (gapp['api']) {
-    const api = (await gapp['api']).default
-    if (api) {
-    }
-  }
 
   web.app = app
   web.server = createServer(web.app)
