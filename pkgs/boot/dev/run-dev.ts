@@ -7,7 +7,7 @@ import { error, Forker, logUpdate } from 'server-utility'
 import { buildClient } from './build-client'
 import { buildDb } from './build-db'
 import { buildDbs } from './build-dbs'
-import { rebuildAppServer } from './build-server'
+import { prepareAppServer } from './build-server'
 import { buildWatch } from './build-watch'
 import { dev } from './client/util'
 import { parseConfig, ParsedConfig } from './config-parse'
@@ -81,6 +81,7 @@ export const runDev = (
     if (isDebug) endLog()
 
     if (isDebug) startLog(`Building App Server`)
+    await prepareAppServer({ cwd, config: cfg, watch })
     let appServReqNpm = []
     const importAppServer = await import(join('../../../app/server/src/index'))
     if (importAppServer && importAppServer['default']) {
@@ -117,7 +118,6 @@ export const runDev = (
         })
       }
     }
-    await rebuildAppServer({ cwd, config: cfg, watch })
     await buildWatch({
       input: join(cwd, 'app', 'server', 'src', 'index.ts'),
       output: join(cwd, '.output', 'pkgs', 'server.app.js'),

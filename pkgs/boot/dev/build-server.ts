@@ -5,7 +5,7 @@ import { reloadAPI } from './client/api'
 import { ParsedConfig } from './config-parse'
 import { pnpm } from './pnpm-runner'
 
-export const rebuildAppServer = async (arg: {
+export const prepareAppServer = async (arg: {
   cwd: string
   config: ParsedConfig
   watch: boolean
@@ -54,7 +54,7 @@ const newSource = async (extdir: string) => {
     )
   )
 
-  await dirAsync(join(extdir, 'api'))
+  await dirAsync(join(extdir, 'src', 'api'))
   await writeAsync(join(extdir, 'src', 'api.ts'), `export default {};`)
 
   await writeAsync(
