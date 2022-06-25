@@ -12,8 +12,7 @@
         "pnpm-workspace.yaml": true,
         ".vscode": true,
         ".husky": true,
-        "app/web/postcss.config.js": true,
-        "app/web/tsconfig.json": true
+        "app/web/postcss.config.js": true
     },
     "hide-files.files": [
         "pnpm-lock.yaml",
@@ -21,7 +20,6 @@
         "pnpm-workspace.yaml",
         ".vscode",
         ".husky",
-        "app/web/postcss.config.js",
-        "app/web/tsconfig.json"
+        "app/web/postcss.config.js"
     ]
 }
