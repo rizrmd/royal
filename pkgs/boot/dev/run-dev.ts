@@ -35,7 +35,7 @@ const endLog = () => {
 
 export const runDev = (
   watch: boolean,
-  opt?: { isPkg?: true; isDebug?: true }
+  opt?: { isPkg?: true; isDebug?: true; port?: number }
 ) => {
   return new Promise<void>(async (resolve) => {
     let ts = new Date().getTime()
@@ -70,10 +70,14 @@ export const runDev = (
     }
 
     if (isDebug) startLog(`Building DB`)
-    const cfg = parseConfig(config, opt && opt.isPkg ? 'prod' : 'dev')
+    const cfg = parseConfig(
+      config,
+      opt && opt.isPkg ? 'prod' : 'dev',
+      opt?.port
+    )
+
     await rebuildDB(cfg)
     if (isDebug) endLog()
-
 
     // build app/*
     if (isDebug) startLog(`Building App Client`)
@@ -166,8 +170,12 @@ export const runDev = (
         if (isDebug) endLog()
 
         if (watch) {
+          const argport = [] as string[]
+          if (opt?.port) {
+            argport.push('--port', opt?.port.toString())
+          }
           dev.boot = await Forker.run(join(cwd, '.output', 'server.js'), {
-            arg: ['--mode', 'dev', ...process.argv.slice(4)],
+            arg: ['--mode', 'dev', ...process.argv.slice(4), ...argport],
           })
         }
         resolve()

@@ -28,14 +28,16 @@ export type BaseConfig = {
 
 export type ParsedConfig = BaseConfig['prod'] & { app: BaseConfig['app'] }
 export const readConfig = async (
-  mode: 'dev' | 'prod' | 'pkg'
+  mode: 'dev' | 'prod' | 'pkg',
+  port?:number
 ): Promise<ParsedConfig> => {
-  return parseConfig(config, mode)
+  return parseConfig(config, mode, port)
 }
 
 export const parseConfig = (
   config: any,
-  mode: 'dev' | 'prod' | 'pkg'
+  mode: 'dev' | 'prod' | 'pkg',
+  port?: number
 ): ParsedConfig => {
   const result = {
     app: config.app,
@@ -52,6 +54,12 @@ export const parseConfig = (
   if (result.useProdDB) {
     delete result.useProdDB
     result.dbs = config.prod.dbs
+  }
+
+  if (port) {
+    const url = new URL(result.server.url)
+    url.port = port.toString()
+    result.server.url = url.toString()
   }
 
   return result

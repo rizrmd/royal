@@ -12,6 +12,7 @@ const program = new Command()
 prettyError()
 
 program
+  .enablePositionalOptions()
   .name('node base')
   .description('Royal Base Framework')
   .version('1.0.0')
@@ -19,7 +20,8 @@ program
   .addOption(new Option('-p, --port <number>', 'port number'))
   .addOption(new Option('-f, --force', 'force vite refresh cache'))
   .action(async (arg, opt) => {
-    await runDev(true, arg === "debug" ? { isDebug: true } : undefined)
+    const port = opt.port
+    await runDev(true, arg === 'debug' ? { isDebug: true, port } : { port })
   })
 
 program
@@ -80,7 +82,7 @@ program
   .command('build')
   .description('build as production')
   .action(async () => {
-    // await removeAsync(join(process.cwd(), '.output'))
+    await removeAsync(join(process.cwd(), '.output'))
     await runDev(false)
     await viteBuild()
     process.exit(1)
@@ -89,6 +91,7 @@ program
 program
   .command('pkg')
   .description('bundle build as executable')
+  .addOption(new Option('-p, --port <number>', 'port number'))
   .action(async () => {
     console.log(join(process.cwd(), '.output'))
     await removeAsync(join(process.cwd(), '.output'))
@@ -118,17 +121,16 @@ program
 program
   .command('prod')
   .description('run as production')
-
   .argument('[serve]', 'skip build process, just run the server')
   .argument('[debug]', 'debug')
-  .addOption(new Option('--port <number>', 'port number'))
-  .action(async (serve, debug, _, a) => {
+  .addOption(new Option('-p, --port <number>', 'port number'))
+  .action(async (serve, debug, opt, a) => {
     if (!serve) {
       await runDev(false)
       await viteBuild()
     }
 
-    await runProd()
+    await runProd(opt.port)
   })
 
 program

@@ -13,7 +13,7 @@ import { startDevClient } from './dev-client'
 import { npm } from './npm-run'
 import { printProcessUsage } from './utils/process-usage'
 
-const varg = arg({ '--mode': String })
+const varg = arg({ '--mode': String, '--port': Number })
 let mode = (Forker.mode = varg['--mode'] === 'dev' ? 'dev' : 'prod') as
   | 'dev'
   | 'prod'
@@ -138,7 +138,7 @@ const startServer = async (
 
 // start
 ;(async () => {
-  const config = await readConfig(mode)
+  const config = await readConfig(mode, varg['--port'])
 
   if (mode === 'dev') {
     Forker.asChild({
