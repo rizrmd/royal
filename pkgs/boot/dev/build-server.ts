@@ -67,8 +67,14 @@ export default {
     Password: require('./bcrypt'),
   },
   api: import('./api'),
-  init: async (root) => {},
-  workerStarted: async (app) => {},
+  events: {
+    root: {
+      init: async (root) => {},
+    },
+    worker: {
+      init: async (app) => {},
+    },
+  },
 } as AppServer
 `
   )
