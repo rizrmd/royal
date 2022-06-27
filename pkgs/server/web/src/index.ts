@@ -51,7 +51,11 @@ if (cluster.isWorker) {
           web.server.on('close', () => {
             worker?.destroy()
           })
-          web.server.close()
+          if (web.server.listening) {
+            web.server.close()
+          } else {
+            worker?.destroy()
+          }
         } else {
           process.exit(1)
         }
