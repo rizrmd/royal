@@ -46,7 +46,7 @@ export const App = () => {
 
   w.appRoot = local
 
-  if (!local.router || local.url !== location.pathname) {
+  if (!local.router || local.url !== location.pathname || w.mode === 'dev') {
     local.url = location.pathname
     loadPageAndLayout(local)
   }

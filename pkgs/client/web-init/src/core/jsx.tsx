@@ -7,7 +7,6 @@ export const jsx = (...args: any[]) => {
   let propsModified = false
   const props = { ..._props }
   if (props.class) {
-    console.log(props.class)
     propsModified = true
     props.className = `${props.className || ''} ${props.class}`
     delete props.class

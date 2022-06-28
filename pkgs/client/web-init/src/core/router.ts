@@ -31,7 +31,7 @@ export const loadPageAndLayout = (local: IAppRoot) => {
   local.page.list = pages as any
   local.layout.list = layouts as any
 
-  if (!local.router) {
+  if (!local.router || w.mode === 'dev') {
     w.cache.layouts = {}
     w.cache.pages = {}
     local.router = createRouter()
@@ -47,6 +47,7 @@ export const loadPageAndLayout = (local: IAppRoot) => {
         | null
         | undefined
     }
+
 
     if (found) {
       w.params = found.params || {}
