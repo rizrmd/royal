@@ -31,7 +31,7 @@ const generateApiIndex = async (cwd: string) => {
       .replace(/[\W_]/g, '_')
 
     newApi[name] = {
-      import: `./api/${i
+      import: `./api${i
         .substring(apiPath.length, i.length - 3)
         .replace(/\\\\/gi, '/')}`,
       name,

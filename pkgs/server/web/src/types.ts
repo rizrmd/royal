@@ -26,6 +26,7 @@ export type API = [
     mode: 'dev' | 'prod' | 'pkg'
     baseurl: string
     db: typeof dbs['db']
+    dbs: typeof dbs
     session: any
   }) => void | Promise<void>
 ]

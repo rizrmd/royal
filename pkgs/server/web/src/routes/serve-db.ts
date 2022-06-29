@@ -33,7 +33,6 @@ export const serveDb = (arg: Partial<IServeDbArgs>) => {
 
   if (app) {
     app.use('/__data', async (req, res, next) => {
-
       const [action, table] = (
         trim(req.url, '/').split('/').shift() || ''
       ).split('...')

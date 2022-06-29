@@ -4,6 +4,7 @@ import { createServer } from 'http'
 import get from 'lodash.get'
 import { getAppServer } from './app-server'
 import { createClient } from './client/create-client'
+import { serveApi } from './routes/serve-api'
 import { serveDb } from './routes/serve-db'
 import { serveDbPkg } from './routes/serve-db-pkg'
 
@@ -33,6 +34,7 @@ export const startServer = async (
   if (gapp['api']) {
     const api = (await gapp['api']).default
     if (api) {
+      await serveApi({ app, mode, config, api })
     }
   }
 
