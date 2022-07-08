@@ -33,6 +33,26 @@ import { db as dbs_${e} }from './${e}/index'`
         (e) => `"${e}"`
       )}] as const`
     )
+
+    const dbsSource = `\
+    import type dbs from 'dbs'
+    
+    declare global {
+      type DBItem<T extends { findFirst: any }> = Exclude<
+        Awaited<ReturnType<T['findFirst']>>,
+        null
+      >
+      
+      ${Object.keys(config.dbs)
+        .map(
+          (e) =>
+            `const ${e}: typeof dbs.${e} & { query: (sql: string) => Promise<any> }`
+        )
+        .join('\n')}
+    }`
+
+    await writeAsync(join(cwd, 'app', app, 'types', 'dbs.d.ts'), dbsSource)
+    await writeAsync(join(cwd, 'app', 'server', 'src', 'dbs.d.ts'), dbsSource)
   }
 
   await buildWatch({

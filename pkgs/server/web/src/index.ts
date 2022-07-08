@@ -1,15 +1,14 @@
 import type { ParsedConfig } from 'boot/dev/config-parse'
 import cluster, { Worker } from 'cluster'
+import get from 'lodash.get'
 import pad from 'lodash.pad'
 import serverDb from 'server-db'
 import { log, prettyError } from 'server-utility'
 import { getAppServer } from './app-server'
 import { dbResultQueue } from './routes/serve-db'
-import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
+import { g } from './types'
 export * from './types'
-import get from 'lodash.get'
-import { getDbProxy } from './db/db-proxy'
 
 prettyError()
 
@@ -81,14 +80,12 @@ if (cluster.isWorker) {
 
       process.on('message', async (data: IServerInit) => {
         if (data.action === 'init') {
-          await serverDb.start(data.config)
+          if (!g.dbs) {
+            g.dbs = await serverDb.start(data.config)
+          }
 
           worker.config = data.config
           worker.mode = data.mode
-
-          const db = getDbProxy(data.mode, 'db')
-
-          await startCluster(worker)
 
           const gapp = await getAppServer()
 

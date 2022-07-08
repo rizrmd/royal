@@ -16,6 +16,9 @@ export type AppServer = {
 }
 import type { IncomingMessage, ServerResponse } from 'http'
 import type { dbs } from 'server-db'
+export const g = global as typeof global & {
+  dbs: typeof dbs
+}
 
 export type API = [
   string,

@@ -43,6 +43,7 @@ const newSource = async (extdir: string) => {
           bcryptjs: '^2.4.3',
           'server-web': 'workspace:^',
           'web-init': 'workspace:^',
+          "dbs": "workspace:^"
         },
         devDependencies: {
           '@types/bcryptjs': '^2.4.2',

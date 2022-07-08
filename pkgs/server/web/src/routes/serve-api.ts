@@ -1,7 +1,6 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
 import { createApp, useBody } from 'h3'
-import { API } from '..'
-import { getDbProxy, getDbsProxy } from '../db/db-proxy'
+import { API, g } from '..'
 
 export type IServeApiArgs = {
   app: ReturnType<typeof createApp>
@@ -31,14 +30,15 @@ export const serveApi = async (arg?: Partial<IServeApiArgs>) => {
         reply.end()
       }
 
+      const dbs = g.dbs
       await handler({
         req: _req,
         reply: _reply,
         ext: {},
         mode,
         baseurl: config.server.url,
-        db: await getDbProxy(mode, 'db'),
-        dbs: await getDbsProxy(mode),
+        db: dbs.db,
+        dbs,
         session: {},
       })
     })
