@@ -18,6 +18,7 @@ import type { IncomingMessage, ServerResponse } from 'http'
 import type { dbs } from 'server-db'
 export const g = global as typeof global & {
   dbs: typeof dbs
+  db: typeof dbs['db']
 }
 
 export type API = [

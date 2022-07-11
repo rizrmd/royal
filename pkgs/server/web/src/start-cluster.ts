@@ -1,9 +1,9 @@
 import cluster from 'cluster'
 import os from 'os'
 import { IPrimaryWorker } from '..'
-import { IDBMsg } from './client/serve-db'
 import { dbs } from 'server-db'
 import { log } from 'server-utility'
+import { IDBMsg } from './routes/serve-db'
 const MAX_CLUSTER_PROCESS = os.cpus().length
 
 export const startCluster = (worker: IPrimaryWorker) => {

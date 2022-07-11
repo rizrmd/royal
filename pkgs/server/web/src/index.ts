@@ -5,7 +5,8 @@ import pad from 'lodash.pad'
 import serverDb from 'server-db'
 import { log, prettyError } from 'server-utility'
 import { getAppServer } from './app-server'
-import { dbResultQueue } from './routes/serve-db'
+import { IDBMsg } from './routes/serve-db'
+import { startCluster } from './start-cluster'
 import { startServer, web } from './start-server'
 import { g } from './types'
 export * from './types'
@@ -13,15 +14,12 @@ export * from './types'
 prettyError()
 
 export type IServerInit = {
-  action: 'init' | 'kill' | 'reload' | 'db.result'
+  action: 'init' | 'kill' | 'reload' | 'db.query'
   name?: string
   config: ParsedConfig
   mode: 'dev' | 'prod' | 'pkg'
   parentStatus?: IPrimaryWorker['status']
-  dbResult?: {
-    id: string
-    result: any
-  }
+  dbQuery?: IDBMsg & { mid: string }
 }
 
 export type IPrimaryWorker = {
@@ -39,8 +37,9 @@ if (cluster.isWorker) {
       const id = process.env.id
 
       if (data.action === 'init') {
-        await startServer(data.config, data.mode)
-
+        await startServer(`wrk-${id}`, data.config, data.mode)
+        g.dbs = await serverDb.clusterProxy(data.config, `wrk-${id}`)
+        g.db = g.dbs.db
         log(
           `[${pad(`wrk-${id}`, 7)}]  🍃 Back End Worker #${id} ${
             data.parentStatus === 'init' ? 'started' : 'reloaded'
@@ -59,13 +58,6 @@ if (cluster.isWorker) {
         } else {
           process.exit(1)
         }
-      } else if (data.action === 'db.result') {
-        if (data.dbResult) {
-          const queue = dbResultQueue[data.dbResult.id]
-          if (queue) {
-            dbResultQueue[data.dbResult.id].result(data.dbResult.result)
-          }
-        }
       }
     })
   }
@@ -81,22 +73,31 @@ if (cluster.isWorker) {
       process.on('message', async (data: IServerInit) => {
         if (data.action === 'init') {
           if (!g.dbs) {
-            g.dbs = await serverDb.start(data.config)
+            await serverDb.startFork(data.config)
+            g.dbs = serverDb.forkProxy(data.config)
+            for (let i of Object.keys(g.dbs)) {
+              ;(g as any)[i] = (g as any).dbs[i]
+            }
           }
 
           worker.config = data.config
           worker.mode = data.mode
 
+          await startCluster(worker)
           const gapp = await getAppServer()
 
           const onInitRoot = get(gapp, 'events.root.init')
           if (onInitRoot) {
-            onInitRoot(worker)
+            await onInitRoot(worker)
           }
 
           worker.status = 'ready'
           if (process.send)
             process.send({ event: 'started', url: data.config.server.url })
+        }
+
+        if (data.action === 'db.query' && data.dbQuery) {
+          serverDb.parentClusterOnMessage(data, g.dbs)
         }
 
         if (data.action === 'reload') {
@@ -114,7 +115,7 @@ if (cluster.isWorker) {
         }
 
         if (data.action === 'kill') {
-          await serverDb.stop()
+          await serverDb.stopFork()
 
           worker.status = 'stopping'
           const killings = [] as Promise<void>[]

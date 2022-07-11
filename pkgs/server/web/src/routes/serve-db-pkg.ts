@@ -1,9 +1,9 @@
 import { useBody } from 'h3'
 import camelCase from 'lodash.camelcase'
-import trim from 'lodash.trim'
-import { IDBMsg, IServeDbArgs, randomDigits } from './serve-db'
 import get from 'lodash.get'
+import trim from 'lodash.trim'
 import { join } from 'path'
+import { IDBMsg, IServeDbArgs } from './serve-db'
 
 export const serveDbPkg = async (arg: Partial<IServeDbArgs>) => {
   const im = join(__dirname, 'pkgs', 'dbs', 'db', 'db.js')

@@ -2,8 +2,6 @@ import { BaseClient, ParsedConfig } from 'boot/dev/config-parse'
 import type { createApp } from 'h3'
 import { setupDevProxy } from './dev-proxy'
 import { setupProdStatic } from './prod-static'
-import { serveDb } from './serve-db'
-import { serveDbPkg } from './serve-db-pkg'
 
 export const createClient = async (
   app: ReturnType<typeof createApp>,

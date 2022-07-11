@@ -16,6 +16,7 @@ export const web = {
 }
 
 export const startServer = async (
+  workerId: string,
   config: ParsedConfig,
   mode: 'dev' | 'prod' | 'pkg'
 ) => {
@@ -40,9 +41,9 @@ export const startServer = async (
 
   // serve db
   if (mode !== 'pkg') {
-    serveDb({ app, config, mode })
+    serveDb({ workerId, app, config, mode })
   } else {
-    await serveDbPkg({ app, config, mode })
+    await serveDbPkg({ workerId, app, config, mode })
   }
 
   // serve static file

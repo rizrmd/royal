@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "importHelpers": true,
-    "esModuleInterop": true,
-    "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": "src",
-    "strict": true,
-    "target": "es2019"
-  }
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": "./src",
+    "typeRoots": ["./types/"]
+  },
+  "include": ["./src/**/*", "./types/**/*"]
 }
