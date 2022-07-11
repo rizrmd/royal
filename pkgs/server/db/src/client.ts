@@ -1,8 +1,8 @@
-import { ParsedConfig } from 'boot/dev/config-parse'
+import { clusterClient, directClient, httpClient } from 'client-send'
 import type import_dbs from 'dbs'
 import { IDBMsg } from '../../web/src/routes/serve-db'
 
-type IClientSend = (args: Partial<IDBMsg>) => Promise<any>
+export type IClientSend = (args: Partial<IDBMsg>) => Promise<any>
 
 export const dbsClient = async (
   type: 'http' | 'cluster' | 'direct',
@@ -19,10 +19,6 @@ export const dbsClient = async (
 
   return result
 }
-
-const httpClient: IClientSend = async (args) => {}
-const directClient: IClientSend = async (args) => {}
-const clusterClient: IClientSend = async (args) => {}
 
 const dbClient = (name: string, send: IClientSend) => {
   return new Proxy(

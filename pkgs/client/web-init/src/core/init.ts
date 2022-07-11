@@ -1,6 +1,5 @@
 import { css } from '@emotion/react'
 import React, { Fragment } from 'react'
-import { initDbs } from './dbs'
 import { jsx } from './jsx'
 
 export const initEnv = () => {
@@ -49,6 +48,6 @@ export const initEnv = () => {
       w.appRoot.render()
     })
 
-    initDbs()
+    // initDbs()
   }
 }
