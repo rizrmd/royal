@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "moduleResolution": "node",
     "noEmit": true,
     "baseUrl": "./src",
     "typeRoots": ["./types/"]
