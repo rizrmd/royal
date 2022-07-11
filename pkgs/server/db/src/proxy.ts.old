@@ -1,0 +1,60 @@
+import { ParsedConfig } from 'boot/dev/config-parse'
+import type dbs from 'dbs'
+import { IDBMsg } from '../../web/src/routes/serve-db'
+
+export type onSend = (args: Partial<IDBMsg>) => Promise<any>
+
+export const createDBSProxy = (
+  config: ParsedConfig,
+  onSend: onSend
+): typeof dbs => {
+  const result = {} as any
+  for (let dbname of Object.keys(config.dbs)) {
+    result[dbname] = createDBProxy(dbname, onSend)
+  }
+  return result
+}
+
+const createDBProxy = (name: string, onSend: onSend) => {
+  return new Proxy(
+    {},
+    {
+      get(_, table: string) {
+        if (table === 'query') {
+          return (...params: any[]) => {
+            return onSend({
+              db: name,
+              action: 'query',
+              params,
+            })
+          }
+        }
+        if (table === 'definition') {
+          return (table: string) => {
+            return onSend({
+              db: name,
+              action: 'definition',
+              table,
+            })
+          }
+        }
+
+        return new Proxy(
+          {},
+          {
+            get(_, action: string) {
+              return (...params: any[]) => {
+                return onSend({
+                  db: name,
+                  action,
+                  table,
+                  params,
+                })
+              }
+            },
+          }
+        )
+      },
+    }
+  )
+}
