@@ -1,9 +1,6 @@
 import cluster from 'cluster'
 import os from 'os'
 import { IPrimaryWorker } from '..'
-import { dbs } from 'server-db'
-import { log } from 'server-utility'
-import { IDBMsg } from './routes/serve-db'
 const MAX_CLUSTER_PROCESS = os.cpus().length
 
 export const startCluster = (worker: IPrimaryWorker) => {
@@ -32,30 +29,30 @@ export const startCluster = (worker: IPrimaryWorker) => {
       }
     })
 
-    cluster.on('message', async (wk, msg, socket) => {
-      if (msg && msg.action === 'db.query') {
-        const { id, arg } = msg as { id: string; arg: IDBMsg }
-        const db = (dbs as any)[arg.db]
+    // cluster.on('message', async (wk, msg, socket) => {
+    //   if (msg && msg.action === 'db.query') {
+    //     const { id, arg } = msg as { id: string; arg: IDBMsg }
+    //     const db = (dbs as any)[arg.db]
 
-        if (!db) {
-          log(
-            `WARNING: app/dbs/${arg.db} not found, are you sure has defined "${arg.db} entry on config.ts?`
-          )
-          return
-        }
+    //     if (!db) {
+    //       log(
+    //         `WARNING: app/dbs/${arg.db} not found, are you sure has defined "${arg.db} entry on config.ts?`
+    //       )
+    //       return
+    //     }
 
-        const table = db[arg.table]
+    //     const table = db[arg.table]
 
-        if (table) {
-          const action = table[arg.action]
-          if (action) {
-            const result = await action(...arg.params)
-            const pkt = { dbResult: { id, result }, action: 'db.result' }
-            wk.send(pkt)
-          }
-        }
-      }
-    })
+    //     if (table) {
+    //       const action = table[arg.action]
+    //       if (action) {
+    //         const result = await action(...arg.params)
+    //         const pkt = { dbResult: { id, result }, action: 'db.result' }
+    //         wk.send(pkt)
+    //       }
+    //     }
+    //   }
+    // })
 
     cluster.on('exit', (wk, code, singal) => {
       if (worker.status !== 'stopping') {

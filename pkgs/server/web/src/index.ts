@@ -2,7 +2,7 @@ import type { ParsedConfig } from 'boot/dev/config-parse'
 import cluster, { Worker } from 'cluster'
 import get from 'lodash.get'
 import pad from 'lodash.pad'
-import serverDb from 'server-db'
+// import serverDb from 'server-db'
 import { log, prettyError } from 'server-utility'
 import { getAppServer } from './app-server'
 import { IDBMsg } from './routes/serve-db'
@@ -38,8 +38,8 @@ if (cluster.isWorker) {
 
       if (data.action === 'init') {
         await startServer(`wrk-${id}`, data.config, data.mode)
-        g.dbs = await serverDb.clusterProxy(data.config, `wrk-${id}`)
-        g.db = g.dbs.db
+        // g.dbs = await serverDb.clusterProxy(data.config, `wrk-${id}`)
+        // g.db = g.dbs.db
         log(
           `[${pad(`wrk-${id}`, 7)}]  🍃 Back End Worker #${id} ${
             data.parentStatus === 'init' ? 'started' : 'reloaded'
@@ -72,13 +72,6 @@ if (cluster.isWorker) {
 
       process.on('message', async (data: IServerInit) => {
         if (data.action === 'init') {
-          if (!g.dbs) {
-            await serverDb.startFork(data.config)
-            g.dbs = serverDb.forkProxy(data.config)
-            for (let i of Object.keys(g.dbs)) {
-              ;(g as any)[i] = (g as any).dbs[i]
-            }
-          }
 
           worker.config = data.config
           worker.mode = data.mode
@@ -96,9 +89,9 @@ if (cluster.isWorker) {
             process.send({ event: 'started', url: data.config.server.url })
         }
 
-        if (data.action === 'db.query' && data.dbQuery) {
-          serverDb.parentClusterOnMessage(data, g.dbs)
-        }
+        // if (data.action === 'db.query' && data.dbQuery) {
+        //   serverDb.parentClusterOnMessage(data, g.dbs)
+        // }
 
         if (data.action === 'reload') {
           if (worker.status === 'ready') {
@@ -115,7 +108,7 @@ if (cluster.isWorker) {
         }
 
         if (data.action === 'kill') {
-          await serverDb.stopFork()
+          // await serverDb.stopFork()
 
           worker.status = 'stopping'
           const killings = [] as Promise<void>[]

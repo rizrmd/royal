@@ -3,7 +3,7 @@ import { ParsedConfig } from 'boot/dev/config-parse'
 import { createApp, useBody } from 'h3'
 import camelCase from 'lodash.camelcase'
 import trim from 'lodash.trim'
-import serverDb from 'server-db'
+// import serverDb from 'server-db'
 
 export type IServeDbArgs = {
   workerId: string
@@ -44,11 +44,11 @@ export const serveDb = (arg: Partial<IServeDbArgs>) => {
         if (process.send) {
           res.setHeader('content-type', 'application/json')
 
-          res.write(
-            JSON.stringify(
-              await serverDb.sendQueryToParentCluster(body, workerId)
-            )
-          )
+          // res.write(
+          //   JSON.stringify(
+          //     await serverDb.sendQueryToParentCluster(body, workerId)
+          //   )
+          // )
           res.end()
           return
         }
