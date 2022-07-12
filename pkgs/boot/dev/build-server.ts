@@ -2,6 +2,7 @@ import { watch } from 'chokidar'
 import { dirAsync, exists, writeAsync } from 'fs-jetpack'
 import { join } from 'path'
 import { reloadAPI } from './client/api'
+import { reloadQuery } from './client/query'
 import { ParsedConfig } from './config-parse'
 import { pnpm } from './pnpm-runner'
 
@@ -15,6 +16,11 @@ export const prepareAppServer = async (arg: {
   if (!exists(join(asdir, 'package.json'))) {
     await newSource(asdir)
   }
+
+  watch(join(cwd, 'app', 'server', 'src', 'query')).on(
+    'all',
+    reloadQuery.bind({ cwd })
+  )
 
   watch(join(cwd, 'app', 'server', 'src', 'api')).on(
     'all',
@@ -30,9 +36,9 @@ export const prepareAppServer = async (arg: {
   }
 }
 
-const newSource = async (extdir: string) => {
+const newSource = async (serverAppDir: string) => {
   await writeAsync(
-    join(extdir, 'package.json'),
+    join(serverAppDir, 'package.json'),
     JSON.stringify(
       {
         name: 'app-server',
@@ -55,11 +61,12 @@ const newSource = async (extdir: string) => {
     )
   )
 
-  await dirAsync(join(extdir, 'src', 'api'))
-  await writeAsync(join(extdir, 'src', 'api.ts'), `export default {};`)
+  await dirAsync(join(serverAppDir, 'src', 'api'))
+  await dirAsync(join(serverAppDir, 'src', 'query'))
+  await writeAsync(join(serverAppDir, 'src', 'api.ts'), `export default {};`)
 
   await writeAsync(
-    join(extdir, 'src', 'index.ts'),
+    join(serverAppDir, 'src', 'index.ts'),
     `\
 import { AppServer } from 'server-web/src/types'
 
@@ -67,6 +74,7 @@ export default {
   ext: {
     Password: require('./utils/bcrypt'),
   },
+  query: import('./query'),
   api: import('./api'),
   events: {
     root: {
@@ -81,7 +89,7 @@ export default {
   )
 
   await writeAsync(
-    join(extdir, 'tsconfig.json'),
+    join(serverAppDir, 'tsconfig.json'),
     `\
   {
     "compilerOptions": {
@@ -100,7 +108,7 @@ export default {
   )
 
   await writeAsync(
-    join(extdir, 'src', 'utils', 'bcrypt.ts'),
+    join(serverAppDir, 'src', 'utils', 'bcrypt.ts'),
     `\
 import BCrypt from 'bcryptjs'
 

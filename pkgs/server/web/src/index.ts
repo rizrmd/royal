@@ -98,9 +98,6 @@ if (cluster.isWorker) {
             g.db = g.dbs['db']
 
             await onInitRoot(parent)
-            if (data.mode === 'dev') {
-              console.log('')
-            }
           }
 
           parent.status = 'ready'

@@ -12,6 +12,7 @@ export type AppServer = {
     }
   }
   api?: Promise<{ default: Record<string, API> }>
+  query?: Promise<{ default: Record<string, APIQuery> }>
   requireNpm?: string[]
 }
 import type { IncomingMessage, ServerResponse } from 'http'
@@ -21,16 +22,18 @@ export const g = global as typeof global & {
   db: dbs['db']
 }
 
-export type API = [
-  string,
-  (args: {
-    req: IncomingMessage & { body: any }
-    reply: ServerResponse & { send: (body: any) => void }
-    ext: any
-    mode: 'dev' | 'prod' | 'pkg'
-    baseurl: string
-    db: dbs['db']
-    dbs: dbs
-    session: any
-  }) => void | Promise<void>
-]
+type IAPIArgs = {
+  body: any
+  req: IncomingMessage
+  reply: ServerResponse & { send: (body: any) => void }
+  ext: any
+  mode: 'dev' | 'prod' | 'pkg'
+  baseurl: string
+  session: any
+}
+
+export type APIQuery = (
+  args: IAPIArgs
+) => Promise<Record<string, any> | Record<string, any>[]>
+
+export type API = [string, (args: IAPIArgs) => void | Promise<void>]

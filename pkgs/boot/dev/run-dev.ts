@@ -42,7 +42,7 @@ export const runDev = (
     const isDebug = get(opt, 'isDebug', false)
     const ival = setInterval(() => {
       if (!isDebug)
-        logUpdate(`[${formatTs(ts)}] ${padEnd(`Booting Royal`, 30)} `)
+        logUpdate(`[${formatTs(ts)}] ${padEnd(`Booting Royal 👑`, 30)} `)
     }, 100)
 
     if (!exists(join(cwd, 'pkgs'))) {

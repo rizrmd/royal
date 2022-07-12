@@ -5,57 +5,54 @@ import { format } from 'prettier'
 import { dev, walkDir } from './util'
 
 let timeout = null as any
-export const reloadAPI = function (
+export const reloadQuery = function (
   this: { cwd: string },
   event: string,
   path: string
 ) {
   clearTimeout(timeout)
   timeout = setTimeout(async () => {
-    await generateApiIndex(this.cwd)
+    await generateQueryIndex(this.cwd)
     if (dev.boot) {
-      dev.boot.send({ action: 'reload.api' })
+      dev.boot.send({ action: 'reload.query' })
     }
   }, 200)
 }
 
-const generateApiIndex = async (cwd: string) => {
-  const apiPath = join(cwd, 'app', 'server', 'src', 'api')
-  const apiOut = join(cwd, 'app', 'server', 'src', 'api.ts')
-  const newApi: Record<string, { import: string; name: string }> = {}
-  const list = await walkDir(join(cwd, 'app', 'server', 'src', 'api'))
+const generateQueryIndex = async (cwd: string) => {
+  const queryPath = join(cwd, 'app', 'server', 'src', 'query')
+  const queryOut = join(cwd, 'app', 'server', 'src', 'query.ts')
+  const newQuery: Record<string, { import: string; name: string }> = {}
+  const list = await walkDir(join(cwd, 'app', 'server', 'src', 'query'))
 
   for (let i of list) {
     const name = i
       .substring(0, i.length - 3)
-      .substring(apiPath.length + 1)
+      .substring(queryPath.length + 1)
       .replace(/[\W_]/g, '_')
 
-    const apiSrc = await readAsync(i)
-    if ((apiSrc && !apiSrc.trim()) || !apiSrc) {
+    const querySrc = await readAsync(i)
+    if ((querySrc && !querySrc.trim()) || !querySrc) {
       await writeAsync(
         i,
         `\
-import { API } from 'server-web'
+import { APIQuery } from 'server-web'
 
-export default [
-  '/${name}',
-  async ({ body, reply }) => {
-    reply.send("${name} works!")
-  },
-] as API
+export default (async ({ req }) => {
+  return await db.$queryRaw\`SELECT NOW ()\`
+}) as APIQuery
       `
       )
     }
-    newApi[name] = {
-      import: `./api${i
-        .substring(apiPath.length, i.length - 3)
+    newQuery[name] = {
+      import: `./query${i
+        .substring(queryPath.length, i.length - 3)
         .replace(/\\\\/gi, '/')}`,
       name,
     }
   }
   const output = `
-  ${Object.entries(newApi)
+  ${Object.entries(newQuery)
     .map((arg: any) => {
       const [_, value] = arg
       return `import ${value.name} from '${value.import}'`
@@ -63,7 +60,7 @@ export default [
     .join('\n')}
   
   export default {
-    ${Object.entries(newApi)
+    ${Object.entries(newQuery)
       .map((arg: any) => {
         const [key, value] = arg
         return `'${key}':${value.name},`
@@ -71,5 +68,5 @@ export default [
       .join('\n')}
       }`
   const formatted = format(output, { parser: 'babel' })
-  await writeFile(apiOut, formatted)
+  await writeFile(queryOut, formatted)
 }

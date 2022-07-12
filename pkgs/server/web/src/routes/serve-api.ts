@@ -18,27 +18,35 @@ export const serveApi = async (arg?: Partial<IServeApiArgs>) => {
   }
   let { api, app, mode, config } = cachedApiArgs
 
-  for (let [k, v] of Object.entries(api)) {
+  for (let [_, v] of Object.entries(api)) {
     const [url, handler] = v
+
     app.use(url, async (req, reply, next) => {
-      const _req = req as any
       const _reply = reply as any
 
-      _req.body = await useBody(req)
+      let body = undefined
+
+      if (req.method === 'POST') {
+        await useBody(req)
+      }
+
       _reply.send = (msg: any) => {
-        reply.write(msg)
+        if (typeof msg === 'object') {
+          reply.setHeader('content-type', 'application/json')
+          reply.write(JSON.stringify(msg))
+        } else {
+          reply.write(msg)
+        }
         reply.end()
       }
 
-      const dbs = g.dbs
       await handler({
-        req: _req,
+        body,
+        req,
         reply: _reply,
         ext: {},
         mode,
         baseurl: config.server.url,
-        db: dbs.db,
-        dbs,
         session: {},
       })
     })

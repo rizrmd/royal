@@ -125,8 +125,9 @@ const startServer = async (
   clearInterval(app.server.timer.ival)
   app.server.timer.ival = null
 
+  logUpdate.done();
   logUpdate(
-    `[${formatTs(app.server.timer.ts)}] 🌿 ${padEnd(
+    `[  wrk  ] 🌿 ${padEnd(
       `Back End started at`,
       24
     )} ➜ ${url}`
