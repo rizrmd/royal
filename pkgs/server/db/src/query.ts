@@ -1,7 +1,7 @@
 import { Worker } from 'cluster'
 import { generateQueueID } from './util'
 import { IDBMsg } from '../../web/src/routes/serve-db'
-import { define } from 'fork'
+import { define } from './fork'
 
 /**
  * fork

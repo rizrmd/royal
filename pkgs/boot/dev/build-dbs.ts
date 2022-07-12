@@ -1,4 +1,4 @@
-import { writeAsync } from 'fs-jetpack'
+import { listAsync, writeAsync } from 'fs-jetpack'
 import { join } from 'path'
 import { buildWatch } from './build-watch'
 import type { ParsedConfig } from './config-parse'
@@ -35,27 +35,38 @@ import { db as dbs_${e} }from './${e}/index'`
     )
 
     const dbsSource = `\
-    import type _dbs from 'dbs'
-    
-    declare global {
-      type DBItem<T extends { findFirst: any }> = Exclude<
-        Awaited<ReturnType<T['findFirst']>>,
-        null
-      >
-      
-      const dbs: typeof _dbs
-      ${Object.keys(config.dbs)
-        .map(
-          (e) =>
-            `const ${e}: typeof _dbs.${e} & { 
-              query: (sql: string) => Promise<any>
-              definition: (table: string) => Promise<any>
-             }`
-        )
-        .join('\n')}
-    }`
+import type _dbs from 'dbs'
+import type APIQuery from '../src/query'
 
-    await writeAsync(join(cwd, 'app', app, 'types', 'dbs.d.ts'), dbsSource)
+declare global {
+  type DBItem<T extends { findFirst: any }> = Exclude<
+    Awaited<ReturnType<T['findFirst']>>,
+    null
+  >
+  
+  const dbs: typeof _dbs
+${(
+  await resolvePromisesSeq(
+    Object.keys(config.dbs).map(async (e) => {
+      const ddir = join(cwd, 'app', 'server', 'src', 'query')
+
+      return `\
+  const ${e}: typeof _dbs.${e} & { 
+    query: <K extends keyof typeof APIQuery['${e}']>(
+      queryName: K, 
+      params?: Parameters<typeof APIQuery['${e}'][K]>[1]
+    ) => Promise<any>
+    definition: (table: string) => Promise<any>
+  }`
+    })
+  )
+).join('\n')}
+}`
+
+    await writeAsync(
+      join(cwd, 'app', app, 'types', 'dbs.d.ts'),
+      dbsSource.replace(`../src/query`, `../../server/src/query`)
+    )
     await writeAsync(join(cwd, 'app', 'server', 'types', 'dbs.d.ts'), dbsSource)
   }
 
@@ -65,4 +76,12 @@ import { db as dbs_${e} }from './${e}/index'`
     watch,
     buildOptions: { minify: true, sourcemap: 'linked' },
   })
+}
+
+const resolvePromisesSeq = async (tasks: any) => {
+  const results = []
+  for (const task of tasks) {
+    results.push(await task)
+  }
+  return results
 }

@@ -1,6 +1,4 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
-import { fork } from 'child_process'
-import { dirname, join } from 'path'
 
 export const define = (name: string, value: any) => {
   const g = global as any
@@ -9,9 +7,12 @@ export const define = (name: string, value: any) => {
   }
 }
 
-const cwd = join(dirname(__filename), '..')
-
 export const startDBFork = async (config: ParsedConfig) => {
+  const { fork } = await import('child_process')
+  const { dirname, join } = await import('path')
+
+  const cwd = join(dirname(__filename), '..')
+
   define('dbQueue', {})
   define('forks', {})
   define('config', config)

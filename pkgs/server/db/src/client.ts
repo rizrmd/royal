@@ -1,10 +1,11 @@
-import { forkSend, fetchSend, proxyClusterSend } from 'client-send'
+import { forkSend, fetchSend, proxyClusterSend } from './client-send'
 import type import_dbs from 'dbs'
 import { IDBMsg } from '../../web/src/routes/serve-db'
 
 export type IClientSend = (msg: IDBMsg, args?: IDBClientArg) => Promise<any>
 
 export type IDBClientArg = { workerId?: string }
+
 export const dbsClient = async (
   type: 'fetch' | 'proxy-cluster' | 'fork',
   dbList: string[],
@@ -35,7 +36,7 @@ const dbClient = (name: string, send: IClientSend, args?: IDBClientArg) => {
         if (table === 'query') {
           return (sql: string, ...params: any[]) => {
             console.log('query', params)
-            return {}
+            return new Promise((resolve) => resolve({}))
             // return send(
             //   {
             //     db: name,
@@ -50,7 +51,7 @@ const dbClient = (name: string, send: IClientSend, args?: IDBClientArg) => {
         if (table === 'definition') {
           return (table: string) => {
             console.log('definition', table)
-            return {}
+            return new Promise((resolve) => resolve({}))
 
             return send(
               {

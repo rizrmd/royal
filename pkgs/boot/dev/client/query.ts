@@ -22,7 +22,10 @@ export const reloadQuery = function (
 const generateQueryIndex = async (cwd: string) => {
   const queryPath = join(cwd, 'app', 'server', 'src', 'query')
   const queryOut = join(cwd, 'app', 'server', 'src', 'query.ts')
-  const newQuery: Record<string, { import: string; name: string }> = {}
+  const newQuery: Record<
+    string,
+    Record<string, { import: string; name: string }>
+  > = {}
   const list = await walkDir(join(cwd, 'app', 'server', 'src', 'query'))
 
   for (let i of list) {
@@ -31,20 +34,26 @@ const generateQueryIndex = async (cwd: string) => {
       .substring(queryPath.length + 1)
       .replace(/[\W_]/g, '_')
 
+    const [dbName, ...queryNameArray] = name.split('_')
+    const queryName = queryNameArray.join('_')
+
     const querySrc = await readAsync(i)
     if ((querySrc && !querySrc.trim()) || !querySrc) {
       await writeAsync(
         i,
         `\
-import { APIQuery } from 'server-web'
+import { APIProps } from 'server-web'
 
-export default (async ({ req }) => {
+export default async ({ req }: APIProps, params: any) => {
   return await db.$queryRaw\`SELECT NOW ()\`
-}) as APIQuery
+}
       `
       )
     }
-    newQuery[name] = {
+    if (!newQuery[dbName]) {
+      newQuery[dbName] = {}
+    }
+    newQuery[dbName][queryName] = {
       import: `./query${i
         .substring(queryPath.length, i.length - 3)
         .replace(/\\\\/gi, '/')}`,
@@ -53,17 +62,29 @@ export default (async ({ req }) => {
   }
   const output = `
   ${Object.entries(newQuery)
-    .map((arg: any) => {
-      const [_, value] = arg
-      return `import ${value.name} from '${value.import}'`
+    .map((arg) => {
+      const [dbName, values] = arg
+
+      return Object.values(values)
+        .map((value) => {
+          return `import ${value.name} from '${value.import}'`
+        })
+        .join('\n')
     })
     .join('\n')}
   
   export default {
     ${Object.entries(newQuery)
-      .map((arg: any) => {
-        const [key, value] = arg
-        return `'${key}':${value.name},`
+      .map((arg) => {
+        const [dbName, values] = arg
+
+        return `${dbName}: {\
+          ${Object.entries(values)
+            .map(([key, value]) => {
+              return `'${key}':${value.name},`
+            })
+            .join('\n')}
+        }`
       })
       .join('\n')}
       }`

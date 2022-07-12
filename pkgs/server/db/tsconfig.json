@@ -6,8 +6,6 @@
     "isolatedModules": true,
     "moduleResolution": "node",
     "noEmit": true,
-    "baseUrl": "./src",
     "typeRoots": ["./types/"]
-  },
-  "include": ["./src/**/*", "./types/**/*"]
+  }
 }

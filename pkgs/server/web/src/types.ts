@@ -1,5 +1,10 @@
 import { createApp } from 'h3'
+import type { IncomingMessage, ServerResponse } from 'http'
+import type { dbs } from 'server-db'
 import { IClusterParent } from '.'
+
+// @ts-ignore
+import type APIQuery from '../../../../app/server/src/query'
 
 export type AppServer = {
   ext: Record<string, any>
@@ -12,17 +17,15 @@ export type AppServer = {
     }
   }
   api?: Promise<{ default: Record<string, API> }>
-  query?: Promise<{ default: Record<string, APIQuery> }>
+  query?: Promise<{ default: typeof APIQuery }>
   requireNpm?: string[]
 }
-import type { IncomingMessage, ServerResponse } from 'http'
-import type { dbs } from 'server-db'
 export const g = global as typeof global & {
   dbs: dbs
   db: dbs['db']
 }
 
-type IAPIArgs = {
+export type APIProps = {
   body: any
   req: IncomingMessage
   reply: ServerResponse & { send: (body: any) => void }
@@ -32,8 +35,4 @@ type IAPIArgs = {
   session: any
 }
 
-export type APIQuery = (
-  args: IAPIArgs
-) => Promise<Record<string, any> | Record<string, any>[]>
-
-export type API = [string, (args: IAPIArgs) => void | Promise<void>]
+export type API = [string, (args: APIProps) => void | Promise<void>]

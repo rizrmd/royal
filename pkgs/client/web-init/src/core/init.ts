@@ -1,8 +1,11 @@
 import { css } from '@emotion/react'
 import React, { Fragment } from 'react'
 import { jsx } from './jsx'
+import { dbsClient } from 'server-db'
 
-export const initEnv = () => {
+import { dbsList } from '../../../../../app/web/types/dbs-list'
+
+export const initEnv = async () => {
   const w = window
   if (!w.css) {
     if (!w.mode) w.mode = 'dev'
@@ -48,6 +51,9 @@ export const initEnv = () => {
       w.appRoot.render()
     })
 
-    // initDbs()
+    w.dbs = await dbsClient('fetch', dbsList as any)
+    for (let key of Object.keys(w.dbs)) {
+      ;(w as any)[key] = w.dbs[key]
+    }
   }
 }

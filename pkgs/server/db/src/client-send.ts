@@ -1,5 +1,5 @@
-import { IClientSend } from 'client'
-import { forkQuery, clusterQuery } from 'query'
+import { IClientSend } from './client'
+import { forkQuery, clusterQuery } from './query'
 
 export const fetchSend: IClientSend = async (params) => {
   const w = window as any
