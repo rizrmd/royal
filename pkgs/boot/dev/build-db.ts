@@ -90,6 +90,31 @@ if (process.send) {
     process.on('message', async (data: any) => {
       if (process.send) {
         if (data.id) {
+          if (typeof (db as any)[data.table] === 'function') {
+            if (data.table.startsWith('$query')) {
+              const q = data.params[0]
+              q.sql = true;
+              Object.freeze(q)
+              let val = db[data.table](
+                q,
+                data.params[1] 
+              );
+
+              process.send({
+                id: data.id,
+                value: await val
+              })
+            } else {
+              const val = await (db as any)[data.table](
+                ...data.params
+              )
+              process.send({
+                id: data.id,
+                value: val,
+              })
+            }
+            return
+          }
           const val = await (db as any)[data.table][data.action](...data.params)
           process.send({
             id: data.id,

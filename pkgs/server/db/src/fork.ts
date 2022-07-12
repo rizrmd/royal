@@ -28,7 +28,7 @@ export const startDBFork = async (config: ParsedConfig) => {
           })
           forks[name].on(
             'message',
-            (data: { id: string; value: any; event?: 'ready' }) => {
+            (data: { id: string; value: any; event?: 'ready'; }) => {
               if (data.event === 'ready') {
                 resolveFork()
               } else {

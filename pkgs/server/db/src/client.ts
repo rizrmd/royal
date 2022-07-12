@@ -33,19 +33,30 @@ const dbClient = (name: string, send: IClientSend, args?: IDBClientArg) => {
     {},
     {
       get(_, table: string) {
+        if (table.startsWith('$')) {
+          return (...params: any[]) => {
+            return send(
+              {
+                db: name,
+                action: 'query',
+                table,
+                params,
+              },
+              args
+            )
+          }
+        }
         if (table === 'query') {
-          return (sql: string, ...params: any[]) => {
-            console.log('query', params)
-            return new Promise((resolve) => resolve({}))
-            // return send(
-            //   {
-            //     db: name,
-            //     action: 'query',
-            //     table: undefined,
-            //     params,
-            //   },
-            //   args
-            // )
+          return (queryName: string, ...params: any[]) => {
+            return send(
+              {
+                db: name,
+                action: 'query',
+                table: queryName,
+                params,
+              },
+              args
+            )
           }
         }
         if (table === 'definition') {

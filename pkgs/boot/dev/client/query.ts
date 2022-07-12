@@ -10,13 +10,12 @@ export const reloadQuery = function (
   event: string,
   path: string
 ) {
-  clearTimeout(timeout)
-  timeout = setTimeout(async () => {
-    await generateQueryIndex(this.cwd)
-    if (dev.boot) {
-      dev.boot.send({ action: 'reload.query' })
-    }
-  }, 200)
+  if (event !== 'change') {
+    clearTimeout(timeout)
+    timeout = setTimeout(async () => {
+      await generateQueryIndex(this.cwd)
+    }, 200)
+  }
 }
 
 const generateQueryIndex = async (cwd: string) => {
@@ -42,12 +41,9 @@ const generateQueryIndex = async (cwd: string) => {
       await writeAsync(
         i,
         `\
-import { APIProps } from 'server-web'
-
-export default async ({ req }: APIProps, params: any) => {
+export default async (params: any) => {
   return await db.$queryRaw\`SELECT NOW ()\`
-}
-      `
+}`
       )
     }
     if (!newQuery[dbName]) {

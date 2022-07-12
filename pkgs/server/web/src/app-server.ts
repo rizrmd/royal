@@ -1,13 +1,17 @@
-import { AppServer } from './types'
 import { join, sep } from 'path'
+import { AppServer } from './types'
 
 const g = global as any
 
-export const getAppServer = async () => {
-  if (!g.app) {
+export const getAppServer = async (mode: 'dev' | 'prod' | 'pkg') => {
+  if (!g.app || mode === 'dev') {
     g.app = {}
     if (__dirname.split(sep).join('/').endsWith('.output/pkgs')) {
-      const app = require(join(__dirname, 'server.app.js')).default
+      const dpath = join(__dirname, 'server.app.js');
+      if (mode === 'dev') {
+        delete require.cache[dpath]
+      }
+      const app = require(dpath).default
       if (app) {
         g.app = app
       }
@@ -18,7 +22,7 @@ export const getAppServer = async () => {
         g.app = app
       }
     }
-  } 
+  }
 
   return g.app as AppServer
 }

@@ -5,6 +5,7 @@ import { IClusterParent } from '.'
 
 // @ts-ignore
 import type APIQuery from '../../../../app/server/src/query'
+import { getAppServer } from './app-server'
 
 export type AppServer = {
   ext: Record<string, any>
@@ -21,6 +22,7 @@ export type AppServer = {
   requireNpm?: string[]
 }
 export const g = global as typeof global & {
+  app: AppServer
   dbs: dbs
   db: dbs['db']
 }

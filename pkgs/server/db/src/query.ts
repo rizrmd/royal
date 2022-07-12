@@ -3,6 +3,9 @@ import { generateQueueID } from './util'
 import { IDBMsg } from '../../web/src/routes/serve-db'
 import { define } from './fork'
 
+// @ts-ignore
+import type APIQuery from '../../../../app/server/src/query'
+
 /**
  * fork
  *   forkQuery()
@@ -38,10 +41,26 @@ export const parentQuery = async (
 }
 
 export const forkQuery = (body: IDBMsg, prefix?: string): Promise<any> => {
-  return new Promise((resolve) => {
+  const g = global as any & { apiQuery: typeof APIQuery }
+
+  return new Promise(async (resolve) => {
     const name = body.db
 
     if (forks[name]) {
+      if (body.action === 'query' && !body.table.startsWith('$')) {
+        if (g.app && g.app.query) {
+          const q = (await g.app.query).default
+          if (q[body.db] && q[body.db][body.table]) {
+          
+            const result = await q[body.db][body.table](body.params)
+            resolve(result)
+            return
+          }
+        }
+        resolve(null)
+        return
+      }
+
       const id = generateQueueID(dbQueue, prefix || 'fork')
       dbQueue[id] = resolve
       forks[name].send({ ...body, id })

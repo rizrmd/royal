@@ -45,22 +45,17 @@ declare global {
   >
   
   const dbs: typeof _dbs
-${(
-  await resolvePromisesSeq(
-    Object.keys(config.dbs).map(async (e) => {
-      const ddir = join(cwd, 'app', 'server', 'src', 'query')
-
-      return `\
+${Object.keys(config.dbs)
+  .map((e) => {
+    return `\
   const ${e}: typeof _dbs.${e} & { 
     query: <K extends keyof typeof APIQuery['${e}']>(
-      queryName: K, 
-      params?: Parameters<typeof APIQuery['${e}'][K]>[1]
+      params?: Parameters<typeof APIQuery['${e}'][K]>[0]
     ) => Promise<any>
     definition: (table: string) => Promise<any>
   }`
-    })
-  )
-).join('\n')}
+  })
+  .join('\n')}
 }`
 
     await writeAsync(

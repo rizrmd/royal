@@ -3,13 +3,13 @@ import cluster, { Worker } from 'cluster'
 import get from 'lodash.get'
 import pad from 'lodash.pad'
 import * as serverDb from 'server-db'
-import { log, logUpdate, prettyError } from 'server-utility'
+import { log, prettyError } from 'server-utility'
 import { getAppServer } from './app-server'
 import { IDBMsg } from './routes/serve-db'
 import { startCluster } from './start-cluster'
 import { startWorkerHttp, web } from './start-worker-http'
-export * from './types'
 import { g } from './types'
+export * from './types'
 
 prettyError()
 
@@ -80,15 +80,16 @@ if (cluster.isWorker) {
 
       process.on('message', async (data: IServerInit) => {
         if (data.action === 'init') {
-          await serverDb.startDBFork(data.config)
-
+          if (parent.status === 'init') {
+            await serverDb.startDBFork(data.config)
+          }
           parent.config = data.config
           parent.mode = data.mode
 
           await startCluster(parent)
-          const gapp = await getAppServer()
+          await getAppServer(data.mode)
 
-          const onInitRoot = get(gapp, 'events.root.init')
+          const onInitRoot = get(g.app, 'events.root.init')
 
           if (onInitRoot) {
             g.dbs = await serverDb.dbsClient(
@@ -110,12 +111,14 @@ if (cluster.isWorker) {
         }
 
         if (data.action === 'reload') {
+          await getAppServer('dev')
           if (parent.status === 'ready') {
             for (let wk of Object.values(parent.child)) {
               wk.send({ action: 'kill' })
             }
           }
         } else if (data.action.startsWith('reload.')) {
+          await getAppServer('dev')
           if (parent.status === 'ready') {
             for (let wk of Object.values(parent.child)) {
               wk.send(data)

@@ -10,13 +10,12 @@ export const reloadAPI = function (
   event: string,
   path: string
 ) {
-  clearTimeout(timeout)
-  timeout = setTimeout(async () => {
-    await generateApiIndex(this.cwd)
-    if (dev.boot) {
-      dev.boot.send({ action: 'reload.api' })
-    }
-  }, 200)
+  if (event !== 'change') {
+    clearTimeout(timeout)
+    timeout = setTimeout(async () => {
+      await generateApiIndex(this.cwd)
+    }, 200)
+  }
 }
 
 const generateApiIndex = async (cwd: string) => {

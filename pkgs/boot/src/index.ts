@@ -165,7 +165,7 @@ const startServer = async (
     watch(app.server.path).on('change', async () => {
       await startServer(config, mode)
     })
-    watch(join(cwd, 'pkgs', 'server.app.js')).on('change', async () => {
+    watch(join(cwd, 'pkgs', 'server.app.js')).on('change', async (path) => {
       app.server.fork?.send({ action: 'reload' })
     })
 

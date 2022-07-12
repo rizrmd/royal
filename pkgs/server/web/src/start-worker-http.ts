@@ -24,8 +24,7 @@ export const startWorkerHttp = async (
 ) => {
   const app = createApp()
 
-  const gapp = await getAppServer()
-
+  await getAppServer(mode)
 
   const url = new URL(config.server.url)
 
@@ -41,14 +40,14 @@ export const startWorkerHttp = async (
   g.db = g.dbs['db']
 
   // init worker event
-  const onInitWorker = get(gapp, 'events.worker.init')
+  const onInitWorker = get(g.app, 'events.worker.init')
   if (onInitWorker) {
     await onInitWorker(app, config)
   }
 
   // serve api
-  if (gapp['api']) {
-    const api = (await gapp['api']).default
+  if (g.app['api']) {
+    const api = (await g.app['api']).default
     if (api) {
       await serveApi({ app, mode, config, api })
     }
