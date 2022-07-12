@@ -2,27 +2,31 @@ import type { ParsedConfig } from 'boot/dev/config-parse'
 import cluster, { Worker } from 'cluster'
 import get from 'lodash.get'
 import pad from 'lodash.pad'
-// import serverDb from 'server-db'
-import { log, prettyError } from 'server-utility'
+import * as serverDb from 'server-db'
+import { log, logUpdate, prettyError } from 'server-utility'
 import { getAppServer } from './app-server'
 import { IDBMsg } from './routes/serve-db'
 import { startCluster } from './start-cluster'
-import { startServer, web } from './start-server'
-import { g } from './types'
+import { startWorkerHttp, web } from './start-worker-http'
 export * from './types'
+import { g } from './types'
 
 prettyError()
 
 export type IServerInit = {
-  action: 'init' | 'kill' | 'reload' | 'db.query'
+  action: 'init' | 'kill' | 'reload' | 'db.query' | 'db.result'
   name?: string
   config: ParsedConfig
   mode: 'dev' | 'prod' | 'pkg'
-  parentStatus?: IPrimaryWorker['status']
-  dbQuery?: IDBMsg & { mid: string }
+  parentStatus?: IClusterParent['status']
+  db?: {
+    id: string
+    result?: any
+    query?: IDBMsg
+  }
 }
 
-export type IPrimaryWorker = {
+export type IClusterParent = {
   status: 'init' | 'ready' | 'stopping'
   child: Record<number, Worker>
   clusterSize: number
@@ -37,9 +41,7 @@ if (cluster.isWorker) {
       const id = process.env.id
 
       if (data.action === 'init') {
-        await startServer(`wrk-${id}`, data.config, data.mode)
-        // g.dbs = await serverDb.clusterProxy(data.config, `wrk-${id}`)
-        // g.db = g.dbs.db
+        await startWorkerHttp(data.config, data.mode, `${id || 0}`)
         log(
           `[${pad(`wrk-${id}`, 7)}]  🍃 Back End Worker #${id} ${
             data.parentStatus === 'init' ? 'started' : 'reloaded'
@@ -58,61 +60,78 @@ if (cluster.isWorker) {
         } else {
           process.exit(1)
         }
+      } else if (data.action === 'db.result') {
+        const dbQueue = (global as any).dbQueue
+        if (data.db && dbQueue[data.db.id]) {
+          dbQueue[data.db.id](data.db.result)
+          delete dbQueue[data.db.id]
+        }
       }
     })
   }
 } else {
   if (process.send) {
     ;(async () => {
-      const worker = {
+      const parent = {
         status: 'init',
         child: {},
         clusterSize: 0,
-      } as IPrimaryWorker
+      } as IClusterParent
 
       process.on('message', async (data: IServerInit) => {
         if (data.action === 'init') {
+          await serverDb.startDBFork(data.config)
 
-          worker.config = data.config
-          worker.mode = data.mode
+          parent.config = data.config
+          parent.mode = data.mode
 
-          await startCluster(worker)
+          await startCluster(parent)
           const gapp = await getAppServer()
 
           const onInitRoot = get(gapp, 'events.root.init')
+
           if (onInitRoot) {
-            await onInitRoot(worker)
+            g.dbs = await serverDb.dbsClient(
+              'fork',
+              Object.keys(data.config.dbs)
+            )
+            g.db = g.dbs['db']
+
+            await onInitRoot(parent)
+            if (data.mode === 'dev') {
+              console.log('')
+            }
           }
 
-          worker.status = 'ready'
+          parent.status = 'ready'
           if (process.send)
             process.send({ event: 'started', url: data.config.server.url })
         }
 
-        // if (data.action === 'db.query' && data.dbQuery) {
-        //   serverDb.parentClusterOnMessage(data, g.dbs)
-        // }
+        if (data.action === 'db.query' && data.db && data.db.query) {
+          serverDb.forkQuery(data.db.query)
+        }
 
         if (data.action === 'reload') {
-          if (worker.status === 'ready') {
-            for (let wk of Object.values(worker.child)) {
+          if (parent.status === 'ready') {
+            for (let wk of Object.values(parent.child)) {
               wk.send({ action: 'kill' })
             }
           }
         } else if (data.action.startsWith('reload.')) {
-          if (worker.status === 'ready') {
-            for (let wk of Object.values(worker.child)) {
+          if (parent.status === 'ready') {
+            for (let wk of Object.values(parent.child)) {
               wk.send(data)
             }
           }
         }
 
         if (data.action === 'kill') {
-          // await serverDb.stopFork()
+          await serverDb.stopDBFork()
 
-          worker.status = 'stopping'
+          parent.status = 'stopping'
           const killings = [] as Promise<void>[]
-          for (let wk of Object.values(worker.child)) {
+          for (let wk of Object.values(parent.child)) {
             wk.send({ action: 'kill' })
             killings.push(
               new Promise((killed) => {

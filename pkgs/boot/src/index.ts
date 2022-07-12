@@ -47,8 +47,8 @@ const startServer = async (
   mode: 'dev' | 'prod' | 'pkg'
 ) => {
   if (mode === 'pkg') {
-    const { startServer } = await import('../../server/web/src/start-server')
-    await startServer(config, mode)
+    const { startWorkerHttp } = await import('server-web/src/start-worker-http')
+    await startWorkerHttp(config, mode)
     return
   }
 

@@ -1,66 +1,54 @@
 import cluster from 'cluster'
 import os from 'os'
-import { IPrimaryWorker } from '..'
+import { IClusterParent, IServerInit } from '..'
+import * as serverDb from 'server-db'
 const MAX_CLUSTER_PROCESS = os.cpus().length
 
-export const startCluster = (worker: IPrimaryWorker) => {
+export const startCluster = (parent: IClusterParent) => {
   return new Promise<void>((started) => {
     const clusterSize = Math.min(
       MAX_CLUSTER_PROCESS,
-      worker.config.server.worker
+      parent.config.server.worker
     )
-    worker.clusterSize = clusterSize
+    parent.clusterSize = clusterSize
 
     for (let i = 0; i < clusterSize; i++) {
       cluster.fork({ id: i + 1 })
     }
 
     cluster.on('online', (wk) => {
-      worker.child[wk.id] = wk
+      parent.child[wk.id] = wk
       wk.send({
-        config: worker.config,
-        mode: worker.mode,
+        config: parent.config,
+        mode: parent.mode,
         action: 'init',
-        parentStatus: worker.status,
+        parentStatus: parent.status,
       })
 
-      if (Object.keys(worker.child).length >= clusterSize) {
+      if (Object.keys(parent.child).length >= clusterSize) {
         started()
       }
     })
 
-    // cluster.on('message', async (wk, msg, socket) => {
-    //   if (msg && msg.action === 'db.query') {
-    //     const { id, arg } = msg as { id: string; arg: IDBMsg }
-    //     const db = (dbs as any)[arg.db]
-
-    //     if (!db) {
-    //       log(
-    //         `WARNING: app/dbs/${arg.db} not found, are you sure has defined "${arg.db} entry on config.ts?`
-    //       )
-    //       return
-    //     }
-
-    //     const table = db[arg.table]
-
-    //     if (table) {
-    //       const action = table[arg.action]
-    //       if (action) {
-    //         const result = await action(...arg.params)
-    //         const pkt = { dbResult: { id, result }, action: 'db.result' }
-    //         wk.send(pkt)
-    //       }
-    //     }
-    //   }
-    // })
+    cluster.on('message', async (wk, msg: IServerInit, socket) => {
+      if (
+        msg &&
+        msg.action === 'db.query' &&
+        msg.db &&
+        msg.db.query &&
+        msg.db.id
+      ) {
+        await serverDb.parentQuery(msg.db.query, wk, msg.db.id)
+      }
+    })
 
     cluster.on('exit', (wk, code, singal) => {
-      if (worker.status !== 'stopping') {
+      if (parent.status !== 'stopping') {
         cluster.fork({
-          id: Object.keys(worker.child).indexOf(wk.id.toString()) + 1,
+          id: Object.keys(parent.child).indexOf(wk.id.toString()) + 1,
         })
       }
-      delete worker.child[wk.id]
+      delete parent.child[wk.id]
     })
   })
 }

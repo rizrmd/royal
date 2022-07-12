@@ -1,12 +1,14 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
-import { createApp, createRouter } from 'h3'
+import { createApp } from 'h3'
 import { createServer } from 'http'
 import get from 'lodash.get'
+import { g } from '.'
 import { getAppServer } from './app-server'
 import { createClient } from './client/create-client'
 import { serveApi } from './routes/serve-api'
 import { serveDb } from './routes/serve-db'
 import { serveDbPkg } from './routes/serve-db-pkg'
+import * as serverDb from 'server-db'
 
 export const web = {
   app: undefined as undefined | ReturnType<typeof createApp>,
@@ -15,23 +17,36 @@ export const web = {
   ext: undefined as undefined | (Record<string, any> & { init?: () => void }),
 }
 
-export const startServer = async (
-  workerId: string,
+export const startWorkerHttp = async (
   config: ParsedConfig,
-  mode: 'dev' | 'prod' | 'pkg'
+  mode: 'dev' | 'prod' | 'pkg',
+  workerId?: string
 ) => {
   const app = createApp()
 
   const gapp = await getAppServer()
 
-  const onInitWorker = get(gapp, 'events.worker.init')
 
+  const url = new URL(config.server.url)
+
+  // initiate db
+  if (workerId) {
+    g.dbs = await serverDb.dbsClient('proxy-cluster', Object.keys(config.dbs), {
+      workerId,
+    })
+  } else {
+    await serverDb.startDBFork(config)
+    g.dbs = await serverDb.dbsClient('fork', Object.keys(config.dbs))
+  }
+  g.db = g.dbs['db']
+
+  // init worker event
+  const onInitWorker = get(gapp, 'events.worker.init')
   if (onInitWorker) {
     await onInitWorker(app, config)
   }
 
-  const url = new URL(config.server.url)
-
+  // serve api
   if (gapp['api']) {
     const api = (await gapp['api']).default
     if (api) {
@@ -40,10 +55,10 @@ export const startServer = async (
   }
 
   // serve db
-  if (mode !== 'pkg') {
+  if (workerId) {
     serveDb({ workerId, app, config, mode })
   } else {
-    await serveDbPkg({ workerId, app, config, mode })
+    await serveDbPkg({ app, config, mode })
   }
 
   // serve static file
@@ -63,6 +78,11 @@ export const startServer = async (
   web.server = createServer(web.app)
   if (mode === 'pkg') {
     console.log(`Server started at http://localhost:${url.port}`)
+  }
+
+  if (!workerId) {
+    web.server.on('close', serverDb.stopDBFork)
+    web.server.on('error', serverDb.stopDBFork)
   }
 
   web.server.listen(url.port || 3200)

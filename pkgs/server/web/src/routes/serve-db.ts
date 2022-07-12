@@ -1,9 +1,7 @@
 import { ParsedConfig } from 'boot/dev/config-parse'
 
 import { createApp, useBody } from 'h3'
-import camelCase from 'lodash.camelcase'
-import trim from 'lodash.trim'
-// import serverDb from 'server-db'
+import * as serverDb from 'server-db'
 
 export type IServeDbArgs = {
   workerId: string
@@ -30,37 +28,21 @@ export const serveDb = (arg: Partial<IServeDbArgs>) => {
 
   if (app) {
     app.use('/__data', async (req, res, next) => {
-      const [action, table] = (
-        trim(req.url, '/').split('/').shift() || ''
-      ).split('...')
-
       const body = (await useBody(req)) as IDBMsg
 
-      if (
-        body.table === table &&
-        camelCase(action) === body.action &&
-        workerId
-      ) {
-        if (process.send) {
+      if (workerId) {
+        const dbResult = await serverDb.clusterQuery(body, workerId)
+        if (dbResult) {
           res.setHeader('content-type', 'application/json')
-
-          // res.write(
-          //   JSON.stringify(
-          //     await serverDb.sendQueryToParentCluster(body, workerId)
-          //   )
-          // )
+          res.write(JSON.stringify(dbResult))
           res.end()
           return
         }
       }
+
       res.statusCode = 403
       res.setHeader('content-type', 'application/json')
       res.write(JSON.stringify({ status: 'forbidden' }))
-      res.end()
     })
   }
-}
-
-export const randomDigits = (n: number) => {
-  return Math.floor(Math.random() * (9 * Math.pow(10, n))) + Math.pow(10, n)
 }

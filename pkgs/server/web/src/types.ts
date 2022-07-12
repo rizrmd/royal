@@ -1,11 +1,11 @@
 import { createApp } from 'h3'
-import { IPrimaryWorker } from '.'
+import { IClusterParent } from '.'
 
 export type AppServer = {
   ext: Record<string, any>
   events: {
     root?: {
-      init: (root: IPrimaryWorker) => Promise<void>
+      init: (root: IClusterParent) => Promise<void>
     }
     worker?: {
       init: (app: ReturnType<typeof createApp>) => Promise<void>
@@ -17,8 +17,8 @@ export type AppServer = {
 import type { IncomingMessage, ServerResponse } from 'http'
 import type { dbs } from 'server-db'
 export const g = global as typeof global & {
-  dbs: typeof dbs
-  db: typeof dbs['db']
+  dbs: dbs
+  db: dbs['db']
 }
 
 export type API = [
@@ -29,8 +29,8 @@ export type API = [
     ext: any
     mode: 'dev' | 'prod' | 'pkg'
     baseurl: string
-    db: typeof dbs['db']
-    dbs: typeof dbs
+    db: dbs['db']
+    dbs: dbs
     session: any
   }) => void | Promise<void>
 ]

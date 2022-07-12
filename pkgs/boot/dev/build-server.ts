@@ -43,7 +43,7 @@ const newSource = async (extdir: string) => {
           bcryptjs: '^2.4.3',
           'server-web': 'workspace:^',
           'web-init': 'workspace:^',
-          "dbs": "workspace:^"
+          dbs: 'workspace:^',
         },
         devDependencies: {
           '@types/bcryptjs': '^2.4.2',
@@ -65,7 +65,7 @@ import { AppServer } from 'server-web/src/types'
 
 export default {
   ext: {
-    Password: require('./bcrypt'),
+    Password: require('./utils/bcrypt'),
   },
   api: import('./api'),
   events: {
@@ -81,7 +81,26 @@ export default {
   )
 
   await writeAsync(
-    join(extdir, 'src', 'bcrypt.ts'),
+    join(extdir, 'tsconfig.json'),
+    `\
+  {
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "moduleResolution": "node",
+      "noEmit": true,
+      "baseUrl": "./src",
+      "typeRoots": ["./types/"]
+    },
+    "include": ["./src/**/*", "./types/**/*"]
+  }
+  `
+  )
+
+  await writeAsync(
+    join(extdir, 'src', 'utils', 'bcrypt.ts'),
     `\
 import BCrypt from 'bcryptjs'
 

@@ -1,6 +1,7 @@
 import { IClientSend } from 'client'
+import { forkQuery, clusterQuery } from 'query'
 
-export const httpClient: IClientSend = async (params) => {
+export const fetchSend: IClientSend = async (params) => {
   const w = window as any
   let url = `${w.serverurl}/__data/${toSnake(params.action)}`
 
@@ -20,8 +21,12 @@ export const httpClient: IClientSend = async (params) => {
   const fetching = await fetch(url, options)
   return await fetching.json()
 }
-export const directClient: IClientSend = async (args) => {}
-export const clusterClient: IClientSend = async (args) => {}
+export const forkSend: IClientSend = async (msg) => {
+  return await forkQuery(msg)
+}
+export const proxyClusterSend: IClientSend = async (msg, { workerId }) => {
+  return await clusterQuery(msg, workerId)
+}
 
 const toSnake = (str: string) =>
   str[0].toLowerCase() +

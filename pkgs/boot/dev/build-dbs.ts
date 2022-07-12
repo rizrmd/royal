@@ -35,7 +35,7 @@ import { db as dbs_${e} }from './${e}/index'`
     )
 
     const dbsSource = `\
-    import type dbs from 'dbs'
+    import type _dbs from 'dbs'
     
     declare global {
       type DBItem<T extends { findFirst: any }> = Exclude<
@@ -43,16 +43,20 @@ import { db as dbs_${e} }from './${e}/index'`
         null
       >
       
+      const dbs: typeof _dbs
       ${Object.keys(config.dbs)
         .map(
           (e) =>
-            `const ${e}: typeof dbs.${e} & { query: (sql: string) => Promise<any> }`
+            `const ${e}: typeof _dbs.${e} & { 
+              query: (sql: string) => Promise<any>
+              definition: (table: string) => Promise<any>
+             }`
         )
         .join('\n')}
     }`
 
     await writeAsync(join(cwd, 'app', app, 'types', 'dbs.d.ts'), dbsSource)
-    await writeAsync(join(cwd, 'app', 'server', 'src', 'dbs.d.ts'), dbsSource)
+    await writeAsync(join(cwd, 'app', 'server', 'types', 'dbs.d.ts'), dbsSource)
   }
 
   await buildWatch({
