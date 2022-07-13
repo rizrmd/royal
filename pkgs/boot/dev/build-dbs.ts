@@ -49,9 +49,7 @@ ${Object.keys(config.dbs)
   .map((e) => {
     return `\
   const ${e}: typeof _dbs.${e} & { 
-    query: <K extends keyof typeof APIQuery['${e}']>(
-      params?: Parameters<typeof APIQuery['${e}'][K]>[0]
-    ) => Promise<any>
+    query: typeof APIQuery['${e}']
     definition: (table: string) => Promise<any>
   }`
   })

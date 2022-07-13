@@ -46,19 +46,6 @@ const dbClient = (name: string, send: IClientSend, args?: IDBClientArg) => {
             )
           }
         }
-        if (table === 'query') {
-          return (queryName: string, ...params: any[]) => {
-            return send(
-              {
-                db: name,
-                action: 'query',
-                table: queryName,
-                params,
-              },
-              args
-            )
-          }
-        }
         if (table === 'definition') {
           return (table: string) => {
             console.log('definition', table)
@@ -81,6 +68,11 @@ const dbClient = (name: string, send: IClientSend, args?: IDBClientArg) => {
           {
             get(_, action: string) {
               return (...params: any[]) => {
+                if (table === 'query') {
+                  table = action
+                  action = 'query'
+                }
+
                 return send(
                   {
                     db: name,
