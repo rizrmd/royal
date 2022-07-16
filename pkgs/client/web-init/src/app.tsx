@@ -55,6 +55,7 @@ export const App = () => {
     local.url !== location.pathname ||
     (w.mode === 'dev' && devTime !== local.devTime)
   ) {
+    local.devTime = devTime
     local.url = location.pathname
     loadPageAndLayout(local)
   }
