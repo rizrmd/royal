@@ -32,7 +32,10 @@ export type IAppRoot = {
   >
   global: WeakMap<any, any>
   mounted: boolean
+  devTime: number
 }
+
+const devTime = new Date().getTime()
 
 export const App = () => {
   const local = useLocal({
@@ -42,11 +45,16 @@ export const App = () => {
     cached: { page: {}, layout: {} },
     mounted: true,
     global: new WeakMap(),
+    devTime: devTime,
   } as IAppRoot)
 
   w.appRoot = local
 
-  if (!local.router || local.url !== location.pathname || w.mode === 'dev') {
+  if (
+    !local.router ||
+    local.url !== location.pathname ||
+    (w.mode === 'dev' && devTime !== local.devTime)
+  ) {
     local.url = location.pathname
     loadPageAndLayout(local)
   }

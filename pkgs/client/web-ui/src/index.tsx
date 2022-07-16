@@ -1,6 +1,0 @@
-export * from './form/Form'
-export * from './form/FormDemo'
-export * from './tree/Tree'
-export * from './mobile'
-export * from './view'
-export * from './list/PopupList'
