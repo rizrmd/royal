@@ -3,7 +3,7 @@ import pluginJsx from '@babel/plugin-syntax-jsx'
 import pluginTs from '@babel/plugin-syntax-typescript'
 import traverse from '@babel/traverse'
 import { readFile, writeFile } from 'fs/promises'
-import { join } from 'path'
+import { basename, join } from 'path'
 import { prettyError } from 'server-utility'
 import { IClientWatchers } from '../build-client'
 import { clientDir, walkDir } from './util'
@@ -21,7 +21,20 @@ export async function reloadPage(
   path: string
 ) {
   if (event === 'addDir') return
-  if (event === 'unlink') await writeFile(path, '')
+  if (event === 'add') {
+    await writeFile(
+      path,
+      `\
+import { page } from 'web-init'
+
+export default page({
+  url: '/${basename(path).substring(0, basename(path).length - 3)}',
+  component: ({}) => {
+    return <div>Halo</div>
+  }
+})`
+    )
+  }
 
   if (event !== 'unlink' && event !== 'unlinkDir' && event !== 'add') {
     await generatePageSingle(path)

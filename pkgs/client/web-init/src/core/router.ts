@@ -60,7 +60,7 @@ export const loadPageAndLayout = (local: IAppRoot) => {
         local.page.current = found.Page
       }
 
-      if (local.layout.name !== found.layout) {
+      if (local.layout.name !== found.layout || w.mode === 'dev') {
         local.layout.name = found.layout
 
         if (w.cache.layouts[found.layout]) {
@@ -112,6 +112,7 @@ const initializeRoute = (local: IAppRoot) => {
               const layoutFound = local.layout.list[layoutName]
               if (layoutFound) {
                 const result = (await layoutFound()).default
+
                 w.cache.layouts[layoutName] = result
                 resolve({
                   default: result,
