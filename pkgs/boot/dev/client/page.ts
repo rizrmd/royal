@@ -21,14 +21,14 @@ export async function reloadPage(
   path: string
 ) {
   if (event === 'addDir') return
-  if (event === 'add') {
+  if (event === 'add' && !(await readFile(path, 'utf-8'))) {
     await writeFile(
       path,
       `\
 import { page } from 'web-init'
 
 export default page({
-  url: '/${basename(path).substring(0, basename(path).length - 3)}',
+  url: '/${basename(path).substring(0, basename(path).length - 4)}',
   component: ({}) => {
     return <div>Halo</div>
   }
