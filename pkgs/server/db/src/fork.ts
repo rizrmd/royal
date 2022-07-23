@@ -28,14 +28,24 @@ export const startDBFork = async (config: ParsedConfig) => {
           })
           forks[name].on(
             'message',
-            (data: { id: string; value: any; event?: 'ready'; }) => {
+            (data: {
+              id: string
+              value: any
+              event?: 'ready' | 'error'
+              reason?: string
+            }) => {
               if (data.event === 'ready') {
                 resolveFork()
               } else {
                 if (data.id) {
                   const resolveDbQueue = dbQueue[data.id] as any
                   if (resolveDbQueue) {
-                    resolveDbQueue(data.value)
+                    if (data.event !== 'error') {
+                      resolveDbQueue(undefined)
+                      console.error(data.value)
+                    } else {
+                      resolveDbQueue(data.value)
+                    }
                     delete dbQueue[data.id]
                   }
                 }

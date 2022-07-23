@@ -32,7 +32,7 @@ export const serveDb = (arg: Partial<IServeDbArgs>) => {
 
       if (workerId) {
         const dbResult = await serverDb.clusterQuery(body, workerId)
-        if (dbResult) {
+        if (dbResult !== undefined) {
           res.setHeader('content-type', 'application/json')
           res.write(JSON.stringify(dbResult))
           res.end()
