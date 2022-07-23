@@ -40,7 +40,7 @@ export const startDBFork = async (config: ParsedConfig) => {
                 if (data.id) {
                   const resolveDbQueue = dbQueue[data.id] as any
                   if (resolveDbQueue) {
-                    if (data.event !== 'error') {
+                    if (data.event === 'error') {
                       resolveDbQueue(undefined)
                       console.error(data.value)
                     } else {

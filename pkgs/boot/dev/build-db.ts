@@ -78,13 +78,13 @@ import * as pc from './node_modules/.prisma/client'
 export type db_type = pc.PrismaClient
 export const db = new pc.PrismaClient() as unknown as pc.PrismaClient
 
-if (process.send && process.connected) {
+if (process.send ) {
   ;(BigInt as any).prototype.toJSON = function () {
     return this.toString()
   }
 
   db.$connect().then(() => {
-    if (process.send) {
+    if (process.send && process.connected) {
       process.send({ event: 'ready' })
     }
     process.on('message', async (data: any) => {
@@ -92,10 +92,10 @@ if (process.send && process.connected) {
         if (data.id) {
           if (typeof (db as any)[data.table] === 'function') {
             if (data.table.startsWith('$query')) {
-              const q = data.params[0]
+              const q = data.params.shift()
               q.sql = true
               Object.freeze(q)
-              let val = db[data.table](q, data.params[1])
+              let val = db[data.table](q, ...data.params)
 
               process.send({
                 id: data.id,
